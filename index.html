@@ -214,6 +214,10 @@
     content.innerHTML = marked.parse(md);
     var h1 = content.querySelector("h1");
     if (h1) h1.textContent = h1.textContent.replace(/^\s*\[[^\]]*\]\s*/, "");
+    content.querySelectorAll("a[href]").forEach(function (a) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    });
     status.textContent = "";
     var t = themeOf(dateStr);
     THEMES.forEach(function (x) {
