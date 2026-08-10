@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KAHA 회원병원 실무 소식지</title>
+<meta name="description" content="한국동물병원협회(KAHA) 회원병원 수의사를 위한 요일별 실무 소식지 — 진료 가이드라인·노무·서식·경영·법규">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --surface: #ffffff;
+    --ink: #26221f;        /* KAHA 차콜 #231916 계열 */
+    --ink-soft: #5f6b78;
+    --accent: #035293;     /* KAHA 블루 */
+    --accent-soft: #e9f1f8;
+    --line: #d8e1ea;
+    --code-bg: #eef2f7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f151c;
+      --surface: #161e28;
+      --ink: #dbe3ea;
+      --ink-soft: #8fa0b0;
+      --accent: #7ab1e3;
+      --accent-soft: #14293f;
+      --line: #253140;
+      --code-bg: #1b2531;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.75;
+    font-size: 16px;
+  }
+  header { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .head-inner {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 0.9rem; }
+  .brand .logo-chip {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0.35rem 0.55rem;
+    display: flex;
+    align-items: center;
+  }
+  .brand img { height: 44px; display: block; }
+  .brand .titles { line-height: 1.3; }
+  .site-title { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; }
+  .site-title .sub {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    margin-top: 0.15rem;
+  }
+  select {
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+  }
+  select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .themes {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 0.8rem 1.25rem 0;
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .theme-chip {
+    font-size: 0.78rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    border-radius: 999px;
+    padding: 0.15rem 0.7rem;
+    white-space: nowrap;
+  }
+  .theme-chip strong { color: var(--ink); font-weight: 700; margin-right: 0.25rem; }
+  .theme-chip.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+  .theme-chip.active strong { color: var(--accent); }
+  main { max-width: 46rem; margin: 0 auto; padding: 1.2rem 1.25rem 4rem; }
+  #issue-badge {
+    display: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 0.2rem 0.65rem;
+    margin-bottom: 0.4rem;
+  }
+  #status { color: var(--ink-soft); font-size: 0.9rem; }
+  article h1 { font-size: 1.45rem; line-height: 1.35; letter-spacing: -0.02em; text-wrap: balance; margin-top: 0.5em; }
+  article h2 {
+    font-size: 1.12rem;
+    margin-top: 2.2em;
+    padding-top: 1.1em;
+    border-top: 1px solid var(--line);
+    letter-spacing: -0.01em;
+  }
+  article h3 { font-size: 1rem; margin-top: 1.6em; }
+  article a { color: var(--accent); text-underline-offset: 3px; }
+  article blockquote {
+    margin: 1em 0;
+    padding: 0.6em 1em;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+  article blockquote p { margin: 0.3em 0; }
+  article code { background: var(--code-bg); border-radius: 4px; padding: 0.1em 0.4em; font-size: 0.88em; }
+  article pre { background: var(--code-bg); border-radius: 8px; padding: 1em; overflow-x: auto; }
+  article pre code { background: none; padding: 0; }
+  article hr { border: none; border-top: 1px solid var(--line); margin: 2.2em 0; }
+  article ul, article ol { padding-left: 1.4em; }
+  article li { margin: 0.35em 0; }
+  article table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
+  article th, article td { border: 1px solid var(--line); padding: 0.45em 0.7em; font-size: 0.92rem; }
+  footer {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 0 1.25rem 2.5rem;
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-inner">
+    <div class="brand">
+      <!-- 협회 공식 로고 파일을 assets/kaha-logo.png 로 넣으면 자동 표시됩니다 (없으면 숨김) -->
+      <span class="logo-chip" hidden><img src="assets/kaha-logo.png" alt="KAHA 한국동물병원협회 로고"
+        onload="this.parentElement.hidden=false"></span>
+      <div class="titles">
+        <div class="site-title">KAHA 회원병원 실무 소식지
+          <span class="sub">한국동물병원협회 정책기획위원회 · 요일별 발행</span>
+        </div>
+      </div>
+    </div>
+    <label>지난 호
+      <select id="datePicker" aria-label="소식지 날짜 선택"></select>
+    </label>
+  </div>
+  <nav class="themes" id="themeNav" aria-label="요일별 테마"></nav>
+</header>
+<main>
+  <span id="issue-badge"></span>
+  <p id="status">소식지를 불러오는 중…</p>
+  <article id="content"></article>
+</main>
+<footer>
+  본 소식지는 KAHA 회원병원 수의사를 위한 참고 자료입니다.
+  노무·세무·법률 관련 내용은 일반적 안내이며 개별 사안은 반드시 전문가(공인노무사·세무사·변호사) 자문과
+  법령 원문을 확인하시기 바랍니다. 진료 가이드라인 요약은 원문 출처를 함께 확인하세요.
+</footer>
+<script src="assets/marked.min.js"></script>
+<script>
+(function () {
+  var THEMES = [
+    { day: 1, label: "월", name: "진료 가이드라인" },
+    { day: 2, label: "화", name: "노무·인사" },
+    { day: 3, label: "수", name: "서식·양식" },
+    { day: 4, label: "목", name: "경영·세무" },
+    { day: 5, label: "금", name: "법규·정책" }
+  ];
+  var status = document.getElementById("status");
+  var content = document.getElementById("content");
+  var picker = document.getElementById("datePicker");
+  var badge = document.getElementById("issue-badge");
+  var themeNav = document.getElementById("themeNav");
+
+  THEMES.forEach(function (t) {
+    var chip = document.createElement("span");
+    chip.className = "theme-chip";
+    chip.id = "chip-" + t.day;
+    chip.innerHTML = "<strong>" + t.label + "</strong>" + t.name;
+    themeNav.appendChild(chip);
+  });
+
+  function themeOf(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    var dow = d.getDay();
+    for (var i = 0; i < THEMES.length; i++) if (THEMES[i].day === dow) return THEMES[i];
+    return null;
+  }
+
+  function show(md, dateStr) {
+    content.innerHTML = marked.parse(md);
+    status.textContent = "";
+    var t = themeOf(dateStr);
+    THEMES.forEach(function (x) {
+      document.getElementById("chip-" + x.day).className =
+        "theme-chip" + (t && x.day === t.day ? " active" : "");
+    });
+    if (t) {
+      badge.style.display = "inline-block";
+      badge.textContent = t.label + "요일 · " + t.name;
+    } else {
+      badge.style.display = "none";
+    }
+  }
+
+  function loadDate(d) {
+    status.textContent = "소식지를 불러오는 중…";
+    fetch("issues/" + d + ".md", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (md) { show(md, d); })
+      .catch(function () { status.textContent = "이 날짜의 소식지를 불러오지 못했습니다."; });
+  }
+
+  fetch("archive.json", { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (a) {
+      var params = new URLSearchParams(location.search);
+      var want = params.get("d");
+      var current = (want && a.dates.indexOf(want) !== -1) ? want : a.latest;
+      a.dates.slice().sort().reverse().forEach(function (d) {
+        var o = document.createElement("option");
+        var t = themeOf(d);
+        o.value = d;
+        o.textContent = d + (t ? " (" + t.label + ") " : " ") + (d === a.latest ? "· 최신" : "");
+        picker.appendChild(o);
+      });
+      picker.value = current;
+      picker.addEventListener("change", function () {
+        loadDate(picker.value);
+        history.replaceState(null, "", "?d=" + picker.value);
+      });
+      loadDate(current);
+    })
+    .catch(function () { status.textContent = "목록을 불러오지 못했습니다."; });
+})();
+</script>
+</body>
+</html>
