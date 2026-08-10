@@ -144,17 +144,18 @@ s.append(grid([
     [P("종 / 품종"), "", P("연 락 처"), ""],
     [P("성별 / 중성화"), "", P("동물과의 관계"), P("□ 소유자        □ 대리인")],
 ], [30 * mm, 60 * mm, 30 * mm, W - 120 * mm],
-    heights=[7.8 * mm] * 3, label_cols=(0, 2)))
+    heights=[7.5 * mm] * 3, label_cols=(0, 2)))
 s.append(grid([
     [P("연령(생년월일)"), "", P("체중(kg)"), "", P("차트번호"), ""],
 ], [30 * mm, 34 * mm, 22 * mm, 24 * mm, 22 * mm, W - 132 * mm],
-    heights=[7.8 * mm], label_cols=(0, 2, 4)))
+    heights=[7.5 * mm], label_cols=(0, 2, 4)))
 
 s += section("1. 진단명 및 현재 상태")
 s.append(grid([
     [P("진단명 (추정 포함)"), ""],
     [P("현재 상태 요약"), ""],
-], [34 * mm, W - 34 * mm], heights=[8.5 * mm, 11 * mm], valign_top=(1,)))
+    [P("ASA 신체상태 분류"), P("□ Ⅰ 건강    □ Ⅱ 경미한 전신질환    □ Ⅲ 중등도 전신질환    □ Ⅳ 생명 위협    □ Ⅴ 위중    □ E 응급")],
+], [34 * mm, W - 34 * mm], heights=[8 * mm, 9.5 * mm, 7.5 * mm], valign_top=(1,)))
 
 s += section("2. 예정 진료의 필요성 · 방법 · 내용")
 s.append(grid([
@@ -164,7 +165,7 @@ s.append(grid([
 s.append(grid([
     [P("필 요 성"), ""],
     [P("방법 및 내용"), ""],
-], [34 * mm, W - 34 * mm], heights=[9 * mm, 12.5 * mm], valign_top=(0, 1)))
+], [34 * mm, W - 34 * mm], heights=[8.5 * mm, 11 * mm], valign_top=(0, 1)))
 
 s += section("3. 전형적으로 발생이 예상되는 후유증 · 부작용")
 s.append(grid([
@@ -172,24 +173,24 @@ s.append(grid([
     [P("□  수술 관련 : 출혈, 감염, 봉합 부위 벌어짐, 재수술 가능성 등")],
     [P("□  개체 상태에 따른 추가 위험 :")],
     [P("※  위 내용은 전형적으로 예상되는 사항이며, 예측하지 못한 상황이 발생할 수 있음을 설명받았습니다.", size=8.4, color=GREY)],
-], [W], heights=[7.2 * mm, 7.2 * mm, 8.2 * mm, 7.2 * mm], label_cols=()))
+], [W], heights=[7 * mm, 7 * mm, 8 * mm, 7 * mm], label_cols=()))
 
 s += section("4. 보호자 준수사항")
 s.append(grid([
     [P("□  수술 전 금식 : 음식 ________ 시간  ·  물 ________ 시간")],
     [P("□  수술 후 주의사항(넥카라 · 활동 제한 · 투약 등) 준수     □  응급상황 연락 가능한 연락처 유지")],
-], [W], heights=[7.2 * mm, 7.2 * mm], label_cols=()))
+], [W], heights=[7 * mm, 7 * mm], label_cols=()))
 
 s += section("5. 추가 확인")
 s.append(grid([
     [P("□  수술 중 상태에 따라 범위가 변경될 수 있음을 설명받음   ( 변경 시 :  □ 사전 연락 요망   □ 수의사 판단에 위임 )")],
     [P("□  예상 진료비용 안내를 받음   ( 예상 범위 : ____________________ 원 )")],
     [P("□  심폐소생술(CPR) :  □ 시행   □ 시행하지 않음(DNR)")],
-], [W], heights=[7.2 * mm] * 3, label_cols=()))
+], [W], heights=[7 * mm] * 3, label_cols=()))
 
-s.append(Spacer(1, 2.5 * mm))
+s.append(Spacer(1, 1.8 * mm))
 agree = Table([[P("본인은 위 내용에 대하여 충분한 설명을 듣고 이해하였으며, 수술 및 마취 시행에 동의합니다.",
-                  bold=True, size=9.5)]], colWidths=[W], rowHeights=[8.5 * mm])
+                  bold=True, size=9.5)]], colWidths=[W], rowHeights=[8 * mm])
 agree.setStyle(TableStyle([
     ("BOX", (0, 0), (-1, -1), 1, BLUE),
     ("BACKGROUND", (0, 0), (-1, -1), BLUE_BG),
@@ -197,13 +198,13 @@ agree.setStyle(TableStyle([
     ("LEFTPADDING", (0, 0), (-1, -1), 7),
 ]))
 s.append(agree)
-s.append(Spacer(1, 2 * mm))
+s.append(Spacer(1, 1.5 * mm))
 s.append(grid([
     [P("작성일"), P("20____년  ____월  ____일"),
      P("보호자"), P("성명 : __________ (서명)"),
      P("설명 수의사"), P("성명 : __________ (서명)")],
 ], [14 * mm, 42 * mm, 14 * mm, 44 * mm, 20 * mm, W - 134 * mm],
-    heights=[10.5 * mm], label_cols=(0, 2, 4)))
+    heights=[10 * mm], label_cols=(0, 2, 4)))
 
 build("surgery-anesthesia-consent.pdf", "KAHA-F-2601", "수술·마취 동의서", s)
 
