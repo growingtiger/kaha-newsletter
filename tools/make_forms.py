@@ -56,7 +56,7 @@ def section(title):
         ("TOPPADDING", (0, 0), (-1, -1), 0),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
     ]))
-    return [Spacer(1, 2.4 * mm), t, Spacer(1, 0.9 * mm)]
+    return [Spacer(1, 2 * mm), t, Spacer(1, 0.7 * mm)]
 
 
 def grid(rows, widths, heights=None, label_cols=(0,), valign_top=()):
@@ -101,7 +101,7 @@ def header(title, subtitle, form_no):
     ]))
     rule = Table([[""]], colWidths=[W], rowHeights=[0.9 * mm])
     rule.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), BLUE)]))
-    return [top, Spacer(1, 2 * mm), rule, Spacer(1, 2.5 * mm),
+    return [top, Spacer(1, 1.8 * mm), rule, Spacer(1, 2 * mm),
             Paragraph(title, st_title), Spacer(1, 1 * mm),
             Paragraph(subtitle, st_sub)]
 
@@ -155,7 +155,8 @@ s.append(grid([
     [P("진단명 (추정 포함)"), ""],
     [P("현재 상태 요약"), ""],
     [P("ASA 신체상태 분류"), P("□ Ⅰ 건강    □ Ⅱ 경미한 전신질환    □ Ⅲ 중등도 전신질환    □ Ⅳ 생명 위협    □ Ⅴ 위중    □ E 응급")],
-], [34 * mm, W - 34 * mm], heights=[8 * mm, 9.5 * mm, 7.5 * mm], valign_top=(1,)))
+], [34 * mm, W - 34 * mm], heights=[8 * mm, 9 * mm, 7.5 * mm], valign_top=(1,)))
+s.append(Paragraph("※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, Brodbelt 등 2008) — 건강 개체(ASA Ⅰ–Ⅱ): 개 0.05% · 고양이 0.11% / 질환 동반(ASA Ⅲ–Ⅴ): 개 1.33% · 고양이 1.40%", st_note))
 
 s += section("2. 예정 진료의 필요성 · 방법 · 내용")
 s.append(grid([
@@ -165,7 +166,7 @@ s.append(grid([
 s.append(grid([
     [P("필 요 성"), ""],
     [P("방법 및 내용"), ""],
-], [34 * mm, W - 34 * mm], heights=[8.5 * mm, 11 * mm], valign_top=(0, 1)))
+], [34 * mm, W - 34 * mm], heights=[8 * mm, 9.5 * mm], valign_top=(0, 1)))
 
 s += section("3. 전형적으로 발생이 예상되는 후유증 · 부작용")
 s.append(grid([
@@ -228,6 +229,7 @@ s.append(grid([
     [P("사전 혈액검사"), P("□ CBC     □ 혈액화학     □ 전해질     □ 응고계     □ 기타 : ")],
     [P("ASA 분류"), P("□ Ⅰ 건강    □ Ⅱ 경미한 전신질환    □ Ⅲ 중등도 전신질환    □ Ⅳ 생명 위협    □ Ⅴ 위중    □ E 응급")],
 ], [32 * mm, W - 32 * mm], heights=[8 * mm, 8 * mm]))
+s.append(Paragraph("※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, Brodbelt 등 2008) — 건강 개체(ASA Ⅰ–Ⅱ): 개 0.05% · 고양이 0.11% / 질환 동반(ASA Ⅲ–Ⅴ): 개 1.33% · 고양이 1.40%", st_note))
 
 s += section("마취 전 준비")
 s.append(grid([
@@ -243,7 +245,7 @@ head = [P(x, bold=True, size=8.6, color=BLUE_DK) for x in
 mon_rows = [head] + [[""] * 8 for _ in range(10)]
 mt = Table(mon_rows,
            colWidths=[18 * mm, 15 * mm, 15 * mm, 17 * mm, 17 * mm, 21 * mm, 17 * mm, W - 120 * mm],
-           rowHeights=[7 * mm] + [7.6 * mm] * 10)
+           rowHeights=[7 * mm] + [7.3 * mm] * 10)
 mt.setStyle(TableStyle([
     ("GRID", (0, 0), (-1, -1), 0.5, LINE),
     ("BACKGROUND", (0, 0), (-1, 0), BLUE_BG),
