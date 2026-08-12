@@ -83,6 +83,32 @@
     padding: 0.35rem 0.6rem;
   }
   select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .controls { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  #searchBox {
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    width: 15.5rem;
+    max-width: 100%;
+  }
+  #searchBox:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  .search-hit {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin: 0.7rem 0;
+    background: var(--surface);
+    cursor: pointer;
+  }
+  .search-hit:hover { border-color: var(--accent); }
+  .search-hit .hit-meta { font-size: 0.78rem; color: var(--accent); font-weight: 700; }
+  .search-hit .hit-title { font-weight: 700; margin: 0.15rem 0 0.3rem; }
+  .search-hit .hit-snippet { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+  .search-hit mark { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 0.15em; }
   .themes {
     max-width: 46rem;
     margin: 0 auto;
@@ -176,9 +202,13 @@
         </div>
       </div>
     </div>
-    <label>지난 호
-      <select id="datePicker" aria-label="소식지 날짜 선택"></select>
-    </label>
+    <div class="controls">
+      <input type="search" id="searchBox" placeholder="전체 호 검색 (예: 백신, 연차, 마약류)"
+        aria-label="소식지 전체 검색" autocomplete="off">
+      <label>지난 호
+        <select id="datePicker" aria-label="소식지 날짜 선택"></select>
+      </label>
+    </div>
   </div>
   <nav class="themes" id="themeNav" aria-label="요일별 테마"></nav>
 </header>
@@ -253,9 +283,94 @@
       .catch(function () { status.textContent = "이 날짜의 소식지를 불러오지 못했습니다."; });
   }
 
+  // ── 전체 호 검색 ──────────────────────────────────────────────
+  var searchBox = document.getElementById("searchBox");
+  var INDEX = null;
+  var ALL_DATES = [];
+
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function plainText(md) {
+    return md
+      .replace(/```[\s\S]*?```/g, " ")
+      .replace(/!\[[^\]]*\]\([^\)]*\)/g, " ")
+      .replace(/\[([^\]]*)\]\([^\)]*\)/g, "$1")
+      .replace(/^>\s?/gm, "")
+      .replace(/[#*_`|>-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+  function buildIndex() {
+    if (INDEX) return Promise.resolve(INDEX);
+    return Promise.all(ALL_DATES.map(function (d) {
+      return fetch("issues/" + d + ".md", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.text() : ""; })
+        .then(function (md) {
+          var first = (md.split("\n")[0] || "").replace(/^#\s*/, "").replace(/^\[[^\]]*\]\s*/, "");
+          return { d: d, title: first, text: plainText(md) };
+        });
+    })).then(function (list) { INDEX = list; return list; });
+  }
+  function highlight(text, q) {
+    var out = "", lower = text.toLowerCase(), ql = q.toLowerCase(), pos = 0;
+    while (true) {
+      var i = lower.indexOf(ql, pos);
+      if (i === -1) { out += esc(text.slice(pos)); break; }
+      out += esc(text.slice(pos, i)) + "<mark>" + esc(text.slice(i, i + q.length)) + "</mark>";
+      pos = i + q.length;
+    }
+    return out;
+  }
+  function renderSearch(q) {
+    buildIndex().then(function (list) {
+      if (searchBox.value.trim() !== q) return; // 최신 입력만 반영
+      var hits = list.filter(function (it) {
+        return (it.title + " " + it.text).toLowerCase().indexOf(q.toLowerCase()) !== -1;
+      });
+      badge.style.display = "none";
+      THEMES.forEach(function (x) { document.getElementById("chip-" + x.day).className = "theme-chip"; });
+      status.textContent = "「" + q + "」 검색 결과 " + hits.length + "건";
+      content.innerHTML = "";
+      hits.forEach(function (it) {
+        var t = themeOf(it.d);
+        var idx = it.text.toLowerCase().indexOf(q.toLowerCase());
+        var start = Math.max(0, idx - 55);
+        var snippet = (start > 0 ? "…" : "") + it.text.slice(start, Math.min(it.text.length, idx + 105)) + "…";
+        var div = document.createElement("div");
+        div.className = "search-hit";
+        div.innerHTML = '<div class="hit-meta">' + it.d + (t ? " · " + t.label + "요일 " + t.name : "") + "</div>" +
+          '<div class="hit-title">' + highlight(it.title, q) + "</div>" +
+          '<div class="hit-snippet">' + highlight(snippet, q) + "</div>";
+        div.addEventListener("click", function () {
+          picker.value = it.d;
+          history.replaceState(null, "", "?d=" + it.d);
+          loadDate(it.d);
+          window.scrollTo(0, 0);
+        });
+        content.appendChild(div);
+      });
+      if (!hits.length) {
+        content.innerHTML = '<p style="color: var(--ink-soft)">다른 검색어로 시도해 보세요. 제목과 본문 전체에서 찾습니다.</p>';
+      }
+    });
+  }
+  var searchTimer = null;
+  searchBox.addEventListener("input", function () {
+    clearTimeout(searchTimer);
+    var q = searchBox.value.trim();
+    if (q.length < 2) {
+      if (q.length === 0) loadDate(picker.value);
+      return;
+    }
+    status.textContent = "검색 중…";
+    searchTimer = setTimeout(function () { renderSearch(q); }, 250);
+  });
+
   fetch("archive.json", { cache: "no-store" })
     .then(function (r) { return r.json(); })
     .then(function (a) {
+      ALL_DATES = a.dates.slice();
       var params = new URLSearchParams(location.search);
       var want = params.get("d");
       var current = (want && a.dates.indexOf(want) !== -1) ? want : a.latest;
