@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell,
-  WidthType, ShadingType, AlignmentType, BorderStyle, VerticalAlign,
+  WidthType, ShadingType, AlignmentType, BorderStyle, VerticalAlign, LineRuleType,
 } = require("docx");
 
 const BASE = path.dirname(__dirname);
@@ -30,14 +30,19 @@ function run(text, { bold = false, size = 18, color = INK } = {}) {
 }
 
 function para(text, opts = {}, pOpts = {}) {
-  return new Paragraph({ children: [run(text, opts)], spacing: { before: 10, after: 10 }, ...pOpts });
+  const sz = opts.size || 18;
+  return new Paragraph({
+    children: [run(text, opts)],
+    spacing: { before: 0, after: 0, line: Math.round(sz * 14), lineRule: LineRuleType.EXACT },
+    ...pOpts,
+  });
 }
 
 function cell(text, { w, label = false, bold = false, size = 18, color = INK, span, fill, empty = 0 } = {}) {
   const children = [];
   if (text !== "") children.push(para(text, { bold: bold || label, size, color: fill === BLUE ? "FFFFFF" : color }));
-  for (let i = 0; i < empty; i++) children.push(new Paragraph({ children: [], spacing: { before: 10, after: 10 } }));
-  if (children.length === 0) children.push(new Paragraph({ children: [] }));
+  for (let i = 0; i < empty; i++) children.push(new Paragraph({ children: [], spacing: { before: 0, after: 0, line: 252, lineRule: LineRuleType.EXACT } }));
+  if (children.length === 0) children.push(new Paragraph({ children: [], spacing: { before: 0, after: 0, line: 252, lineRule: LineRuleType.EXACT } }));
   return new TableCell({
     children,
     width: { size: w, type: WidthType.DXA },
@@ -45,7 +50,7 @@ function cell(text, { w, label = false, bold = false, size = 18, color = INK, sp
     borders: BORDERS,
     verticalAlign: VerticalAlign.CENTER,
     shading: fill ? { type: ShadingType.CLEAR, fill } : label ? { type: ShadingType.CLEAR, fill: BLUE_BG } : undefined,
-    margins: { top: 50, bottom: 50, left: 90, right: 60 },
+    margins: { top: 36, bottom: 36, left: 90, right: 60 },
   });
 }
 
@@ -61,29 +66,30 @@ function sectionBar(title) {
   return table([TOTAL], [[cell(title, { w: TOTAL, bold: true, size: 19, fill: BLUE })]]);
 }
 
-function gap(h = 60) {
-  return new Paragraph({ children: [], spacing: { before: 0, after: h } });
+function gap(h = 90) {
+  return new Paragraph({ children: [], spacing: { before: 0, after: 0, line: h, lineRule: LineRuleType.EXACT } });
 }
 
 function header(title, subtitle) {
   return [
     new Paragraph({
       children: [new ImageRun({ type: "png", data: LOGO, transformation: { width: 189, height: 38 } })],
-      spacing: { after: 80 },
+      spacing: { after: 60 },
     }),
     new Paragraph({
       children: [run(title, { bold: true, size: 34, color: BLUE_DK })],
-      spacing: { after: 40 },
+      spacing: { after: 30, line: 500, lineRule: LineRuleType.EXACT },
       border: { bottom: { style: BorderStyle.SINGLE, size: 18, color: BLUE, space: 6 } },
     }),
-    new Paragraph({ children: [run(subtitle, { size: 15, color: GREY })], spacing: { after: 120 } }),
+    new Paragraph({ children: [run(subtitle, { size: 15, color: GREY })],
+      spacing: { after: 90, line: 230, lineRule: LineRuleType.EXACT } }),
   ];
 }
 
 function footerPara(formNo) {
   return new Paragraph({
     children: [run(`사단법인 한국동물병원협회 · 회원병원 실무 소식지 제공 양식 (${formNo}) — 병원 실정에 맞게 수정 후 사용하십시오.`, { size: 14, color: GREY })],
-    spacing: { before: 160 },
+    spacing: { before: 80, line: 210, lineRule: LineRuleType.EXACT },
     border: { top: { style: BorderStyle.SINGLE, size: 8, color: BLUE, space: 4 } },
   });
 }
@@ -92,7 +98,7 @@ function buildDoc(children) {
   return new Document({
     styles: { default: { document: { run: { font: FONT, size: 18, color: INK } } } },
     sections: [{
-      properties: { page: { margin: { top: 700, bottom: 700, left: 900, right: 900 } } },
+      properties: { page: { margin: { top: 540, bottom: 540, left: 900, right: 900 } } },
       children,
     }],
   });
@@ -125,7 +131,7 @@ const CEPSAF = "※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, 
     sectionBar("1. 진단명 및 현재 상태"),
     table(c2, [
       [cell("진단명 (추정 포함)", { w: c2[0], label: true }), cell("", { w: c2[1] })],
-      [cell("현재 상태 요약", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 1 })],
+      [cell("현재 상태 요약", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 2 })],
       [cell("ASA 신체상태 분류", { w: c2[0], label: true }), cell(ASA_TEXT, { w: c2[1], size: 16 })],
     ]),
     para(CEPSAF, { size: 14, color: GREY }),
@@ -137,7 +143,7 @@ const CEPSAF = "※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, 
     ]),
     table(c2, [
       [cell("필 요 성", { w: c2[0], label: true }), cell("", { w: c2[1] })],
-      [cell("방법 및 내용", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 1 })],
+      [cell("방법 및 내용", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 2 })],
     ]),
     gap(),
     sectionBar("3. 전형적으로 발생이 예상되는 후유증 · 부작용"),
@@ -179,7 +185,7 @@ const CEPSAF = "※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, 
   const mon = [1100, 950, 950, 1050, 1050, 1250, 1050, 2690];
   const monHead = ["시각", "HR", "RR", "SpO2", "EtCO2", "혈압", "체온", "마취심도 · 처치 · 비고"];
   const monRows = [monHead.map((t, i) => cell(t, { w: mon[i], bold: true, size: 16, color: BLUE_DK, fill: BLUE_BG }))];
-  for (let r = 0; r < 9; r++) monRows.push(mon.map((w) => cell("", { w })));
+  for (let r = 0; r < 10; r++) monRows.push(mon.map((w) => cell("", { w })));
   const doc = buildDoc([
     ...header("마취 전 평가 · 모니터링 체크리스트",
       "2020 AAHA Anesthesia and Monitoring Guidelines for Dogs and Cats 기반 (aaha.org 전문 무료 공개, 참고용) / 서식번호 KAHA-F-2602"),
@@ -272,7 +278,7 @@ const CEPSAF = "※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, 
       [cell("확장 평가 필요", { w: c2[0], label: true }), cell("□ 불필요       □ 필요  ( 사유 : ______________________________ )", { w: c2[1] })],
       [cell("권장 사료 · 급여량", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 1 })],
       [cell("목표 체중 · 재평가 일정", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 1 })],
-      [cell("보호자 상담 내용", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 2 })],
+      [cell("보호자 상담 내용", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 3 })],
     ]),
     gap(),
     table([1200, 3200, 1200, 4490], [[
