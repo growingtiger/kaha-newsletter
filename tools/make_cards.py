@@ -82,8 +82,6 @@ def base_card():
 def footer(img, draw, date, page=None, total=None):
     draw.rectangle([0, SIZE - 14, SIZE, SIZE], fill=BLUE)
     draw.text((80, SIZE - 74), "KAHA 회원병원 실무 소식지", font=F("semibold", 26), fill=GREY)
-    w = draw.textlength(date, font=F("regular", 26))
-    draw.text((SIZE - 80 - w, SIZE - 74), date, font=F("regular", 26), fill=GREY)
     if page is not None:
         cx = SIZE // 2 - (total - 1) * 18
         for i in range(total):
