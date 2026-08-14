@@ -290,4 +290,157 @@ const CEPSAF = "※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, 
   Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "nutrition-assessment-chart.docx"), b));
 })();
 
-console.log("워드 양식 3종 생성 요청 완료");
+// ═══ 4. 입원 동의서 (KAHA-F-2604) ═════════════════════════════════
+(function () {
+  const c4 = [1700, 3350, 1700, 3340];
+  const c8 = [900, 1300, 1150, 1150, 1150, 1400, 900, 2140];
+  const doc = buildDoc([
+    ...header("입원 동의서",
+      "입원 진료에 관한 설명·비용·연락 방식 합의서 — 본 서식은 수의사법 제13조의2의 수술등중대진료 동의서가 아닙니다. / 서식번호 KAHA-F-2604"),
+    sectionBar("동물 · 보호자 정보"),
+    table(c4, [
+      [cell("동 물 명", { w: c4[0], label: true }), cell("", { w: c4[1] }), cell("보호자 성명", { w: c4[2], label: true }), cell("", { w: c4[3] })],
+      [cell("종 / 품종", { w: c4[0], label: true }), cell("", { w: c4[1] }), cell("연 락 처", { w: c4[2], label: true }), cell("", { w: c4[3] })],
+      [cell("성별 / 중성화", { w: c4[0], label: true }), cell("", { w: c4[1] }), cell("제2연락처", { w: c4[2], label: true }), cell("", { w: c4[3] })],
+    ]),
+    table(c8, [[
+      cell("연령", { w: c8[0], label: true }), cell("", { w: c8[1] }),
+      cell("체중(kg)", { w: c8[2], label: true }), cell("", { w: c8[3] }),
+      cell("차트번호", { w: c8[4], label: true }), cell("", { w: c8[5] }),
+      cell("관계", { w: c8[6], label: true }), cell("□ 소유자  □ 대리인", { w: c8[7], size: 16 }),
+    ]]),
+    gap(),
+    sectionBar("1. 입원 사유 및 예상 기간"),
+    table([1600, 3400, 1500, 3590], [[
+      cell("추정 진단명", { w: 1600, label: true }), cell("", { w: 3400 }),
+      cell("입원 목적", { w: 1500, label: true }), cell("", { w: 3590 }),
+    ]]),
+    table([1900, 8190], [[
+      cell("예상 입원 기간", { w: 1900, label: true }),
+      cell("약 ______ 일        ( 20____. ____. ____.  ～  20____. ____. ____. )", { w: 8190 }),
+    ]]),
+    gap(),
+    sectionBar("2. 비용 안내   ※ 1일 입원비는 병원 게시 금액과 동일해야 합니다"),
+    table([1600, 2700, 1600, 4190], [[
+      cell("1일 입원비", { w: 1600, label: true }), cell("____________ 원", { w: 2700 }),
+      cell("예상 총액", { w: 1600, label: true }), cell("____________ 원 (변동 가능)", { w: 4190 }),
+    ]]),
+    table([1900, 8190], [
+      [cell("입원비 포함 항목", { w: 1900, label: true }), cell("", { w: 8190 })],
+      [cell("별도 청구 항목", { w: 1900, label: true }), cell("□ 검사    □ 처치    □ 약제    □ 수혈    □ 기타 :", { w: 8190 })],
+    ]),
+    table([TOTAL], [[cell("□  예상액의 ______ % 또는 ____________ 원을 초과할 것으로 예상되면 진행 전에 보호자에게 연락합니다.", { w: TOTAL })]]),
+    gap(),
+    sectionBar("3. 경과 보고 및 연락"),
+    table([1500, 3300, 1500, 3790], [[
+      cell("정기 보고", { w: 1500, label: true }), cell("□ 1일 1회   □ 1일 2회   □ 기타", { w: 3300, size: 16 }),
+      cell("보고 방법", { w: 1500, label: true }), cell("□ 전화  □ 문자·메신저  □ 면회 시 구두", { w: 3790, size: 16 }),
+    ]]),
+    table([TOTAL], [[cell("□  상태 급변 시 즉시 연락   /   연락 불통 시 :  □ 수의사 판단으로 필요한 처치 시행   □ 응급처치만 시행 후 재시도", { w: TOTAL })]]),
+    gap(),
+    sectionBar("4. 면회 · 반입물품 · 야간 관리"),
+    table([1800, 2900, 1800, 3590], [[
+      cell("면회 가능 시간", { w: 1800, label: true }), cell("", { w: 2900 }),
+      cell("면회 제한 사유", { w: 1800, label: true }), cell("□ 감염  □ 중환자  □ 기타", { w: 3590, size: 16 }),
+    ]]),
+    table([1600, 8490], [
+      [cell("반입물품", { w: 1600, label: true }), cell("(사료 · 약 · 담요 등 :                              )  ※ 분실 시 병원이 책임지지 않을 수 있습니다.", { w: 8490, size: 16 })],
+      [cell("야간·휴일 관리", { w: 1600, label: true }), cell("□ 야간 수의사 상주   □ 야간 간호인력 상주   □ 야간 무인 관리 ( ____시 최종 처치 → ____시 확인 )", { w: 8490, size: 16 })],
+    ]),
+    gap(),
+    sectionBar("5. 응급 상황 및 사망 시 처리"),
+    table([TOTAL], [
+      [cell("□  심정지 시 심폐소생술(CPR) :  □ 시행   □ 시행하지 않음(DNR)        □  생명 유지에 필요한 응급처치는 연락 전 시행에 동의", { w: TOTAL })],
+      [cell("□  사망 시 :  □ 사체 인도 희망   □ 병원 위탁 처리   □ 동물장묘업 등록 시설 이용 안내 희망", { w: TOTAL })],
+    ]),
+    gap(),
+    sectionBar("6. 입원 중 중대진료가 필요해지는 경우"),
+    table([TOTAL], [[cell("전신마취를 동반하는 내부장기 · 뼈 · 관절 수술 또는 전신마취를 동반하는 수혈이 필요해지면, 수의사법 제13조의2에 따라 별도의 수술등중대진료 동의서(서식 KAHA-F-2601)를 작성합니다. 본 입원 동의서가 이를 대신하지 않습니다.", { w: TOTAL, size: 17 })]]),
+    gap(),
+    table([TOTAL], [[cell("본인은 위 내용에 대하여 설명을 듣고 이해하였으며, 입원 및 위 조건에 동의합니다.", { w: TOTAL, bold: true, size: 19, fill: BLUE_BG })]]),
+    gap(),
+    table([1000, 2400, 1100, 2600, 1400, 1590], [[
+      cell("작성일", { w: 1000, label: true }), cell("20____년  ____월  ____일", { w: 2400 }),
+      cell("보호자", { w: 1100, label: true }), cell("성명 : __________ (서명)", { w: 2600 }),
+      cell("설명 수의사", { w: 1400, label: true }), cell("성명 : ______ (서명)", { w: 1590 }),
+    ]]),
+    footerPara("KAHA-F-2604"),
+  ]);
+  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "hospitalization-consent.docx"), b));
+})();
+
+// ═══ 5. 퇴원 안내문 (KAHA-F-2605) ═════════════════════════════════
+(function () {
+  const med = [1500, 1650, 1150, 800, 1000, 1150, 1050, 1790];
+  const medHead = ["약품명", "무엇 때문에", "1회 용량", "경로", "1일 횟수", "종료일", "식전/식후", "주의할 점"];
+  const medRows = [medHead.map((t, i) => cell(t, { w: med[i], bold: true, size: 15, color: BLUE_DK, fill: BLUE_BG }))];
+  for (let r = 0; r < 3; r++) medRows.push(med.map((w) => cell("", { w })));
+
+  const calW = [1210].concat(Array(7).fill(Math.floor((TOTAL - 1210) / 7)));
+  calW[7] += TOTAL - calW.reduce((a, b) => a + b, 0);
+  const calHead = [cell("", { w: calW[0], fill: BLUE_BG })]
+    .concat(Array.from({ length: 7 }, (_, i) => cell(`${i + 1}일차`, { w: calW[i + 1], bold: true, size: 15, color: BLUE_DK, fill: BLUE_BG })));
+  const calRow = (label) => [cell(label, { w: calW[0], bold: true, size: 16, color: BLUE_DK, fill: BLUE_BG })]
+    .concat(Array.from({ length: 7 }, (_, i) => cell("", { w: calW[i + 1] })));
+
+  const doc = buildDoc([
+    ...header("퇴원 안내문",
+      "가정 투약 · 관리 · 재진 안내 — 2020 AAHA 마취·모니터링 가이드라인의 서면 지침 권고를 참고한 참고용 서식 (처방전이 아닙니다) / 서식번호 KAHA-F-2605"),
+    sectionBar("환자 정보"),
+    table([1500, 1900, 1700, 1900, 1300, 1790], [
+      [cell("동 물 명", { w: 1500, label: true }), cell("", { w: 1900 }),
+       cell("보호자 성명", { w: 1700, label: true }), cell("", { w: 1900 }),
+       cell("체중(kg)", { w: 1300, label: true }), cell("", { w: 1790 })],
+      [cell("차트번호", { w: 1500, label: true }), cell("", { w: 1900 }),
+       cell("담당 수의사", { w: 1700, label: true }), cell("", { w: 1900 }),
+       cell("퇴원 일시", { w: 1300, label: true }), cell("", { w: 1790 })],
+    ]),
+    table([2100, 7990], [
+      [cell("진단명 / 시행한 처치", { w: 2100, label: true }), cell("", { w: 7990 })],
+      [cell("퇴원 시점 상태 확인", { w: 2100, label: true }), cell("□ 각성  □ 반응 있음  □ 체온 회복  □ 통증 조절됨   (마취 시행 : □ 예  □ 아니오)", { w: 7990, size: 16 })],
+    ]),
+    gap(),
+    sectionBar("1. 가정 투약 안내   ※ 원내 조제·투약분입니다. 처방전이 필요하시면 별도로 요청해 주십시오."),
+    table(med, medRows),
+    table([TOTAL], [[cell("□  퇴원 전 경구약 투여 방법을 보호자가 직접 해보고 확인하였습니다.      □  약 보관 방법을 안내하였습니다.", { w: TOTAL })]]),
+    gap(),
+    sectionBar("2. 투약 체크 달력   (투여 후 표시하세요)"),
+    table(calW, [calHead, calRow("아침"), calRow("저녁")]),
+    gap(),
+    sectionBar("3. 가정 관리   (담당 수의사가 환자에 맞게 기입합니다)"),
+    table([1900, 8190], [
+      [cell("활동 제한", { w: 1900, label: true }), cell("□ 산책 제한  □ 계단·점프 금지  □ 목줄 산책만    기간 : ________", { w: 8190, size: 16 })],
+      [cell("넥카라 · 수술복", { w: 1900, label: true }), cell("□ 착용 필요    착용 기간 : ________          □ 해당 없음", { w: 8190, size: 16 })],
+      [cell("절개 부위 관리", { w: 1900, label: true }), cell("□ 물 닿지 않게  □ 소독 : ____________    목욕 가능 시점 : ________", { w: 8190, size: 16 })],
+      [cell("식이 · 급수", { w: 1900, label: true }), cell("", { w: 8190 })],
+      [cell("관찰 사항", { w: 1900, label: true }), cell("배뇨 · 배변 · 식욕 · 활력 변화 시 기록해 주세요.", { w: 8190, size: 16 })],
+    ]),
+    gap(),
+    sectionBar("4. 재진 및 응급 연락"),
+    table([1700, 3200, 1500, 3690], [[
+      cell("다음 내원일", { w: 1700, label: true }), cell("20____. ____. ____.  ____시", { w: 3200 }),
+      cell("재진 목적", { w: 1500, label: true }), cell("□ 경과 확인  □ 봉합사 제거  □ 재검사", { w: 3690, size: 16 }),
+    ]]),
+    table([TOTAL], [
+      [cell("아래 증상이 보이면 즉시 연락 주십시오 (담당 수의사 기입) :", { w: TOTAL })],
+      [cell("", { w: TOTAL, empty: 2 })],
+    ]),
+    table([1700, 3200, 1500, 3690], [[
+      cell("병원 연락처", { w: 1700, label: true }), cell("", { w: 3200 }),
+      cell("야간 · 휴일", { w: 1500, label: true }), cell("", { w: 3690 }),
+    ]]),
+    para("※ 마취 후에는 회복기에 상태가 변할 수 있습니다. 퇴원 후 몇 시간 동안 특히 주의 깊게 지켜봐 주십시오.", { size: 14, color: GREY }),
+    gap(),
+    table([TOTAL], [[cell("□  위 내용을 안내문과 함께 읽으며 설명하였고, 보호자가 이해하였음을 확인합니다.", { w: TOTAL })]]),
+    gap(),
+    table([1100, 2500, 1100, 2600, 1100, 1690], [[
+      cell("설명일", { w: 1100, label: true }), cell("20____년 ____월 ____일", { w: 2500 }),
+      cell("보호자", { w: 1100, label: true }), cell("성명 : __________ (서명)", { w: 2600 }),
+      cell("설명자", { w: 1100, label: true }), cell("성명 : ______ (서명)", { w: 1690 }),
+    ]]),
+    footerPara("KAHA-F-2605"),
+  ]);
+  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "discharge-instructions.docx"), b));
+})();
+
+console.log("워드 양식 5종 생성 요청 완료");

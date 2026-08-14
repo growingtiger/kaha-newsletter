@@ -337,6 +337,188 @@ s.append(grid([
 
 build("nutrition-assessment-chart.pdf", "KAHA-F-2603", "영양 평가·BCS/MCS 기록지", s)
 
+# ═══════════════════════════════════════════════════════════════════
+# 4. 입원 동의서  (KAHA-F-2604)
+# ═══════════════════════════════════════════════════════════════════
+s = header("입원 동의서",
+           "입원 진료에 관한 설명·비용·연락 방식 합의서 — 본 서식은 수의사법 제13조의2의 수술등중대진료 동의서가 아닙니다.",
+           "KAHA-F-2604")
+
+s += section("동물 · 보호자 정보")
+s.append(grid([
+    [P("동 물 명"), "", P("보호자 성명"), ""],
+    [P("종 / 품종"), "", P("연 락 처"), ""],
+    [P("성별 / 중성화"), "", P("제2연락처"), ""],
+], [30 * mm, 60 * mm, 28 * mm, W - 118 * mm],
+    heights=[8 * mm] * 3, label_cols=(0, 2)))
+s.append(grid([
+    [P("연령"), "", P("체중(kg)"), "", P("차트번호"), "", P("관계"), P("□ 소유자&nbsp;&nbsp;&nbsp; □ 대리인", size=8.4)],
+], [16 * mm, 22 * mm, 20 * mm, 20 * mm, 20 * mm, 24 * mm, 14 * mm, W - 136 * mm],
+    heights=[8 * mm], label_cols=(0, 2, 4, 6)))
+
+s += section("1. 입원 사유 및 예상 기간")
+s.append(grid([
+    [P("추정 진단명"), "", P("입원 목적"), ""],
+], [26 * mm, 62 * mm, 24 * mm, W - 112 * mm], heights=[8.4 * mm], label_cols=(0, 2)))
+s.append(grid([
+    [P("예상 입원 기간"), P("약 ______ 일        ( 20____. ____. ____.  ～  20____. ____. ____. )")],
+], [30 * mm, W - 30 * mm], heights=[8.4 * mm]))
+
+s += section("2. 비용 안내   ※ 1일 입원비는 병원 게시 금액과 동일해야 합니다")
+s.append(grid([
+    [P("1일 입원비"), P("____________ 원"), P("예상 총액"), P("____________ 원 (변동 가능)")],
+], [26 * mm, 42 * mm, 26 * mm, W - 94 * mm], heights=[8.4 * mm], label_cols=(0, 2)))
+s.append(grid([
+    [P("입원비 포함 항목"), ""],
+    [P("별도 청구 항목"), P("□ 검사&nbsp;&nbsp;&nbsp;&nbsp; □ 처치&nbsp;&nbsp;&nbsp;&nbsp; □ 약제&nbsp;&nbsp;&nbsp;&nbsp; □ 수혈&nbsp;&nbsp;&nbsp;&nbsp; □ 기타 : ")],
+], [30 * mm, W - 30 * mm], heights=[9 * mm, 8.4 * mm]))
+s.append(grid([
+    [P("□&nbsp; 예상액의 ______ % 또는 ____________ 원을 초과할 것으로 예상되면 진행 전에 보호자에게 연락합니다.")],
+], [W], heights=[7.8 * mm], label_cols=()))
+
+s += section("3. 경과 보고 및 연락")
+s.append(grid([
+    [P("정기 보고"), P("□ 1일 1회&nbsp;&nbsp;&nbsp; □ 1일 2회&nbsp;&nbsp;&nbsp; □ 기타", size=8.4),
+     P("보고 방법"), P("□ 전화&nbsp;&nbsp; □ 문자·메신저&nbsp;&nbsp; □ 면회 시 구두", size=8.4)],
+], [24 * mm, 54 * mm, 24 * mm, W - 102 * mm], heights=[8 * mm], label_cols=(0, 2)))
+s.append(grid([
+    [P("□&nbsp; 상태 급변 시 즉시 연락&nbsp;&nbsp;&nbsp;／&nbsp;&nbsp;&nbsp;연락 불통 시 : &nbsp;□ 수의사 판단으로 필요한 처치 시행&nbsp;&nbsp;&nbsp; □ 응급처치만 시행 후 재시도")],
+], [W], heights=[7.6 * mm], label_cols=()))
+
+s += section("4. 면회 · 반입물품 · 야간 관리")
+s.append(grid([
+    [P("면회 가능 시간"), "", P("면회 제한 사유"), P("□ 감염&nbsp;&nbsp; □ 중환자&nbsp;&nbsp; □ 기타", size=8.4)],
+], [28 * mm, 46 * mm, 28 * mm, W - 102 * mm], heights=[8.4 * mm], label_cols=(0, 2)))
+s.append(grid([
+    [P("반입물품"), P("(사료 · 약 · 담요 등 :                                            )  ※ 분실 시 병원이 책임지지 않을 수 있습니다.", size=8.4)],
+], [24 * mm, W - 24 * mm], heights=[8.4 * mm]))
+s.append(grid([
+    [P("야간·휴일 관리"), P("□ 야간 수의사 상주&nbsp;&nbsp; □ 야간 간호인력 상주&nbsp;&nbsp; □ 야간 무인 관리 ( ____시 최종 처치 → ____시 확인 )", size=8.4)],
+], [28 * mm, W - 28 * mm], heights=[8.4 * mm]))
+
+s += section("5. 응급 상황 및 사망 시 처리")
+s.append(grid([
+    [P("□&nbsp; 심정지 시 심폐소생술(CPR) : &nbsp;□ 시행&nbsp;&nbsp; □ 시행하지 않음(DNR)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; □&nbsp; 생명 유지에 필요한 응급처치는 연락 전 시행에 동의")],
+    [P("□&nbsp; 사망 시 : &nbsp;□ 사체 인도 희망&nbsp;&nbsp; □ 병원 위탁 처리&nbsp;&nbsp; □ 동물장묘업 등록 시설 이용 안내 희망")],
+], [W], heights=[8 * mm, 8 * mm], label_cols=()))
+
+s += section("6. 입원 중 중대진료가 필요해지는 경우")
+s.append(grid([
+    [P("전신마취를 동반하는 내부장기 · 뼈 · 관절 수술 또는 전신마취를 동반하는 수혈이 필요해지면, 수의사법 제13조의2에 따라 "
+       "<b>별도의 수술등중대진료 동의서</b>(서식 KAHA-F-2601)를 작성합니다. 본 입원 동의서가 이를 대신하지 않습니다.", size=8.6)],
+], [W], heights=[11.5 * mm], label_cols=(), valign_top=(0,)))
+
+s.append(Spacer(1, 1.8 * mm))
+agree = Table([[P("본인은 위 내용에 대하여 설명을 듣고 이해하였으며, 입원 및 위 조건에 동의합니다.",
+                  bold=True, size=9.5)]], colWidths=[W], rowHeights=[8 * mm])
+agree.setStyle(TableStyle([
+    ("BOX", (0, 0), (-1, -1), 1, BLUE),
+    ("BACKGROUND", (0, 0), (-1, -1), BLUE_BG),
+    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+    ("LEFTPADDING", (0, 0), (-1, -1), 7),
+]))
+s.append(agree)
+s.append(Spacer(1, 1.5 * mm))
+s.append(grid([
+    [P("작성일"), P("20____년  ____월  ____일"),
+     P("보호자"), P("성명 : __________ (서명)"),
+     P("설명 수의사"), P("성명 : __________ (서명)")],
+], [14 * mm, 42 * mm, 14 * mm, 44 * mm, 20 * mm, W - 134 * mm],
+    heights=[10 * mm], label_cols=(0, 2, 4)))
+
+build("hospitalization-consent.pdf", "KAHA-F-2604", "입원 동의서", s)
+
+# ═══════════════════════════════════════════════════════════════════
+# 5. 퇴원 안내문  (KAHA-F-2605)
+# ═══════════════════════════════════════════════════════════════════
+s = header("퇴원 안내문",
+           "가정 투약 · 관리 · 재진 안내 — 2020 AAHA 마취·모니터링 가이드라인의 서면 지침 권고를 참고한 참고용 서식 (처방전이 아닙니다)",
+           "KAHA-F-2605")
+
+s += section("환자 정보")
+s.append(grid([
+    [P("동 물 명"), "", P("보호자 성명"), "", P("체중(kg)"), ""],
+    [P("차트번호"), "", P("담당 수의사"), "", P("퇴원 일시"), ""],
+], [24 * mm, 34 * mm, 26 * mm, 34 * mm, 22 * mm, W - 140 * mm],
+    heights=[7.6 * mm] * 2, label_cols=(0, 2, 4)))
+s.append(grid([
+    [P("진단명 / 시행한 처치"), ""],
+], [34 * mm, W - 34 * mm], heights=[8 * mm]))
+s.append(grid([
+    [P("퇴원 시점 상태 확인"), P("□ 각성&nbsp;&nbsp; □ 반응 있음&nbsp;&nbsp; □ 체온 회복&nbsp;&nbsp; □ 통증 조절됨&nbsp;&nbsp;&nbsp;&nbsp; (마취 시행 : □ 예&nbsp;&nbsp; □ 아니오)", size=8.4)],
+], [34 * mm, W - 34 * mm], heights=[7.8 * mm]))
+
+s += section("1. 가정 투약 안내   ※ 원내 조제·투약분입니다. 처방전이 필요하시면 별도로 요청해 주십시오.")
+med_head = [P(x, bold=True, size=8.2, color=BLUE_DK) for x in
+            ["약품명", "무엇 때문에", "1회 용량", "경로", "1일 횟수", "종료일", "식전/식후", "주의할 점"]]
+med_w = [24 * mm, 26 * mm, 18 * mm, 13 * mm, 16 * mm, 18 * mm, 17 * mm, W - 132 * mm]
+med_rows = [med_head] + [[""] * 8 for _ in range(3)]
+mt = Table(med_rows, colWidths=med_w, rowHeights=[6.6 * mm] + [7.4 * mm] * 3)
+mt.setStyle(TableStyle([
+    ("GRID", (0, 0), (-1, -1), 0.5, LINE),
+    ("BACKGROUND", (0, 0), (-1, 0), BLUE_BG),
+    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+    ("ALIGN", (0, 0), (-1, 0), "CENTER"),
+    ("LEFTPADDING", (0, 0), (-1, -1), 4),
+]))
+s.append(mt)
+s.append(Spacer(1, 1 * mm))
+s.append(grid([
+    [P("□&nbsp; 퇴원 전 경구약 투여 방법을 보호자가 직접 해보고 확인하였습니다.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; □&nbsp; 약 보관 방법을 안내하였습니다.")],
+], [W], heights=[7.2 * mm], label_cols=()))
+
+s += section("2. 투약 체크 달력   (투여 후 표시하세요)")
+day_head = [P("", size=8)] + [P("%d일차" % i, bold=True, size=8, color=BLUE_DK) for i in range(1, 8)]
+cw = [18 * mm] + [(W - 18 * mm) / 7] * 7
+cal = [day_head,
+       [P("아침", bold=True, size=8.4, color=BLUE_DK)] + [""] * 7,
+       [P("저녁", bold=True, size=8.4, color=BLUE_DK)] + [""] * 7]
+ct = Table(cal, colWidths=cw, rowHeights=[6.4 * mm, 7.4 * mm, 7.4 * mm])
+ct.setStyle(TableStyle([
+    ("GRID", (0, 0), (-1, -1), 0.5, LINE),
+    ("BACKGROUND", (0, 0), (-1, 0), BLUE_BG),
+    ("BACKGROUND", (0, 1), (0, -1), BLUE_BG),
+    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+]))
+s.append(ct)
+
+s += section("3. 가정 관리   (담당 수의사가 환자에 맞게 기입합니다)")
+s.append(grid([
+    [P("활동 제한"), P("□ 산책 제한&nbsp;&nbsp; □ 계단·점프 금지&nbsp;&nbsp; □ 목줄 산책만&nbsp;&nbsp;&nbsp;&nbsp; 기간 : ________")],
+    [P("넥카라 · 수술복"), P("□ 착용 필요&nbsp;&nbsp;&nbsp;&nbsp; 착용 기간 : ________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; □ 해당 없음")],
+    [P("절개 부위 관리"), P("□ 물 닿지 않게&nbsp;&nbsp; □ 소독 : ______________&nbsp;&nbsp;&nbsp;&nbsp; 목욕 가능 시점 : ________")],
+    [P("식이 · 급수"), ""],
+    [P("관찰 사항"), P("배뇨 · 배변 · 식욕 · 활력 변화 시 기록해 주세요.", size=8.4)],
+], [30 * mm, W - 30 * mm], heights=[7 * mm, 7 * mm, 7 * mm, 7.4 * mm, 7 * mm]))
+
+s += section("4. 재진 및 응급 연락")
+s.append(grid([
+    [P("다음 내원일"), P("20____.&nbsp;____.&nbsp;____.&nbsp;&nbsp;____시"), P("재진 목적"), P("□ 경과 확인&nbsp;&nbsp; □ 봉합사 제거&nbsp;&nbsp; □ 재검사", size=8.4)],
+], [26 * mm, 54 * mm, 24 * mm, W - 104 * mm], heights=[7.8 * mm], label_cols=(0, 2)))
+s.append(grid([
+    [P("아래 증상이 보이면 즉시 연락 주십시오 (담당 수의사 기입) :")],
+    [P(" ")],
+], [W], heights=[6.4 * mm, 8 * mm], label_cols=(), valign_top=(1,)))
+s.append(grid([
+    [P("병원 연락처"), "", P("야간 · 휴일"), ""],
+], [26 * mm, 48 * mm, 26 * mm, W - 100 * mm], heights=[7.8 * mm], label_cols=(0, 2)))
+s.append(Paragraph("※ 마취 후에는 회복기에 상태가 변할 수 있습니다. 퇴원 후 몇 시간 동안 특히 주의 깊게 지켜봐 주십시오.", st_note))
+
+s.append(Spacer(1, 1.5 * mm))
+s.append(grid([
+    [P("□&nbsp; 위 내용을 안내문과 함께 읽으며 설명하였고, 보호자가 이해하였음을 확인합니다.")],
+], [W], heights=[7.4 * mm], label_cols=()))
+s.append(Spacer(1, 1.2 * mm))
+s.append(grid([
+    [P("설명일"), P("20____년&nbsp;____월&nbsp;____일"),
+     P("보호자"), P("성명 : __________ (서명)"),
+     P("설명자"), P("성명 : __________ (서명)")],
+], [16 * mm, 46 * mm, 16 * mm, 44 * mm, 16 * mm, W - 138 * mm],
+    heights=[9 * mm], label_cols=(0, 2, 4)))
+
+build("discharge-instructions.pdf", "KAHA-F-2605", "퇴원 안내문", s)
+
 print("생성 완료")
 for f in sorted(os.listdir(OUT)):
     print(" -", f, os.path.getsize(os.path.join(OUT, f)), "bytes")
