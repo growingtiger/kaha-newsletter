@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 """인스타그램 카드뉴스(1080×1080) 생성.
 
-tools/cards_data.json의 호별 데이터(제목·부제·포인트 3개[머리글, 본문, 근거]·캡션)를 읽어
+tools/cards_data.json의 호별 데이터(제목·부제·포인트 3개·캡션)를 읽어
 cards/<날짜>/ 아래에 표지·포인트 3장·요약 카드와 caption.txt를 만든다.
 - 표지: 제목 + 이번 호 핵심 3줄 미리보기
-- 포인트 카드: 번호 칩 + 머리글 + 본문 + 근거/출처 줄
+- 포인트 카드: 번호 칩 + 머리글 + 본문 + 세부 항목(선택) + 근거/출처 줄
+- 마무리: 오늘의 핵심 정리(3줄 재수록) + 안내
+
+포인트 형식: [머리글, 본문, 근거] 또는 [머리글, 본문, 근거, [세부항목, ...]]
+세부항목은 가이드라인 요약·핵심 수치를 나열하는 용도이며 생략할 수 있다.
+생성 시 CONTENT_MAX_Y를 넘는 카드가 있으면 경고와 함께 비정상 종료한다.
 - 마무리: 오늘의 핵심 정리(3줄 재수록) + 안내
 디자인은 소식지·양식과 같은 브랜드 팔레트(KAHA 블루 #035293)를 쓴다.
 필요: Pillow, 시스템 폰트 fonts-nanum.
@@ -19,6 +24,8 @@ LOGO_PATH = os.path.join(BASE, "assets", "kaha-logo.png")
 OUT_ROOT = os.path.join(BASE, "cards")
 
 SIZE = 1080
+CONTENT_MAX_Y = 946        # 하단 푸터 영역 침범 방지 한계선
+OVERFLOW = []              # 넘친 카드 기록 (생성 후 일괄 보고)
 BLUE = (3, 82, 147)
 BLUE_DK = (2, 58, 104)
 BLUE_LT = (213, 228, 242)
@@ -119,9 +126,9 @@ def make_set(date, data):
     d.text((80, y), "이번 호 핵심", font=F("bold", 30), fill=BLUE)
     y += 54
     bf = F("semibold", 36)
-    for head, _, _ in points:
+    for point in points:
         d.ellipse([84, y + 16, 100, y + 32], fill=BLUE)
-        for ln in wrap(d, head, bf, 860):
+        for ln in wrap(d, point[0], bf, 860):
             d.text((124, y), ln, font=bf, fill=INK)
             y += 54
         y += 12
@@ -131,10 +138,11 @@ def make_set(date, data):
     footer(img, d, date, page=1, total=total)
     img.save(os.path.join(outdir, "1-cover.png"))
 
-    # ── 2~4. 포인트 카드: 번호 칩 + 머리글 + 본문 + 근거 줄 ──
+    # ── 2~4. 포인트 카드: 번호 칩 + 머리글 + 본문 + 세부 항목 + 근거 줄 ──
     for i, point in enumerate(points, start=1):
         head, body = point[0], point[1]
         detail = point[2] if len(point) > 2 else None
+        bullets = point[3] if len(point) > 3 else None
         img, d = base_card()
         img.paste(logo(48), (80, 72), logo(48))
         tw = d.textlength(theme, font=F("regular", 28))
@@ -152,14 +160,28 @@ def make_set(date, data):
         # 본문
         bf2 = F("regular", 40)
         y = draw_lines(d, wrap(d, body, bf2, 920), 80, y + 22, bf2, INK, 62)
+        # 세부 항목 (선택) — 가이드라인 요약·핵심 수치를 항목으로 나열
+        if bullets:
+            y += 20
+            lf = F("regular", 34)
+            for b in bullets:
+                lines = wrap(d, b, lf, 848)
+                d.ellipse([88, y + 15, 104, y + 31], fill=BLUE_LT)
+                for ln in lines:
+                    d.text((128, y), ln, font=lf, fill=INK)
+                    y += 50
+                y += 10
         # 근거/출처 줄
         if detail:
-            y += 30
+            y += 22
             df = F("regular", 32)
             dlines = wrap(d, detail, df, 880)
             bar_h = len(dlines) * 46 + 8
             d.rectangle([80, y, 88, y + bar_h], fill=BLUE)
             draw_lines(d, dlines, 112, y + 4, df, GREY, 46)
+            y += bar_h
+        if y > CONTENT_MAX_Y:
+            OVERFLOW.append("%s point%d: y=%d (한계 %d)" % (date, i, y, CONTENT_MAX_Y))
         footer(img, d, date, page=i + 1, total=total)
         img.save(os.path.join(outdir, "%d-point%d.png" % (i + 1, i)))
 
@@ -189,6 +211,8 @@ def make_set(date, data):
     d.text((80, y), "전체 내용 · 양식 PDF · 워드 파일은 소식지에서", font=cf, fill=INK)
     d.text((80, y + 62), "프로필 링크 · 매 평일 발행 · 한국동물병원협회 정책기획위원회",
            font=F("regular", 30), fill=GREY)
+    if y + 62 + 30 > CONTENT_MAX_Y:
+        OVERFLOW.append("%s outro: y=%d (한계 %d)" % (date, y + 92, CONTENT_MAX_Y))
     footer(img, d, date, page=total, total=total)
     img.save(os.path.join(outdir, "%d-outro.png" % total))
 
@@ -202,3 +226,9 @@ if __name__ == "__main__":
     for date in dates:
         make_set(date, data[date])
         print("생성:", date)
+    if OVERFLOW:
+        print("\n⚠ 넘침 경고 %d건:" % len(OVERFLOW))
+        for o in OVERFLOW:
+            print("  -", o)
+        raise SystemExit(1)
+    print("넘침 없음 — 전 카드 안전 영역 내")
