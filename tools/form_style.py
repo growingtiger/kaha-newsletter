@@ -66,7 +66,8 @@ def P(text, size=9.4, bold=False, color=INK, leading=None, align=None):
 def _label_cell(text, note="", size=9.3):
     body = '<font size="%.1f">' % size + text.replace("\n", "<br/>") + "</font>"
     if note:
-        body += '<br/><br/><font size="7.4" color="#767676">' + note + "</font>"
+        body += ('<br/><font size="7.2" color="#767676">'
+                 + note.replace("\n", "<br/>") + "</font>")
     return Paragraph(body, ParagraphStyle(
         "lb", fontName="NanumB", fontSize=size, leading=size + 3.6,
         textColor=INK, alignment=TA_CENTER))
@@ -119,7 +120,7 @@ def title_block(title, legal, title_size=25):
         ("LEFTPADDING", (1, 0), (1, 0), 0), ("RIGHTPADDING", (1, 0), (1, 0), 0),
         ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
     ]))
-    return [head, Spacer(1, 2.2 * mm), P(legal, size=9), Spacer(1, 4.5 * mm)]
+    return [head, Spacer(1, 2 * mm), P(legal, size=9), Spacer(1, 3.2 * mm)]
 
 
 def info_table(groups, widths, heights=None):
@@ -179,9 +180,20 @@ def sec(label, content, note="", label_w=34 * mm, height=None, pad_top=4, pad_le
     return t
 
 
-def bullets(lines, size=9, leading=13.6, marker="· "):
-    return Paragraph("<br/>".join(marker + x for x in lines), ParagraphStyle(
-        "bl", fontName="Nanum", fontSize=size, leading=leading, textColor=INK))
+def bullets(lines, size=9, leading=13.6, marker="· ", indent=None):
+    """머리기호 안내 줄. 줄이 넘어가면 머리기호 폭만큼 들여써서 글머리를 맞춘다."""
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+    ind = indent if indent is not None else stringWidth(marker or "· ", "Nanum", size)
+    st = ParagraphStyle("bl", fontName="Nanum", fontSize=size, leading=leading,
+                        textColor=INK, leftIndent=ind, firstLineIndent=-ind)
+    paras = [[Paragraph(marker + x, st)] for x in lines]
+    t = Table(paras, colWidths=["*"])
+    t.setStyle(TableStyle([
+        ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+    ]))
+    return t
 
 
 def fields(rows, widths, heights, valign_top=(), size=8.8):
@@ -282,13 +294,14 @@ def grid_list(items, total_w, cols=3, size=9, leading=14):
 
 
 def asa_table(total_w, row_h=4.9 * mm):
+    """체크 · ASA 등급 · 정의 · 사망률 표. 해당 등급에 표시할 수 있게 체크칸을 둔다."""
     def C(t, bold=False, size=8.0):
         return Paragraph(t, ParagraphStyle(
             "a", fontName="NanumB" if bold else "Nanum", fontSize=size,
             leading=size + 2.2, textColor=INK, alignment=TA_CENTER))
-    w = [17 * mm, total_w - 17 * mm - 18 * mm, 18 * mm]
-    rows = [[C("ASA 등급", size=7.8), C("정 의", size=7.8), C("사망률(%)", size=7.8)]]
-    rows += [[C(g), C(d), C(m)] for g, d, m in ASA_ROWS]
+    w = [10 * mm, 14 * mm, total_w - 40 * mm, 16 * mm]
+    rows = [[C("체크", size=7.4), C("ASA 등급", size=7.4), C("정 의", size=7.4), C("사망률(%)", size=7.4)]]
+    rows += [[C("□", size=9), C(g, size=7.6), C(d, size=7.6), C(m, size=7.6)] for g, d, m in ASA_ROWS]
     t = Table(rows, colWidths=w, rowHeights=[row_h] * 6)
     t.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), LABEL_BG),
@@ -305,7 +318,7 @@ def closing(text, note=""):
     if note:
         body += '<br/><font size="8.8">' + note + "</font>"
     return Paragraph(body, ParagraphStyle(
-        "cl", fontName="Nanum", fontSize=8.8, leading=13.4, textColor=INK,
+        "cl", fontName="Nanum", fontSize=8.8, leading=12.8, textColor=INK,
         alignment=TA_CENTER))
 
 
@@ -316,18 +329,30 @@ def sign_row(roles):
     넘쳐 다음 장으로 밀리기 때문이다.
     """
     from reportlab.pdfbase.pdfmetrics import stringWidth
-    date_txt = "20        년        월        일"
     note_txt = "(서명 또는 인)"
     n = len(roles)
-    date_w = stringWidth(date_txt, "Nanum", 9.6) + 8
+    date_w = 56 * mm
     label_w = max(stringWidth(r, "NanumB", 9.6) for r in roles) + 10
     note_w = stringWidth(note_txt, "Nanum", 7.8) + 8
     line_w = (W - date_w - n * (label_w + note_w)) / n
-    cells, widths = [P(date_txt, size=9.6)], [date_w]
+    # 날짜: 20 [   ] 년 [   ] 월 [   ] 일 — 숫자를 적을 빈칸을 실제로 벌려 둔다
+    unit = (date_w - stringWidth("20 년 월 일", "Nanum", 9.6) - 14 - 5 * mm) / 3
+    dcells = [P("20", size=9.6), "", P("년", size=9.6), "", P("월", size=9.6), "", P("일", size=9.6), ""]
+    dwidths = [7 * mm, unit, 5 * mm, unit, 5 * mm, unit, 5 * mm, 5 * mm]
+    date_tbl = Table([dcells], colWidths=dwidths, rowHeights=[9 * mm])
+    date_tbl.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 1), ("RIGHTPADDING", (0, 0), (-1, -1), 1),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+        ("LINEBELOW", (1, 0), (1, 0), 0.7, colors.HexColor("#9A9A9A")),
+        ("LINEBELOW", (3, 0), (3, 0), 0.7, colors.HexColor("#9A9A9A")),
+        ("LINEBELOW", (5, 0), (5, 0), 0.7, colors.HexColor("#9A9A9A")),
+    ]))
+    cells, widths = [date_tbl], [date_w]
     for r in roles:
         cells += [P(r, size=9.6, bold=True), P("", size=9), P(note_txt, size=7.8, color=SOFT)]
         widths += [label_w, line_w, note_w]
-    t = Table([cells], colWidths=widths, rowHeights=[9 * mm], hAlign="CENTER")
+    t = Table([cells], colWidths=widths, rowHeights=[11 * mm], hAlign="CENTER")
     style = [
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),

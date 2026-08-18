@@ -188,10 +188,7 @@ function infoTable(groups, widths, rowH) {
 /** 좌측 회색 라벨 + 우측 내용의 구획 상자 */
 function sec(label, contentChildren, { note = "", labelW = 1928, height, valignTop = false } = {}) {
   const labelKids = [centered(label, { bold: true, size: 17 })];
-  if (note) {
-    labelKids.push(new Paragraph({ children: [], spacing: { before: 0, after: 0, line: 120, lineRule: LineRuleType.EXACT } }));
-    labelKids.push(centered(note, { size: 13, color: SOFT }));
-  }
+  if (note) labelKids.push(centered(note, { size: 13, color: SOFT }));
   return table([labelW, TOTAL - labelW], [[
     plainCell(labelKids, { w: labelW, fill: LABEL_BG, borders: { ...BORDERS },
       margins: { top: 20, bottom: 20, left: 40, right: 40 } }),
@@ -201,9 +198,12 @@ function sec(label, contentChildren, { note = "", labelW = 1928, height, valignT
 }
 
 /** · 또는 □ 로 시작하는 안내 문단 묶음 */
-function bulletLines(lines, { size = 16, marker = "· ", lineH } = {}) {
+function bulletLines(lines, { size = 16, marker = "· ", lineH, hanging } = {}) {
+  // 줄이 넘어가면 머리기호 폭만큼 들여써서 둘째 줄 글머리를 맞춘다
+  const ind = hanging !== undefined ? hanging : (marker ? Math.round(size * 11) : 0);
   return lines.map((t) => new Paragraph({
     children: [run(marker + t, { size })],
+    indent: ind ? { left: ind, hanging: ind } : undefined,
     spacing: { before: 0, after: 0, line: lineH || Math.round(size * 15), lineRule: LineRuleType.EXACT },
   }));
 }
@@ -249,13 +249,13 @@ const ASA_ROWS = [
 ];
 
 function asaTable(totalW, rowH = 278) {
-  const w = [Math.round(totalW * 0.15), 0, Math.round(totalW * 0.16)];
-  w[1] = totalW - w[0] - w[2];
-  const C = (t, bold) => cell(t, { w: 0, bold, size: 15, align: AlignmentType.CENTER });
+  // 체크 · 등급 · 정의 · 사망률 — 해당 등급에 표시할 수 있게 체크칸을 둔다
+  const w = [Math.round(totalW * 0.075), Math.round(totalW * 0.105), 0, Math.round(totalW * 0.12)];
+  w[2] = totalW - w[0] - w[1] - w[3];
   const mk = (cells, fill) => cells.map((t, i) =>
-    cell(t, { w: w[i], size: 15, bold: !!fill, fill, align: AlignmentType.CENTER }));
-  const rows = [mk(["ASA 등급", "정 의", "사망률(%)"], LABEL_BG)]
-    .concat(ASA_ROWS.map((r) => mk(r)));
+    cell(t, { w: w[i], size: 14, bold: !!fill, fill, align: AlignmentType.CENTER }));
+  const rows = [mk(["체크", "ASA 등급", "정 의", "사망률(%)"], LABEL_BG)]
+    .concat(ASA_ROWS.map((r) => mk(["\u25A1"].concat(r))));
   return table(w, rows, rowH);
 }
 
@@ -269,10 +269,25 @@ function closing(text, note = "") {
 /** 서명줄 — 점선 상자 */
 function signRow(roles) {
   const dotted = { style: BorderStyle.DOTTED, size: 4, color: "9A9A9A" };
-  const dateW = 2200, labelW = 1100, noteW = 1250;
+  const dateW = 3180, labelW = 1100, noteW = 1250;
   const lineW = Math.floor((TOTAL - dateW - roles.length * (labelW + noteW)) / roles.length);
-  const cells = [plainCell([para("20        년        월        일", { size: 17 })],
-    { w: dateW, margins: { top: 0, bottom: 0, left: 0, right: 0 } })];
+  const underline = { top: NO_BORDER, left: NO_BORDER, right: NO_BORDER,
+                      bottom: { style: BorderStyle.SINGLE, size: 4, color: "9A9A9A" } };
+  const dUnit = 620;
+  const dW = [400, dUnit, 300, dUnit, 300, dUnit, 300, 280];
+  const dTxt = ["20", "", "년", "", "월", "", "일", ""];
+  const dCells = dW.map((w, i) => new TableCell({
+    children: [para(dTxt[i], { size: 17 })],
+    width: { size: w, type: WidthType.DXA },
+    borders: (i % 2 === 1 && i < 6) ? underline : NONE_ALL,
+    verticalAlign: VerticalAlign.CENTER,
+    margins: { top: 0, bottom: 0, left: 20, right: 20 },
+  }));
+  const dateTbl = new Table({
+    columnWidths: dW, width: { size: dateW, type: WidthType.DXA },
+    rows: [new TableRow({ children: dCells, height: { value: 470, rule: HeightRule.EXACT } })],
+  });
+  const cells = [plainCell([dateTbl], { w: dateW, margins: { top: 0, bottom: 0, left: 0, right: 0 } })];
   const widths = [dateW];
   roles.forEach((r) => {
     cells.push(plainCell([para(r, { size: 17, bold: true })], { w: labelW,
@@ -287,7 +302,7 @@ function signRow(roles) {
       margins: { top: 0, bottom: 0, left: 60, right: 0 } }));
     widths.push(labelW, lineW, noteW);
   });
-  return table(widths, [cells], 510);
+  return table(widths, [cells], 570);
 }
 
 // ── 문서 조립 ────────────────────────────────────────────────────
