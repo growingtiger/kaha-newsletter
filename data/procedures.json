@@ -22,7 +22,8 @@
    "넥카라를 착용하고 눈을 비비지 않도록 관리해야 합니다.",
    "정기적인 안압 검사와 경과 확인이 필요합니다."
   ],
-  "kw": "백내장 cataract 수정체 안과 시력"
+  "kw": "백내장 cataract 수정체 안과 시력",
+  "dx_en": "Cataract"
  },
  {
   "cat": "안과",
@@ -45,7 +46,8 @@
    "넥카라를 지속적으로 착용해야 합니다.",
    "안약을 정해진 횟수대로 점안해야 합니다."
   ],
-  "kw": "각막궤양 표층각막절제술 keratectomy 안과 각막"
+  "kw": "각막궤양 표층각막절제술 keratectomy 안과 각막 Corneal Ulcer",
+  "dx_en": "Corneal Ulcer"
  },
  {
   "cat": "안과",
@@ -68,7 +70,8 @@
    "넥카라를 착용하고 수술 부위를 긁지 않도록 해야 합니다.",
    "봉합사 제거 시기에 맞춰 내원해야 합니다."
   ],
-  "kw": "안검내반 entropion 눈꺼풀 안과 성형"
+  "kw": "안검내반 entropion 눈꺼풀 안과 성형",
+  "dx_en": "Entropion"
  },
  {
   "cat": "안과",
@@ -91,7 +94,8 @@
    "넥카라를 착용해야 합니다.",
    "재탈출 여부를 관찰하고 이상 시 내원해야 합니다."
   ],
-  "kw": "체리아이 제3안검 cherry eye 순막 안과"
+  "kw": "체리아이 제3안검 cherry eye 순막 안과",
+  "dx_en": "Cherry Eye"
  },
  {
   "cat": "안과",
@@ -114,7 +118,8 @@
    "안압 조절 약물을 지속적으로 투여해야 합니다.",
    "정기적인 안압 측정이 필요합니다."
   ],
-  "kw": "녹내장 glaucoma 안압 안과"
+  "kw": "녹내장 glaucoma 안압 안과",
+  "dx_en": "Glaucoma"
  },
  {
   "cat": "안과",
@@ -137,7 +142,8 @@
    "넥카라를 착용하고 수술 부위를 보호해야 합니다.",
    "처방된 약을 정해진 기간 동안 투여해야 합니다."
   ],
-  "kw": "안구적출 enucleation 적출 안과"
+  "kw": "안구적출 enucleation 적출 안과 End-stage Ocular Disease",
+  "dx_en": "End-stage Ocular Disease"
  },
  {
   "cat": "안과",
@@ -160,7 +166,8 @@
    "넥카라를 착용하고 안약을 규칙적으로 점안해야 합니다.",
    "경과 확인을 위해 정기적으로 내원해야 합니다."
   ],
-  "kw": "결막피판 conjunctival graft 각막 안과"
+  "kw": "결막피판 conjunctival graft 각막 안과 Corneal Defect",
+  "dx_en": "Corneal Defect"
  },
  {
   "cat": "안과",
@@ -183,7 +190,8 @@
    "안약 점안과 넥카라 착용이 필요합니다.",
    "정기적인 안압 검사가 필요합니다."
   ],
-  "kw": "수정체탈구 lens luxation 안과"
+  "kw": "수정체탈구 lens luxation 안과",
+  "dx_en": "Lens Luxation"
  },
  {
   "cat": "안과",
@@ -206,7 +214,8 @@
    "넥카라를 착용해야 합니다.",
    "조직검사 결과 확인을 위해 재내원해야 합니다."
   ],
-  "kw": "눈꺼풀종양 안검종양 eyelid mass 안과"
+  "kw": "눈꺼풀종양 안검종양 eyelid mass 안과 Eyelid Tumor",
+  "dx_en": "Eyelid Tumor"
  },
  {
   "cat": "안과",
@@ -229,7 +238,8 @@
    "처방된 안약을 점안해야 합니다.",
    "눈 주변을 청결하게 유지해야 합니다."
   ],
-  "kw": "유루증 코눈물관 비루관 세척 안과"
+  "kw": "유루증 코눈물관 비루관 세척 안과 Epiphora / Nasolacrimal Obstruction",
+  "dx_en": "Epiphora / Nasolacrimal Obstruction"
  },
  {
   "cat": "안과",
@@ -252,7 +262,8 @@
    "식사 시 눈물 과다 분비가 있을 수 있으며 닦아 주어야 합니다.",
    "정기적인 각막 상태 확인이 필요합니다."
   ],
-  "kw": "건성각결막염 KCS 안구건조 이하선관 안과"
+  "kw": "건성각결막염 KCS 안구건조 이하선관 안과 Keratoconjunctivitis Sicca",
+  "dx_en": "Keratoconjunctivitis Sicca"
  },
  {
   "cat": "안과",
@@ -275,7 +286,8 @@
    "넥카라를 반드시 착용해야 합니다.",
    "안약을 정해진 간격으로 점안해야 합니다."
   ],
-  "kw": "각막열상 각막천공 corneal 봉합 안과"
+  "kw": "각막열상 각막천공 corneal 봉합 안과 Corneal Laceration / Perforation",
+  "dx_en": "Corneal Laceration / Perforation"
  },
  {
   "cat": "정형외과",
@@ -298,7 +310,8 @@
    "정해진 기간 동안 활동을 제한하고 미끄럼 방지 환경을 유지해야 합니다.",
    "재활과 경과 확인을 위해 정기적으로 내원해야 합니다."
   ],
-  "kw": "슬개골탈구 MPL patella 무릎 정형"
+  "kw": "슬개골탈구 MPL patella 무릎 정형 Medial Patellar Luxation",
+  "dx_en": "Medial Patellar Luxation"
  },
  {
   "cat": "정형외과",
@@ -321,7 +334,8 @@
    "8주 이상 엄격한 활동 제한이 필요합니다.",
    "정해진 시기에 방사선 검사로 유합을 확인해야 합니다."
   ],
-  "kw": "십자인대 TPLO TTA 슬관절 정형"
+  "kw": "십자인대 TPLO TTA 슬관절 정형 Cranial Cruciate Ligament Rupture",
+  "dx_en": "Cranial Cruciate Ligament Rupture"
  },
  {
   "cat": "정형외과",
@@ -344,7 +358,8 @@
    "수술 직후부터 계획된 재활 운동이 필요합니다.",
    "체중 관리가 회복에 중요합니다."
   ],
-  "kw": "FHO 대퇴골두절제 고관절 정형"
+  "kw": "FHO 대퇴골두절제 고관절 정형 Femoral Head Disease",
+  "dx_en": "Femoral Head Disease"
  },
  {
   "cat": "정형외과",
@@ -367,7 +382,8 @@
    "유합될 때까지 활동을 엄격히 제한해야 합니다.",
    "정기 방사선 검사로 유합 상태를 확인해야 합니다."
   ],
-  "kw": "골절 fracture 내고정 핀 플레이트 정형"
+  "kw": "골절 fracture 내고정 핀 플레이트 정형 Limb Fracture",
+  "dx_en": "Limb Fracture"
  },
  {
   "cat": "정형외과",
@@ -390,7 +406,8 @@
    "정해진 기간 동안 활동을 제한해야 합니다.",
    "미끄러운 바닥을 피해야 합니다."
   ],
-  "kw": "고관절탈구 hip luxation 정형"
+  "kw": "고관절탈구 hip luxation 정형 Coxofemoral Luxation",
+  "dx_en": "Coxofemoral Luxation"
  },
  {
   "cat": "정형외과",
@@ -413,7 +430,8 @@
    "검사 후 일정 기간 활동을 제한해야 합니다.",
    "부종과 파행이 지속되면 내원해야 합니다."
   ],
-  "kw": "관절경 arthroscopy 정형"
+  "kw": "관절경 arthroscopy 정형 Joint Disease",
+  "dx_en": "Joint Disease"
  },
  {
   "cat": "정형외과",
@@ -436,7 +454,8 @@
    "미끄럼 방지 환경과 체중 관리가 필요합니다.",
    "수술 부위를 핥지 않도록 넥카라를 착용해야 합니다."
   ],
-  "kw": "사지절단 amputation 정형"
+  "kw": "사지절단 amputation 정형 Limb Tumor / Severe Injury",
+  "dx_en": "Limb Tumor / Severe Injury"
  },
  {
   "cat": "정형외과",
@@ -459,7 +478,8 @@
    "고정 장치를 임의로 제거하지 말고 정기적으로 교체해야 합니다.",
    "활동 제한을 철저히 지켜야 합니다."
   ],
-  "kw": "아킬레스건 achilles 건파열 정형"
+  "kw": "아킬레스건 achilles 건파열 정형 Achilles Tendon Rupture",
+  "dx_en": "Achilles Tendon Rupture"
  },
  {
   "cat": "정형외과",
@@ -482,7 +502,8 @@
    "넥카라를 착용하고 발을 청결하게 유지해야 합니다.",
    "산책 시 발 보호가 필요합니다."
   ],
-  "kw": "발가락절단 digit 지골 정형"
+  "kw": "발가락절단 digit 지골 정형 Digit Disease",
+  "dx_en": "Digit Disease"
  },
  {
   "cat": "정형외과",
@@ -505,7 +526,8 @@
    "유합될 때까지 활동을 엄격히 제한해야 합니다.",
    "정기 방사선 검사가 필요합니다."
   ],
-  "kw": "관절고정 arthrodesis 정형"
+  "kw": "관절고정 arthrodesis 정형 Joint Instability",
+  "dx_en": "Joint Instability"
  },
  {
   "cat": "정형외과",
@@ -528,7 +550,8 @@
    "활동 제한과 정기 방사선 검사가 필요합니다.",
    "성장기에는 추가 교정이 필요할 수 있습니다."
   ],
-  "kw": "성장판 교정절골 osteotomy 변형 정형"
+  "kw": "성장판 교정절골 osteotomy 변형 정형 Premature Physeal Closure",
+  "dx_en": "Premature Physeal Closure"
  },
  {
   "cat": "정형외과",
@@ -551,7 +574,8 @@
    "체중 관리와 활동 제한이 필요합니다.",
    "정기적인 경과 확인이 필요합니다."
   ],
-  "kw": "고관절이형성 TPO 골반절골 정형"
+  "kw": "고관절이형성 TPO 골반절골 정형 Hip Dysplasia",
+  "dx_en": "Hip Dysplasia"
  },
  {
   "cat": "신경외과",
@@ -575,7 +599,8 @@
    "케이지 안정이 최소 4주 이상 필요합니다.",
    "배뇨 관리와 재활 운동을 병행해야 합니다."
   ],
-  "kw": "추간판탈출 디스크 IVDD 편측추궁절제 신경"
+  "kw": "추간판탈출 디스크 IVDD 편측추궁절제 신경 Thoracolumbar IVDD",
+  "dx_en": "Thoracolumbar IVDD"
  },
  {
   "cat": "신경외과",
@@ -598,7 +623,8 @@
    "목줄 대신 가슴줄을 사용해야 합니다.",
    "정해진 기간 동안 안정이 필요합니다."
   ],
-  "kw": "경추디스크 ventral slot 신경"
+  "kw": "경추디스크 ventral slot 신경 Cervical IVDD",
+  "dx_en": "Cervical IVDD"
  },
  {
   "cat": "신경외과",
@@ -621,7 +647,8 @@
    "검사 후 안정과 관찰이 필요합니다.",
    "발작 등 이상 증상 시 즉시 연락해야 합니다."
   ],
-  "kw": "척수조영 myelography 신경"
+  "kw": "척수조영 myelography 신경 Spinal Cord Lesion",
+  "dx_en": "Spinal Cord Lesion"
  },
  {
   "cat": "신경외과",
@@ -644,7 +671,8 @@
    "정기적인 경과 확인과 영상 검사가 필요합니다.",
    "발작·기력 저하 등 이상 시 즉시 내원해야 합니다."
   ],
-  "kw": "수두증 hydrocephalus 션트 신경"
+  "kw": "수두증 hydrocephalus 션트 신경",
+  "dx_en": "Hydrocephalus"
  },
  {
   "cat": "신경외과",
@@ -667,7 +695,8 @@
    "목줄 사용을 금지하고 가슴줄을 사용해야 합니다.",
    "장기간 활동 제한이 필요합니다."
   ],
-  "kw": "환축추 AA불안정 고정 신경"
+  "kw": "환축추 AA불안정 고정 신경 Atlantoaxial Instability",
+  "dx_en": "Atlantoaxial Instability"
  },
  {
   "cat": "신경외과",
@@ -690,7 +719,8 @@
    "검사 후 안정이 필요합니다.",
    "이상 증상 발생 시 즉시 연락해야 합니다."
   ],
-  "kw": "뇌척수액 CSF 채취 신경"
+  "kw": "뇌척수액 CSF 채취 신경 CNS Disease",
+  "dx_en": "CNS Disease"
  },
  {
   "cat": "신경외과",
@@ -713,7 +743,8 @@
    "재활 운동과 부위 보호가 필요합니다.",
    "정기적인 신경학적 평가가 필요합니다."
   ],
-  "kw": "말초신경 신경봉합 신경"
+  "kw": "말초신경 신경봉합 신경 Peripheral Nerve Injury",
+  "dx_en": "Peripheral Nerve Injury"
  },
  {
   "cat": "소화기",
@@ -736,7 +767,8 @@
    "정해진 기간 동안 절식 후 소량씩 급여해야 합니다.",
    "구토·기력 저하가 나타나면 즉시 연락해야 합니다."
   ],
-  "kw": "위이물 gastrotomy 이물제거 소화기"
+  "kw": "위이물 gastrotomy 이물제거 소화기 Gastric Foreign Body",
+  "dx_en": "Gastric Foreign Body"
  },
  {
   "cat": "소화기",
@@ -759,7 +791,8 @@
    "정해진 절식·급여 지침을 지켜야 합니다.",
    "발열·구토·복통 시 즉시 연락해야 합니다."
   ],
-  "kw": "장이물 장폐색 enterotomy 문합 소화기"
+  "kw": "장이물 장폐색 enterotomy 문합 소화기 Intestinal Foreign Body / Obstruction",
+  "dx_en": "Intestinal Foreign Body / Obstruction"
  },
  {
   "cat": "소화기",
@@ -782,7 +815,8 @@
    "회복기에 집중 모니터링이 필요합니다.",
    "식사는 소량씩 나누어 급여하고 식후 운동을 피해야 합니다."
   ],
-  "kw": "GDV 위염전 위확장 위고정 소화기"
+  "kw": "GDV 위염전 위확장 위고정 소화기 Gastric Dilatation-Volvulus",
+  "dx_en": "Gastric Dilatation-Volvulus"
  },
  {
   "cat": "소화기",
@@ -805,7 +839,8 @@
    "저지방 식이 관리가 필요합니다.",
    "정기적인 혈액·초음파 검사가 필요합니다."
   ],
-  "kw": "담낭절제 담낭점액낭종 cholecystectomy 소화기"
+  "kw": "담낭절제 담낭점액낭종 cholecystectomy 소화기 Gallbladder Mucocele / Cholecystitis",
+  "dx_en": "Gallbladder Mucocele / Cholecystitis"
  },
  {
   "cat": "소화기",
@@ -828,7 +863,8 @@
    "회복기 동안 간 수치와 혈당 확인이 필요합니다.",
    "처방 식이와 약물을 유지해야 합니다."
   ],
-  "kw": "간엽절제 liver lobectomy 간종양 소화기"
+  "kw": "간엽절제 liver lobectomy 간종양 소화기 Hepatic Mass",
+  "dx_en": "Hepatic Mass"
  },
  {
   "cat": "소화기",
@@ -851,7 +887,8 @@
    "회복기 심전도·빈혈 확인이 필요합니다.",
    "조직검사 결과에 따라 후속 치료를 상의해야 합니다."
   ],
-  "kw": "비장절제 splenectomy 혈관육종 소화기"
+  "kw": "비장절제 splenectomy 혈관육종 소화기 Splenic Mass / Torsion",
+  "dx_en": "Splenic Mass / Torsion"
  },
  {
   "cat": "소화기",
@@ -874,7 +911,8 @@
    "정해진 절식·급여 지침을 지켜야 합니다.",
    "결과 확인을 위해 재내원해야 합니다."
   ],
-  "kw": "장생검 GI biopsy 조직검사 소화기"
+  "kw": "장생검 GI biopsy 조직검사 소화기 Chronic Enteropathy",
+  "dx_en": "Chronic Enteropathy"
  },
  {
   "cat": "소화기",
@@ -897,7 +935,8 @@
    "배변 상태를 관찰하고 이상 시 연락해야 합니다.",
    "수술 부위를 청결하게 유지해야 합니다."
   ],
-  "kw": "항문낭 항문낭절제 anal sac 소화기"
+  "kw": "항문낭 항문낭절제 anal sac 소화기 Anal Sac Disease",
+  "dx_en": "Anal Sac Disease"
  },
  {
   "cat": "소화기",
@@ -920,7 +959,8 @@
    "중성화가 재발 방지에 도움이 되므로 함께 상의해야 합니다.",
    "변비가 생기지 않도록 식이 관리가 필요합니다."
   ],
-  "kw": "회음탈장 perineal hernia 소화기"
+  "kw": "회음탈장 perineal hernia 소화기",
+  "dx_en": "Perineal Hernia"
  },
  {
   "cat": "소화기",
@@ -943,7 +983,8 @@
    "설사·기생충 등 원인 질환을 함께 치료해야 합니다.",
    "배변 시 힘주기를 줄이도록 관리해야 합니다."
   ],
-  "kw": "직장탈 rectal prolapse 소화기"
+  "kw": "직장탈 rectal prolapse 소화기",
+  "dx_en": "Rectal Prolapse"
  },
  {
   "cat": "소화기",
@@ -966,7 +1007,8 @@
    "급여 지침과 수분 공급을 지켜야 합니다.",
    "배변 양상 변화를 기록해 주십시오."
   ],
-  "kw": "거대결장 megacolon 결장절제 소화기"
+  "kw": "거대결장 megacolon 결장절제 소화기",
+  "dx_en": "Megacolon"
  },
  {
   "cat": "소화기",
@@ -989,7 +1031,8 @@
    "처방 식이와 약물을 임의로 중단하면 안 됩니다.",
    "발작·의식 저하 시 즉시 연락해야 합니다."
   ],
-  "kw": "문맥전신단락 PSS shunt 소화기"
+  "kw": "문맥전신단락 PSS shunt 소화기 Portosystemic Shunt",
+  "dx_en": "Portosystemic Shunt"
  },
  {
   "cat": "소화기",
@@ -1012,7 +1055,8 @@
    "처방된 기간 동안 부드러운 음식을 급여해야 합니다.",
    "구역질·삼킴 곤란이 지속되면 내원해야 합니다."
   ],
-  "kw": "식도이물 esophageal foreign body 내시경 소화기"
+  "kw": "식도이물 esophageal foreign body 내시경 소화기",
+  "dx_en": "Esophageal Foreign Body"
  },
  {
   "cat": "소화기",
@@ -1035,7 +1079,8 @@
    "원인 질환(기생충·장염) 치료를 병행해야 합니다.",
    "급여 지침을 지키고 이상 시 연락해야 합니다."
   ],
-  "kw": "장중첩 intussusception 소화기"
+  "kw": "장중첩 intussusception 소화기",
+  "dx_en": "Intussusception"
  },
  {
   "cat": "비뇨생식기",
@@ -1058,7 +1103,8 @@
    "넥카라를 착용하고 활동을 제한해야 합니다.",
    "봉합사 제거 시기에 맞춰 내원해야 합니다."
   ],
-  "kw": "중성화 난소자궁적출 avarian OHE 비뇨생식"
+  "kw": "중성화 난소자궁적출 avarian OHE 비뇨생식 Spay",
+  "dx_en": "Spay"
  },
  {
   "cat": "비뇨생식기",
@@ -1081,7 +1127,8 @@
    "넥카라를 착용하고 활동을 제한해야 합니다.",
    "음낭 부종이 심해지면 내원해야 합니다."
   ],
-  "kw": "중성화 거세 castration 고환 비뇨생식"
+  "kw": "중성화 거세 castration 고환 비뇨생식",
+  "dx_en": "Castration"
  },
  {
   "cat": "비뇨생식기",
@@ -1104,7 +1151,8 @@
    "넥카라 착용과 활동 제한이 필요합니다.",
    "봉합사 제거를 위해 내원해야 합니다."
   ],
-  "kw": "잠복고환 cryptorchid 비뇨생식"
+  "kw": "잠복고환 cryptorchid 비뇨생식 Cryptorchidism",
+  "dx_en": "Cryptorchidism"
  },
  {
   "cat": "비뇨생식기",
@@ -1127,7 +1175,8 @@
    "입원 치료와 수액 요법이 필요할 수 있습니다.",
    "기력·식욕 저하 지속 시 즉시 연락해야 합니다."
   ],
-  "kw": "자궁축농증 pyometra 응급 비뇨생식"
+  "kw": "자궁축농증 pyometra 응급 비뇨생식",
+  "dx_en": "Pyometra"
  },
  {
   "cat": "비뇨생식기",
@@ -1150,7 +1199,8 @@
    "수유 관리와 신생아 관찰이 필요합니다.",
    "수술 부위를 청결하게 유지해야 합니다."
   ],
-  "kw": "제왕절개 난산 cesarean 비뇨생식"
+  "kw": "제왕절개 난산 cesarean 비뇨생식 Dystocia",
+  "dx_en": "Dystocia"
  },
  {
   "cat": "비뇨생식기",
@@ -1173,7 +1223,8 @@
    "처방 식이를 유지해야 합니다.",
    "배뇨 곤란이 나타나면 즉시 연락해야 합니다."
   ],
-  "kw": "방광결석 cystotomy 요로결석 비뇨생식"
+  "kw": "방광결석 cystotomy 요로결석 비뇨생식 Cystolithiasis",
+  "dx_en": "Cystolithiasis"
  },
  {
   "cat": "비뇨생식기",
@@ -1196,7 +1247,8 @@
    "처방 식이와 충분한 음수가 필요합니다.",
    "배뇨 상태를 관찰하고 이상 시 연락해야 합니다."
   ],
-  "kw": "요도조루 urethrostomy 요도폐색 비뇨생식"
+  "kw": "요도조루 urethrostomy 요도폐색 비뇨생식 Urethral Obstruction",
+  "dx_en": "Urethral Obstruction"
  },
  {
   "cat": "비뇨생식기",
@@ -1219,7 +1271,8 @@
    "정기적인 장치 세척과 검사가 필요합니다.",
    "처방 식이와 약물을 유지해야 합니다."
   ],
-  "kw": "요관결석 SUB 요관 비뇨생식"
+  "kw": "요관결석 SUB 요관 비뇨생식 Ureteral Obstruction",
+  "dx_en": "Ureteral Obstruction"
  },
  {
   "cat": "비뇨생식기",
@@ -1242,7 +1295,8 @@
    "정기적인 신장 수치 검사가 필요합니다.",
    "처방 식이를 유지해야 합니다."
   ],
-  "kw": "신장적출 nephrectomy 비뇨생식"
+  "kw": "신장적출 nephrectomy 비뇨생식 Unilateral Renal Disease",
+  "dx_en": "Unilateral Renal Disease"
  },
  {
   "cat": "비뇨생식기",
@@ -1265,7 +1319,8 @@
    "넥카라와 수술복 착용이 필요합니다.",
    "조직검사 결과에 따라 후속 치료를 상의해야 합니다."
   ],
-  "kw": "유선종양 mastectomy 유방 비뇨생식"
+  "kw": "유선종양 mastectomy 유방 비뇨생식 Mammary Tumor",
+  "dx_en": "Mammary Tumor"
  },
  {
   "cat": "비뇨생식기",
@@ -1288,7 +1343,8 @@
    "처방 약물을 정해진 기간 투여해야 합니다.",
    "배뇨·배변 상태를 관찰해야 합니다."
   ],
-  "kw": "전립선 prostate 비뇨생식"
+  "kw": "전립선 prostate 비뇨생식 Prostatic Disease",
+  "dx_en": "Prostatic Disease"
  },
  {
   "cat": "비뇨생식기",
@@ -1311,7 +1367,8 @@
    "넥카라를 착용해야 합니다.",
    "배뇨 상태를 관찰하고 이상 시 연락해야 합니다."
   ],
-  "kw": "질탈 질종괴 vaginal 비뇨생식"
+  "kw": "질탈 질종괴 vaginal 비뇨생식 Vaginal Prolapse / Mass",
+  "dx_en": "Vaginal Prolapse / Mass"
  },
  {
   "cat": "비뇨생식기",
@@ -1334,7 +1391,8 @@
    "넥카라를 착용하고 부위를 청결히 해야 합니다.",
    "배뇨를 관찰해야 합니다."
   ],
-  "kw": "포피 음경 preputial 비뇨생식"
+  "kw": "포피 음경 preputial 비뇨생식 Preputial / Penile Disease",
+  "dx_en": "Preputial / Penile Disease"
  },
  {
   "cat": "비뇨생식기",
@@ -1357,7 +1415,8 @@
    "배뇨 상태를 기록해 주십시오.",
    "정기적인 경과 확인이 필요합니다."
   ],
-  "kw": "요실금 incontinence 비뇨생식"
+  "kw": "요실금 incontinence 비뇨생식 Urinary Incontinence",
+  "dx_en": "Urinary Incontinence"
  },
  {
   "cat": "호흡기",
@@ -1380,7 +1439,8 @@
    "회복기 동안 산소 공급과 집중 관찰이 필요합니다.",
    "체중 관리와 흥분·더위 회피가 중요합니다."
   ],
-  "kw": "단두종 BOAS 연구개 비공확장 호흡기"
+  "kw": "단두종 BOAS 연구개 비공확장 호흡기 Brachycephalic Airway Syndrome",
+  "dx_en": "Brachycephalic Airway Syndrome"
  },
  {
   "cat": "호흡기",
@@ -1403,7 +1463,8 @@
    "식사는 소량씩 천천히 급여하고 물을 마신 뒤 관찰해야 합니다.",
    "기침·발열 시 즉시 연락해야 합니다."
   ],
-  "kw": "후두마비 tieback 후두 호흡기"
+  "kw": "후두마비 tieback 후두 호흡기 Laryngeal Paralysis",
+  "dx_en": "Laryngeal Paralysis"
  },
  {
   "cat": "호흡기",
@@ -1426,7 +1487,8 @@
    "체중 관리와 목줄 대신 가슴줄 사용이 필요합니다.",
    "정기적인 방사선 검사가 필요합니다."
   ],
-  "kw": "기관허탈 스텐트 tracheal collapse 호흡기"
+  "kw": "기관허탈 스텐트 tracheal collapse 호흡기",
+  "dx_en": "Tracheal Collapse"
  },
  {
   "cat": "호흡기",
@@ -1449,7 +1511,8 @@
    "회복기 산소 치료와 통증 관리가 필요합니다.",
    "흉관 관리와 정기 검사가 필요합니다."
   ],
-  "kw": "폐엽절제 lung lobectomy 호흡기"
+  "kw": "폐엽절제 lung lobectomy 호흡기 Pulmonary Mass",
+  "dx_en": "Pulmonary Mass"
  },
  {
   "cat": "호흡기",
@@ -1472,7 +1535,8 @@
    "배액관 부위를 만지지 않도록 넥카라를 착용해야 합니다.",
    "호흡 상태 변화 시 즉시 알려야 합니다."
   ],
-  "kw": "흉수 기흉 흉강천자 배액 호흡기"
+  "kw": "흉수 기흉 흉강천자 배액 호흡기 Pleural Effusion / Pneumothorax",
+  "dx_en": "Pleural Effusion / Pneumothorax"
  },
  {
   "cat": "호흡기",
@@ -1495,7 +1559,8 @@
    "출혈이 멎지 않으면 즉시 연락해야 합니다.",
    "결과 확인을 위해 재내원해야 합니다."
   ],
-  "kw": "비강내시경 rhinoscopy 코 호흡기"
+  "kw": "비강내시경 rhinoscopy 코 호흡기 Nasal Disease",
+  "dx_en": "Nasal Disease"
  },
  {
   "cat": "호흡기",
@@ -1518,7 +1583,8 @@
    "튜브 관리와 흡인이 자주 필요하며 입원이 필요할 수 있습니다.",
    "퇴원 후에도 정해진 관리 지침을 지켜야 합니다."
   ],
-  "kw": "기관절개 tracheostomy 호흡기"
+  "kw": "기관절개 tracheostomy 호흡기 Upper Airway Obstruction",
+  "dx_en": "Upper Airway Obstruction"
  },
  {
   "cat": "호흡기",
@@ -1541,7 +1607,8 @@
    "회복기 산소·통증 관리가 필요합니다.",
    "활동을 제한하고 정기 검사를 받아야 합니다."
   ],
-  "kw": "흉벽종괴 늑골 흉벽재건 호흡기"
+  "kw": "흉벽종괴 늑골 흉벽재건 호흡기 Chest Wall Mass",
+  "dx_en": "Chest Wall Mass"
  },
  {
   "cat": "순환기",
@@ -1564,7 +1631,8 @@
    "회복기 집중 모니터링이 필요합니다.",
    "정기적인 심장 초음파 검사가 필요합니다."
   ],
-  "kw": "PDA 동맥관개존 결찰 순환기"
+  "kw": "PDA 동맥관개존 결찰 순환기 Patent Ductus Arteriosus",
+  "dx_en": "Patent Ductus Arteriosus"
  },
  {
   "cat": "순환기",
@@ -1587,7 +1655,8 @@
    "회복기 심전도 감시가 필요합니다.",
    "호흡 곤란·기력 저하 시 즉시 연락해야 합니다."
   ],
-  "kw": "심낭삼출 심낭천자 pericardial 순환기"
+  "kw": "심낭삼출 심낭천자 pericardial 순환기 Pericardial Effusion / Tamponade",
+  "dx_en": "Pericardial Effusion / Tamponade"
  },
  {
   "cat": "순환기",
@@ -1610,7 +1679,8 @@
    "정기적인 장치 점검이 필요합니다.",
    "수술 부위를 보호하고 활동을 제한해야 합니다."
   ],
-  "kw": "심박동기 pacemaker 서맥 순환기"
+  "kw": "심박동기 pacemaker 서맥 순환기 Bradyarrhythmia",
+  "dx_en": "Bradyarrhythmia"
  },
  {
   "cat": "순환기",
@@ -1633,7 +1703,8 @@
    "검사 전 안정된 상태를 유지해 주십시오.",
    "결과에 따라 추가 검사가 필요할 수 있습니다."
   ],
-  "kw": "심장초음파 echo 심잡음 순환기"
+  "kw": "심장초음파 echo 심잡음 순환기 Heart Disease",
+  "dx_en": "Heart Disease"
  },
  {
   "cat": "종양",
@@ -1656,7 +1727,8 @@
    "넥카라를 착용해야 합니다.",
    "조직검사 결과 확인을 위해 재내원해야 합니다."
   ],
-  "kw": "종괴절제 mass removal 혹 종양"
+  "kw": "종괴절제 mass removal 혹 종양 Cutaneous Mass",
+  "dx_en": "Cutaneous Mass"
  },
  {
   "cat": "종양",
@@ -1679,7 +1751,8 @@
    "처방 약물을 유지하고 부위를 보호해야 합니다.",
    "조직검사 등급에 따라 추가 치료를 상의해야 합니다."
   ],
-  "kw": "비만세포종 MCT mast cell 종양"
+  "kw": "비만세포종 MCT mast cell 종양 Mast Cell Tumor",
+  "dx_en": "Mast Cell Tumor"
  },
  {
   "cat": "종양",
@@ -1702,7 +1775,8 @@
    "활동을 제한하고 부위를 보호해야 합니다.",
    "정기적인 재발 확인이 필요합니다."
   ],
-  "kw": "연부조직육종 STS sarcoma 종양"
+  "kw": "연부조직육종 STS sarcoma 종양 Soft Tissue Sarcoma",
+  "dx_en": "Soft Tissue Sarcoma"
  },
  {
   "cat": "종양",
@@ -1725,7 +1799,8 @@
    "넥카라를 착용해야 합니다.",
    "결과 확인을 위해 재내원해야 합니다."
   ],
-  "kw": "림프절 생검 lymph node 종양"
+  "kw": "림프절 생검 lymph node 종양 Lymphadenopathy",
+  "dx_en": "Lymphadenopathy"
  },
  {
   "cat": "종양",
@@ -1748,7 +1823,8 @@
    "통증 관리와 재활이 필요합니다.",
    "전이 확인을 위한 정기 검사가 필요합니다."
   ],
-  "kw": "골육종 osteosarcoma 절단 종양"
+  "kw": "골육종 osteosarcoma 절단 종양",
+  "dx_en": "Osteosarcoma"
  },
  {
   "cat": "종양",
@@ -1771,7 +1847,8 @@
    "채취 부위를 관찰해 주십시오.",
    "결과 확인을 위해 재내원해야 합니다."
   ],
-  "kw": "세침흡인 FNA 세포검사 종양"
+  "kw": "세침흡인 FNA 세포검사 종양 Mass of Unknown Origin",
+  "dx_en": "Mass of Unknown Origin"
  },
  {
   "cat": "종양",
@@ -1794,7 +1871,8 @@
    "부드러운 음식으로 급여해야 합니다.",
    "정기적인 구강 확인이 필요합니다."
   ],
-  "kw": "구강종양 하악절제 상악절제 종양"
+  "kw": "구강종양 하악절제 상악절제 종양 Oral Tumor",
+  "dx_en": "Oral Tumor"
  },
  {
   "cat": "종양",
@@ -1817,7 +1895,8 @@
    "배변 상태를 관찰해야 합니다.",
    "수술 부위를 청결히 유지해야 합니다."
   ],
-  "kw": "항문주위선종 perianal 종양"
+  "kw": "항문주위선종 perianal 종양 Perianal Tumor",
+  "dx_en": "Perianal Tumor"
  },
  {
   "cat": "종양",
@@ -1840,7 +1919,8 @@
    "검사 전 금식이 필요할 수 있습니다.",
    "결과에 따라 치료 계획을 상의합니다."
   ],
-  "kw": "병기검사 staging 전이 종양"
+  "kw": "병기검사 staging 전이 종양 Tumor Staging",
+  "dx_en": "Tumor Staging"
  },
  {
   "cat": "피부·연부조직",
@@ -1863,7 +1943,8 @@
    "넥카라를 착용하고 소독을 유지해야 합니다.",
    "항생제를 정해진 기간 투여해야 합니다."
   ],
-  "kw": "농양 배농 abscess 피부"
+  "kw": "농양 배농 abscess 피부",
+  "dx_en": "Abscess"
  },
  {
   "cat": "피부·연부조직",
@@ -1886,7 +1967,8 @@
    "넥카라 착용과 소독이 필요합니다.",
    "부기·삼출이 심해지면 내원해야 합니다."
   ],
-  "kw": "열상 교상 창상봉합 wound 피부"
+  "kw": "열상 교상 창상봉합 wound 피부 Laceration / Bite Wound",
+  "dx_en": "Laceration / Bite Wound"
  },
  {
   "cat": "피부·연부조직",
@@ -1909,7 +1991,8 @@
    "부위를 고정하고 절대 핥지 않도록 해야 합니다.",
    "정해진 일정에 드레싱 교체가 필요합니다."
   ],
-  "kw": "피부이식 피판 skin graft 피부"
+  "kw": "피부이식 피판 skin graft 피부 Extensive Skin Defect",
+  "dx_en": "Extensive Skin Defect"
  },
  {
   "cat": "피부·연부조직",
@@ -1932,7 +2015,8 @@
    "넥카라를 착용하고 활동을 제한해야 합니다.",
    "봉합사 제거를 위해 내원해야 합니다."
   ],
-  "kw": "지방종 lipoma 피부"
+  "kw": "지방종 lipoma 피부",
+  "dx_en": "Lipoma"
  },
  {
   "cat": "피부·연부조직",
@@ -1955,7 +2039,8 @@
    "수술 후 주기적인 소독이 필요합니다.",
    "배변 상태를 관찰해야 합니다."
   ],
-  "kw": "스크루테일 screwtail 꼬리 주름 피부"
+  "kw": "스크루테일 screwtail 꼬리 주름 피부",
+  "dx_en": "Screwtail"
  },
  {
   "cat": "피부·연부조직",
@@ -1978,7 +2063,8 @@
    "부위를 건조하고 청결하게 유지해야 합니다.",
    "넥카라를 착용해야 합니다."
   ],
-  "kw": "주름피부염 fold dermatitis 피부"
+  "kw": "주름피부염 fold dermatitis 피부 Skin Fold Dermatitis",
+  "dx_en": "Skin Fold Dermatitis"
  },
  {
   "cat": "피부·연부조직",
@@ -2001,7 +2087,8 @@
    "원인이 되는 외이염을 함께 치료해야 합니다.",
    "넥카라를 착용해야 합니다."
   ],
-  "kw": "이혈종 aural hematoma 귀 피부"
+  "kw": "이혈종 aural hematoma 귀 피부",
+  "dx_en": "Aural Hematoma"
  },
  {
   "cat": "피부·연부조직",
@@ -2024,7 +2111,8 @@
    "발을 청결하게 유지하고 넥카라를 착용해야 합니다.",
    "산책 시 보호가 필요합니다."
   ],
-  "kw": "조갑 발톱 nail 피부"
+  "kw": "조갑 발톱 nail 피부 Nail / Claw Disease",
+  "dx_en": "Nail / Claw Disease"
  },
  {
   "cat": "피부·연부조직",
@@ -2047,7 +2135,8 @@
    "체위 변경과 드레싱 관리가 필요합니다.",
    "영양 관리가 치유에 중요합니다."
   ],
-  "kw": "욕창 창상관리 debridement 피부"
+  "kw": "욕창 창상관리 debridement 피부 Chronic Wound / Decubitus",
+  "dx_en": "Chronic Wound / Decubitus"
  },
  {
   "cat": "피부·연부조직",
@@ -2070,7 +2159,8 @@
    "활동을 제한하고 넥카라를 착용해야 합니다.",
    "부기·통증이 심해지면 내원해야 합니다."
   ],
-  "kw": "탈장 제대탈장 서혜탈장 hernia 피부"
+  "kw": "탈장 제대탈장 서혜탈장 hernia 피부 Umbilical / Inguinal Hernia",
+  "dx_en": "Umbilical / Inguinal Hernia"
  },
  {
   "cat": "치과",
@@ -2093,7 +2183,8 @@
    "처치 후 부드러운 음식을 급여해야 합니다.",
    "가정에서 칫솔질 관리가 필요합니다."
   ],
-  "kw": "스케일링 치석제거 치주염 치과"
+  "kw": "스케일링 치석제거 치주염 치과 Periodontal Disease",
+  "dx_en": "Periodontal Disease"
  },
  {
   "cat": "치과",
@@ -2116,7 +2207,8 @@
    "처방 진통제와 항생제를 투여해야 합니다.",
    "일주일간 딱딱한 음식과 장난감을 피해야 합니다."
   ],
-  "kw": "발치 extraction 치아 치과"
+  "kw": "발치 extraction 치아 치과 Tooth Fracture / Periapical Disease",
+  "dx_en": "Tooth Fracture / Periapical Disease"
  },
  {
   "cat": "치과",
@@ -2139,7 +2231,8 @@
    "부드러운 음식을 급여해야 합니다.",
    "구강 상태를 관찰해야 합니다."
   ],
-  "kw": "유치발치 잔존유치 치과"
+  "kw": "유치발치 잔존유치 치과 Persistent Deciduous Teeth",
+  "dx_en": "Persistent Deciduous Teeth"
  },
  {
   "cat": "치과",
@@ -2162,7 +2255,8 @@
    "딱딱한 음식과 장난감을 피해야 합니다.",
    "재채기·콧물 지속 시 내원해야 합니다."
   ],
-  "kw": "구강비강누공 oronasal fistula 치과"
+  "kw": "구강비강누공 oronasal fistula 치과",
+  "dx_en": "Oronasal Fistula"
  },
  {
   "cat": "치과",
@@ -2185,7 +2279,8 @@
    "부드러운 음식으로 급여해야 합니다.",
    "정기적인 구강 검진이 필요합니다."
   ],
-  "kw": "흡수병변 FORL 고양이 치과"
+  "kw": "흡수병변 FORL 고양이 치과 Feline Tooth Resorption",
+  "dx_en": "Feline Tooth Resorption"
  },
  {
   "cat": "치과",
@@ -2208,7 +2303,8 @@
    "유동식 급여가 필요할 수 있습니다.",
    "정기 방사선 검사로 유합을 확인해야 합니다."
   ],
-  "kw": "턱골절 하악골절 치과"
+  "kw": "턱골절 하악골절 치과 Mandibular Fracture",
+  "dx_en": "Mandibular Fracture"
  },
  {
   "cat": "치과",
@@ -2231,7 +2327,8 @@
    "부드러운 음식과 구강 관리가 필요합니다.",
    "정기적인 치과 검진이 필요합니다."
   ],
-  "kw": "치은증식 gingivectomy 잇몸 치과"
+  "kw": "치은증식 gingivectomy 잇몸 치과 Gingival Hyperplasia",
+  "dx_en": "Gingival Hyperplasia"
  },
  {
   "cat": "치과",
@@ -2254,7 +2351,8 @@
    "회복기 동안 유동식 급여와 진통 관리가 필요합니다.",
    "정기적인 구강 확인이 필요합니다."
   ],
-  "kw": "구내염 stomatitis 전발치 치과"
+  "kw": "구내염 stomatitis 전발치 치과 Feline Stomatitis",
+  "dx_en": "Feline Stomatitis"
  },
  {
   "cat": "이과",
@@ -2277,7 +2375,8 @@
    "귀 세정과 약물 점이가 계속 필요합니다.",
    "넥카라를 착용해야 합니다."
   ],
-  "kw": "외이도절제 LECR 외이염 이과"
+  "kw": "외이도절제 LECR 외이염 이과 Chronic Otitis Externa",
+  "dx_en": "Chronic Otitis Externa"
  },
  {
   "cat": "이과",
@@ -2301,7 +2400,8 @@
    "회복기 동안 안면 마비 여부를 관찰해야 합니다.",
    "넥카라 착용과 정기 확인이 필요합니다."
   ],
-  "kw": "TECA 전이개절제 이과"
+  "kw": "TECA 전이개절제 이과 End-stage Otitis / Ear Tumor",
+  "dx_en": "End-stage Otitis / Ear Tumor"
  },
  {
   "cat": "이과",
@@ -2324,7 +2424,8 @@
    "점이약을 정해진 대로 사용해야 합니다.",
    "기울임·비틀거림이 지속되면 내원해야 합니다."
   ],
-  "kw": "중이염 고막절개 myringotomy 이과"
+  "kw": "중이염 고막절개 myringotomy 이과 Otitis Media",
+  "dx_en": "Otitis Media"
  },
  {
   "cat": "이과",
@@ -2347,7 +2448,8 @@
    "처방된 점이약과 경구약을 투여해야 합니다.",
    "결과 확인을 위해 재내원해야 합니다."
   ],
-  "kw": "이도폴립 귀종괴 이과"
+  "kw": "이도폴립 귀종괴 이과 Aural Polyp / Mass",
+  "dx_en": "Aural Polyp / Mass"
  },
  {
   "cat": "이과",
@@ -2370,7 +2472,8 @@
    "귀를 건조하게 유지해야 합니다.",
    "처방된 점이약을 사용해야 합니다."
   ],
-  "kw": "귀세정 ear flush 외이도 이과"
+  "kw": "귀세정 ear flush 외이도 이과 Ear Canal Foreign Body",
+  "dx_en": "Ear Canal Foreign Body"
  },
  {
   "cat": "응급·중환자",
@@ -2394,7 +2497,8 @@
    "수혈 중 지속적인 감시가 필요합니다.",
    "수혈 후에도 원인 질환 치료가 계속되어야 합니다."
   ],
-  "kw": "수혈 transfusion 혈액 응급"
+  "kw": "수혈 transfusion 혈액 응급 Anemia / Hemorrhage",
+  "dx_en": "Anemia / Hemorrhage"
  },
  {
   "cat": "응급·중환자",
@@ -2417,7 +2521,8 @@
    "보호자의 선택(시행 / 시행하지 않음)을 미리 알려 주십시오.",
    "연락 가능한 번호를 유지해 주십시오."
   ],
-  "kw": "CPR DNR 심폐소생술 응급"
+  "kw": "CPR DNR 심폐소생술 응급 Cardiac Arrest",
+  "dx_en": "Cardiac Arrest"
  },
  {
   "cat": "응급·중환자",
@@ -2440,7 +2545,8 @@
    "카테터 부위를 만지지 않도록 넥카라를 착용해야 합니다.",
    "발열 시 즉시 알려야 합니다."
   ],
-  "kw": "중심정맥관 central line 응급"
+  "kw": "중심정맥관 central line 응급 Shock / Dehydration",
+  "dx_en": "Shock / Dehydration"
  },
  {
   "cat": "응급·중환자",
@@ -2463,7 +2569,8 @@
    "처치 후 활력 변화를 관찰해야 합니다.",
    "원인 질환에 대한 추가 검사가 필요합니다."
   ],
-  "kw": "복강천자 복수 abdominocentesis 응급"
+  "kw": "복강천자 복수 abdominocentesis 응급 Hemoabdomen / Ascites",
+  "dx_en": "Hemoabdomen / Ascites"
  },
  {
   "cat": "응급·중환자",
@@ -2486,7 +2593,8 @@
    "집중치료실 입원과 지속 감시가 필요합니다.",
    "경과에 따라 치료 방향을 함께 결정합니다."
   ],
-  "kw": "산소치료 인공호흡 ventilator 응급"
+  "kw": "산소치료 인공호흡 ventilator 응급 Respiratory Failure",
+  "dx_en": "Respiratory Failure"
  },
  {
   "cat": "응급·중환자",
@@ -2509,7 +2617,8 @@
    "섭취한 물질과 시각을 정확히 알려 주십시오.",
    "이후 장기 기능 검사가 필요할 수 있습니다."
   ],
-  "kw": "중독 위세척 해독 응급"
+  "kw": "중독 위세척 해독 응급 Toxin Ingestion",
+  "dx_en": "Toxin Ingestion"
  },
  {
   "cat": "응급·중환자",
@@ -2532,7 +2641,8 @@
    "입원 관리와 혈액 검사가 필요합니다.",
    "퇴원 후 처방 식이를 유지해야 합니다."
   ],
-  "kw": "요로폐색 카테터 요도 응급"
+  "kw": "요로폐색 카테터 요도 응급 Urinary Obstruction",
+  "dx_en": "Urinary Obstruction"
  },
  {
   "cat": "영상·검사",
@@ -2555,7 +2665,8 @@
    "검사 전 금식이 필요합니다.",
    "검사 후 충분한 수분 공급이 필요합니다."
   ],
-  "kw": "CT 컴퓨터단층촬영 조영 영상"
+  "kw": "CT 컴퓨터단층촬영 조영 영상 Advanced Imaging",
+  "dx_en": "Advanced Imaging"
  },
  {
   "cat": "영상·검사",
@@ -2578,7 +2689,8 @@
    "검사 전 금식이 필요합니다.",
    "회복까지 시간이 걸릴 수 있습니다."
   ],
-  "kw": "MRI 자기공명 영상"
+  "kw": "MRI 자기공명 영상 Soft Tissue / Neurologic Imaging",
+  "dx_en": "Soft Tissue / Neurologic Imaging"
  },
  {
   "cat": "영상·검사",
@@ -2601,7 +2713,8 @@
    "검사 전 금식이 필요합니다.",
    "검사 후 소량씩 급여를 시작합니다."
   ],
-  "kw": "위내시경 gastroscopy 생검 영상"
+  "kw": "위내시경 gastroscopy 생검 영상 Upper GI Disease",
+  "dx_en": "Upper GI Disease"
  },
  {
   "cat": "영상·검사",
@@ -2624,7 +2737,8 @@
    "검사 전 장 세척과 금식이 필요합니다.",
    "검사 후 급여 지침을 지켜야 합니다."
   ],
-  "kw": "대장내시경 colonoscopy 영상"
+  "kw": "대장내시경 colonoscopy 영상 Lower GI Disease",
+  "dx_en": "Lower GI Disease"
  },
  {
   "cat": "영상·검사",
@@ -2647,7 +2761,8 @@
    "검사 후 안정과 관찰이 필요합니다.",
    "기력 저하·창백함이 나타나면 즉시 연락해야 합니다."
   ],
-  "kw": "초음파생검 US biopsy 조직검사 영상"
+  "kw": "초음파생검 US biopsy 조직검사 영상 Visceral Lesion",
+  "dx_en": "Visceral Lesion"
  },
  {
   "cat": "영상·검사",
@@ -2670,7 +2785,8 @@
    "처치 후 안정이 필요합니다.",
    "천자 부위를 관찰해 주십시오."
   ],
-  "kw": "골수천자 bone marrow 영상"
+  "kw": "골수천자 bone marrow 영상 Bone Marrow Disorder",
+  "dx_en": "Bone Marrow Disorder"
  },
  {
   "cat": "영상·검사",
@@ -2693,7 +2809,8 @@
    "처치 후 활동을 제한해야 합니다.",
    "부종이 심해지면 내원해야 합니다."
   ],
-  "kw": "관절액 arthrocentesis 영상"
+  "kw": "관절액 arthrocentesis 영상 Joint Disease",
+  "dx_en": "Joint Disease"
  },
  {
   "cat": "영상·검사",
@@ -2716,7 +2833,8 @@
    "검사 전 금식이 필요합니다.",
    "검사 후 변 색깔 변화는 정상입니다."
   ],
-  "kw": "바륨조영 barium 조영검사 영상"
+  "kw": "바륨조영 barium 조영검사 영상 GI Transit Disorder",
+  "dx_en": "GI Transit Disorder"
  },
  {
   "cat": "영상·검사",
@@ -2739,7 +2857,8 @@
    "호흡이 불안정하면 미리 알려 주십시오.",
    "결과에 따라 추가 검사가 필요할 수 있습니다."
   ],
-  "kw": "흉부방사선 X-ray 영상"
+  "kw": "흉부방사선 X-ray 영상 Thoracic Evaluation",
+  "dx_en": "Thoracic Evaluation"
  },
  {
   "cat": "내과처치",
@@ -2762,7 +2881,8 @@
    "급여 전후 관을 세척해야 합니다.",
    "삽입 부위 소독과 넥카라 착용이 필요합니다."
   ],
-  "kw": "식도루관 위루관 feeding tube 내과"
+  "kw": "식도루관 위루관 feeding tube 내과 Anorexia / Inability to Eat",
+  "dx_en": "Anorexia / Inability to Eat"
  },
  {
   "cat": "내과처치",
@@ -2785,7 +2905,8 @@
    "정해진 용량과 간격을 지켜야 합니다.",
    "호흡이 빨라지면 즉시 중단하고 연락해야 합니다."
   ],
-  "kw": "피하수액 SQ fluid 신부전 내과"
+  "kw": "피하수액 SQ fluid 신부전 내과 Chronic Kidney Disease",
+  "dx_en": "Chronic Kidney Disease"
  },
  {
   "cat": "내과처치",
@@ -2809,7 +2930,8 @@
    "투여 후 배설물 처리 시 장갑을 착용해야 합니다.",
    "발열·기력 저하 시 즉시 연락해야 합니다."
   ],
-  "kw": "항암 chemotherapy 화학요법 내과"
+  "kw": "항암 chemotherapy 화학요법 내과 Neoplasia",
+  "dx_en": "Neoplasia"
  },
  {
   "cat": "내과처치",
@@ -2832,7 +2954,8 @@
    "정해진 시간에 식사와 함께 투여해야 합니다.",
    "저혈당 증상 시 즉시 대처하고 연락해야 합니다."
   ],
-  "kw": "당뇨 인슐린 insulin 내과"
+  "kw": "당뇨 인슐린 insulin 내과 Diabetes Mellitus",
+  "dx_en": "Diabetes Mellitus"
  },
  {
   "cat": "내과처치",
@@ -2855,7 +2978,8 @@
    "임의로 약을 중단하면 안 됩니다.",
    "정기적인 혈액 검사가 필요합니다."
   ],
-  "kw": "면역억제 IMHA 스테로이드 내과"
+  "kw": "면역억제 IMHA 스테로이드 내과 Immune-mediated Disease",
+  "dx_en": "Immune-mediated Disease"
  },
  {
   "cat": "내과처치",
@@ -2878,7 +3002,8 @@
    "가정에서 호흡수를 측정해 기록해 주십시오.",
    "정기적인 혈액·영상 검사가 필요합니다."
   ],
-  "kw": "심장약 이뇨제 심부전 내과"
+  "kw": "심장약 이뇨제 심부전 내과 Heart Disease",
+  "dx_en": "Heart Disease"
  },
  {
   "cat": "예방·건강관리",
@@ -2901,7 +3026,8 @@
    "접종 후 30분간 병원에서 관찰하는 것을 권장합니다.",
    "당일 목욕과 과격한 활동을 피해야 합니다."
   ],
-  "kw": "예방접종 백신 vaccination 예방"
+  "kw": "예방접종 백신 vaccination 예방",
+  "dx_en": "Vaccination"
  },
  {
   "cat": "예방·건강관리",
@@ -2924,7 +3050,8 @@
    "검사 전 금식이 필요합니다.",
    "결과 상담을 위해 재내원해야 합니다."
   ],
-  "kw": "건강검진 wellness 스크리닝 예방"
+  "kw": "건강검진 wellness 스크리닝 예방 Wellness Screening",
+  "dx_en": "Wellness Screening"
  },
  {
   "cat": "예방·건강관리",
@@ -2947,7 +3074,8 @@
    "투여 일정을 지켜야 합니다.",
    "심장사상충 검사를 먼저 시행해야 합니다."
   ],
-  "kw": "기생충 심장사상충 구충 예방"
+  "kw": "기생충 심장사상충 구충 예방 Internal / External Parasites",
+  "dx_en": "Internal / External Parasites"
  },
  {
   "cat": "예방·건강관리",
@@ -2970,7 +3098,8 @@
    "삽입 부위를 관찰해 주십시오.",
    "등록 정보 변경 시 갱신해야 합니다."
   ],
-  "kw": "동물등록 마이크로칩 microchip 예방"
+  "kw": "동물등록 마이크로칩 microchip 예방 Microchip Registration",
+  "dx_en": "Microchip Registration"
  },
  {
   "cat": "임종·완화",
@@ -2993,7 +3122,8 @@
    "보호자의 자유로운 의사에 따른 결정임을 확인합니다.",
    "사후 처리 방법을 미리 정해 주십시오."
   ],
-  "kw": "안락사 euthanasia 임종 완화"
+  "kw": "안락사 euthanasia 임종 완화 Terminal Illness",
+  "dx_en": "Terminal Illness"
  },
  {
   "cat": "임종·완화",
@@ -3016,7 +3146,8 @@
    "희망하는 처리 방법을 알려 주십시오.",
    "필요 시 등록 말소 절차를 안내드립니다."
   ],
-  "kw": "사체처리 장묘 임종"
+  "kw": "사체처리 장묘 임종 Death",
+  "dx_en": "Death"
  },
  {
   "cat": "임종·완화",
@@ -3039,7 +3170,8 @@
    "부검 범위와 사후 처리 방법을 정해 주십시오.",
    "결과는 확인되는 대로 안내드립니다."
   ],
-  "kw": "부검 necropsy 사인 임종"
+  "kw": "부검 necropsy 사인 임종 Cause of Death Investigation",
+  "dx_en": "Cause of Death Investigation"
  },
  {
   "cat": "임종·완화",
@@ -3062,7 +3194,8 @@
    "통증 신호와 식사·배설 상태를 기록해 주십시오.",
    "정기적으로 계획을 함께 검토합니다."
   ],
-  "kw": "완화치료 호스피스 palliative 임종"
+  "kw": "완화치료 호스피스 palliative 임종 Terminal Illness",
+  "dx_en": "Terminal Illness"
  },
  {
   "cat": "부가서비스",
@@ -3085,7 +3218,8 @@
    "미용 전 금식이 필요합니다.",
    "기저 질환과 복용 약을 알려 주십시오."
   ],
-  "kw": "미용마취 그루밍 부가서비스"
+  "kw": "미용마취 그루밍 부가서비스 Grooming under Anesthesia",
+  "dx_en": "Grooming under Anesthesia"
  },
  {
   "cat": "부가서비스",
@@ -3108,7 +3242,8 @@
    "복용 중인 약과 사료를 함께 맡겨 주십시오.",
    "연락 가능한 번호를 유지해 주십시오."
   ],
-  "kw": "호텔링 위탁 입소 부가서비스"
+  "kw": "호텔링 위탁 입소 부가서비스 Boarding",
+  "dx_en": "Boarding"
  },
  {
   "cat": "부가서비스",
@@ -3131,6 +3266,7 @@
    "시행 주기를 지켜 주십시오.",
    "피부 상태 변화를 알려 주십시오."
   ],
-  "kw": "약욕 목욕 부가서비스"
+  "kw": "약욕 목욕 부가서비스 Medicated Bath",
+  "dx_en": "Medicated Bath"
  }
 ]

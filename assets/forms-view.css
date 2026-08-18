@@ -1,0 +1,54 @@
+/* KAHA 양식 모음 화면 스타일 — 소식지(index.html)와 회원 자료실(library/) 공용.
+   assets/forms-view.js 와 짝을 이룹니다. */
+  #forms { display: none; }
+  #forms.on { display: block; }
+  .forms-head { margin: 0 0 1.6rem; }
+  .forms-head h1 { font-size: 1.45rem; margin: 0 0 0.4rem; letter-spacing: -0.02em; }
+  .forms-head p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.6; }
+  .fsearch {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+    margin: 0 0 1rem;
+  }
+  .fsearch input {
+    flex: 1 1 16rem; font: inherit; font-size: 0.9rem;
+    padding: 0.5rem 0.8rem; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--card); color: var(--ink);
+  }
+  .fsearch input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  .fsearch .cnt { color: var(--ink-soft); font-size: 0.82rem; white-space: nowrap; }
+  .fchips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0 0 1.4rem; }
+  .fchip {
+    border: 1px solid var(--line); border-radius: 999px; background: none;
+    font: inherit; font-size: 0.78rem; padding: 0.26rem 0.7rem;
+    color: var(--ink-soft); cursor: pointer; white-space: nowrap;
+  }
+  .fchip:hover { border-color: var(--accent); color: var(--accent); }
+  .fchip.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .fgroup > h2 {
+    font-size: 1.05rem; margin: 0 0 0.2rem; color: var(--ink);
+  }
+  .fgroup > p { margin: 0.3rem 0 1rem; color: var(--ink-soft); font-size: 0.84rem; }
+  .fcat { margin: 0 0 2rem; }
+  .fcat > h2 {
+    font-size: 1rem; margin: 0 0 0.15rem; color: var(--accent);
+    border-bottom: 2px solid var(--accent-soft); padding-bottom: 0.4rem;
+  }
+  .fcat > p { margin: 0.45rem 0 0.9rem; color: var(--ink-soft); font-size: 0.82rem; }
+  .fitem {
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 0.85rem 1rem; margin-bottom: 0.6rem;
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+    align-items: center; justify-content: space-between;
+  }
+  .fitem .t { flex: 1 1 15rem; min-width: 0; }
+  .fitem .t strong { display: block; font-size: 0.95rem; word-break: keep-all; }
+  .fitem .t span { display: block; color: var(--ink-soft); font-size: 0.82rem; margin-top: 0.2rem; word-break: keep-all; }
+  .fitem .dl { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .fitem .dl a {
+    text-decoration: none; font-size: 0.8rem; font-weight: 600;
+    border: 1px solid var(--line); border-radius: 7px;
+    padding: 0.32rem 0.7rem; color: var(--ink-soft);
+  }
+  .fitem .dl a:hover { border-color: var(--accent); color: var(--accent); }
+  .fitem .dl a.pdf { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .fitem .dl a.pdf:hover { background: var(--accent-dk, #023A68); color: #fff; }

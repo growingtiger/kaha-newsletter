@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KAHA 회원병원 양식 자료실</title>
+<meta name="description" content="한국동물병원협회(KAHA) 회원병원 양식 자료실 — 동의서, 질환 안내문, 노무·행정 서식을 PDF와 워드로 내려받으실 수 있습니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/forms-view.css">
+<style>
+  /* 자료실은 양식 화면만 쓰므로 항상 펼쳐 둔다 */
+  #forms { display: block; }
+  .notice {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 8px 8px 0;
+    padding: 0.7rem 1rem;
+    margin: 0 0 1.5rem;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-inner">
+    <div class="brand">
+      <a class="logo-chip" href="./" hidden title="양식 자료실 처음으로"
+        aria-label="KAHA 양식 자료실 처음으로"><img src="../assets/kaha-logo.png"
+        alt="KAHA 한국동물병원협회 로고" onload="this.parentElement.hidden=false"></a>
+      <div class="titles">
+        <div class="site-title">KAHA 회원병원 양식 자료실
+          <span class="sub">한국동물병원협회 정책기획위원회</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main>
+  <p class="notice">
+    회원병원에서 바로 인쇄해 쓰실 수 있는 양식입니다.
+    <strong>PDF</strong>는 그대로 인쇄용, <strong>워드</strong>는 병원 사정에 맞게 고쳐 쓰시는 용도입니다.
+    모든 문서는 A4 한 장에 맞춰 만들었습니다.
+    진단명·질환명은 검색이 쉽도록 괄호 안에 영문명을 함께 적었습니다
+    (예: <em>백내장 (Cataract)</em> — 한글·영문 어느 쪽으로 검색해도 찾을 수 있습니다).
+  </p>
+  <section id="forms" aria-label="양식 모음"></section>
+</main>
+<footer>
+  본 자료는 KAHA 회원병원을 위한 참고 양식입니다.
+  노무·세무·법률 관련 서식은 일반적 안내이며, 개별 사안은 반드시 전문가(공인노무사·세무사·변호사) 자문과
+  법령 원문을 확인하시기 바랍니다. 진료 관련 동의서는 병원의 진료 방침에 맞게 확인한 뒤 사용하십시오.
+</footer>
+<script src="../assets/forms-view.js"></script>
+<script>
+  KAHAForms.mount(document.getElementById("forms"), {
+    base: "../",
+    title: "양식 자료실",
+    intro: null
+  });
+</script>
+</body>
+</html>

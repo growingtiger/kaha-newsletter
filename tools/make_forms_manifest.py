@@ -7,6 +7,7 @@ data/procedures.json 에서 진단명·시행 방법·검색어를 가져온다.
 """
 import json
 import os
+import re
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FORMS = os.path.join(BASE, "forms")
@@ -60,6 +61,11 @@ ADMIN_CAT_LABEL = {
     "03_인사관리": "인사 관리", "04_퇴직": "퇴직",
     "05_병원운영": "병원 운영", "06_안전보건": "안전 · 보건",
 }
+
+
+def flat_paren(text):
+    """괄호 안에 또 괄호가 겹치지 않게 편다 — "A (B)" → "A, B"."""
+    return re.sub(r"\s*\(([^()]*)\)", r", \1", text).strip(" ,")
 
 
 def files_in(rel):
@@ -118,12 +124,15 @@ def build():
     add_group("proc", "질환 · 처치별 동의서",
               "진단명과 시행 방법이 미리 채워진 동의서입니다. 빈 줄에 병원별 항목을 더해 쓰십시오.",
               PROC_ROOT, "procedures.json", PROC_CAT_LABEL, "title",
-              lambda e: (e["title"], "진단명 " + e["dx"]))
+              lambda e: (e["title"], "진단명 " + e["dx"]
+                         + (" (%s)" % e["dx_en"] if e.get("dx_en") else "")))
 
     add_group("guide", "질환 안내문 (보호자 설명용)",
               "보호자에게 건네는 설명 자료입니다. 증상·치료·가정 관리·응급 신호를 한 장에 담았습니다.",
               GUIDE_ROOT, "diseases.json", GUIDE_CAT_LABEL, "name",
-              lambda e: (e["name"] + " 안내문", e.get("eng", "")))
+              lambda e: (e["name"] + " 안내문",
+                         "질환명 " + e["name"]
+                         + (" (%s)" % flat_paren(e["eng"]) if e.get("eng") else "")))
 
     add_group("admin", "노무 · 병원 행정 서식",
               "근로계약, 근태·휴가, 인사, 퇴직, 병원 운영, 안전보건 서식입니다.",

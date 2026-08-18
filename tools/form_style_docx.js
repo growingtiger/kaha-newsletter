@@ -400,9 +400,33 @@ function buildDoc(name, children, filename) {
   return Packer.toBuffer(doc).then((b) => fs.writeFileSync(dest, b));
 }
 
+/** 글자 폭을 어림잡는다 (twip). sz 는 half-point 단위. */
+function textWidth(text, sz) {
+  const em = sz * 10;
+  let w = 0;
+  for (const ch of String(text)) {
+    const c = ch.codePointAt(0);
+    if (c > 0x2e00) w += em;                                  // 한글·한자 등 전각
+    else if (ch === " ") w += em * 0.32;
+    else if (/[A-Z]/.test(ch)) w += em * 0.62;
+    else if (/[a-z0-9]/.test(ch)) w += em * 0.52;
+    else w += em * 0.34;                                      // 괄호·하이픈 등
+  }
+  return w;
+}
+
+/** 한 줄짜리 칸에 글자가 다 들어가도록 글자 크기를 줄인다.
+ *  칸 안에서 줄이 넘어가면 워드에서 잘려 보이므로, 넘칠 때만 한 단계씩 줄인다. */
+function fitSize(text, cellW, maxSize = 16, minSize = 12, pad = 160) {
+  const room = cellW - pad;
+  let sz = maxSize;
+  while (sz > minSize && textWidth(text, sz) > room) sz -= 1;
+  return sz;
+}
+
 module.exports = {
   TOTAL, USABLE, LABEL_BG, LINE, NAVY, INK, SOFT, AlignmentType,
   H, run, para, centered, cell, plainCell, table, gap,
   titleBlock, infoTable, sec, bulletLines, fieldTable, recTable, asaTable,
-  closing, signRow, buildDoc,
+  closing, signRow, buildDoc, textWidth, fitSize,
 };

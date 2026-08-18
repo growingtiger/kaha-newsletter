@@ -82,7 +82,8 @@ def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6, info_h=7.6 * mm, tail=0):
         ("수의사", [[P("동물병원명"), "", P("수의사 성명"), ""]]),
     ], widths=IN_W, heights=[info_h] * 6))
     s.append(Spacer(1, gap))
-    s.append(two_box("진 단 명", e["dx"], "시행 방법", e["proc"]))
+    dx = e["dx"] + (" (%s)" % e["dx_en"] if e.get("dx_en") else "")
+    s.append(two_box("진 단 명", dx, "시행 방법", e["proc"]))
     s.append(Spacer(1, gap))
 
     def block(label, items, extra=None):

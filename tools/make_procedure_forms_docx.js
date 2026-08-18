@@ -7,6 +7,7 @@ const S = require("./form_style_docx");
 const {
   TOTAL, USABLE, LABEL_BG, AlignmentType, para, cell, plainCell, table, gap,
   titleBlock, infoTable, sec, bulletLines, asaTable, closing, signRow, buildDoc,
+  fitSize,
 } = S;
 
 const BASE = path.dirname(__dirname);
@@ -27,12 +28,14 @@ const DECL = "「수의사법」 제13조의2 및 같은 법 시행규칙 제13�
 function twoBox(dx, proc, h) {
   const half = Math.floor(TOTAL / 2) - 40;
   const lw = mm(24);
-  return table([lw, half - lw, 80, lw, TOTAL - half - lw - 80], [[
+  const dxW = half - lw, pcW = TOTAL - half - lw - 80;
+  // 진단명에 영문명이 붙어 길어지면 한 줄 안에 들어오도록 글자를 줄인다.
+  return table([lw, dxW, 80, lw, pcW], [[
     cell("진 단 명", { w: lw, label: true, size: 16 }),
-    cell(dx, { w: half - lw, size: 16 }),
+    cell(dx, { w: dxW, size: fitSize(dx, dxW) }),
     plainCell([para("", { size: 2 })], { w: 80 }),
     cell("시행 방법", { w: lw, label: true, size: 16 }),
-    cell(proc, { w: TOTAL - half - lw - 80, size: 16 }),
+    cell(proc, { w: pcW, size: fitSize(proc, pcW) }),
   ]], h);
 }
 
@@ -57,7 +60,7 @@ function makeDoc(e, opt) {
         ["수의사", [["동물병원명", "", "수의사 성명", ""]]],
       ], IN_W, infoH),
       gap(g),
-      twoBox(e.dx, e.proc, mm(9)),
+      twoBox(e.dx + (e.dx_en ? " (" + e.dx_en + ")" : ""), e.proc, mm(9)),
       gap(g),
       sec("진료의 필요성 ·\n방법 및 내용",
         bulletLines(e.need.concat(Array(blanks).fill(" ")), { size: 16, lineH }),

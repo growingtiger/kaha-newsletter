@@ -132,6 +132,41 @@ python3 tools/make_forms.py && node tools/make_forms_docx.js && python3 tools/ch
 
 수요일 서식 호의 양식은 **인쇄용 PDF와 수정 가능한 워드(DOCX) 두 형식**으로 `forms/`에 제공되어 소식지에서 바로 다운로드됩니다.
 
+### 배포 사이트 두 곳 — 사무국용 · 회원용 (2026-08-18 신설)
+
+같은 양식을 두 주소로 제공합니다.
+
+| 주소 | 대상 | 화면 |
+|---|---|---|
+| `/` (`index.html`) | 사무국 · 정책기획위원회 | 소식지 + 지난 호 검색 + **양식 모음** 버튼 |
+| `/library/` (`library/index.html`) | **회원병원** | 양식만. 소식지·자동 발행 화면 없음 |
+
+**두 사이트가 어긋나지 않게 하는 방법 — 코드와 데이터를 한 벌만 둡니다.**
+
+| 공용 파일 | 하는 일 |
+|---|---|
+| `forms.json` | 양식 목록. 두 화면이 같은 파일을 읽습니다. |
+| `assets/forms-view.js` | 양식 화면 전체(검색·분류 칩·목록)를 그리는 코드 |
+| `assets/forms-view.css` | 양식 화면 스타일 |
+| `assets/base.css` | 색·머리말·꼬리말 등 공통 기본 스타일 |
+
+따라서 **양식을 고치고 `python3 tools/make_forms_manifest.py`만 다시 돌리면 두 사이트에 그대로 반영**됩니다. 화면 기능을 고칠 때도 위 공용 파일만 고치고, `index.html`이나 `library/index.html` 어느 한쪽에 기능을 따로 넣지 마십시오(한쪽만 좋아지면 회원이 보는 화면이 뒤처집니다).
+
+`library/index.html`은 `KAHAForms.mount(element, { base: "../" })` 로 붙입니다. `base`는 `forms.json`과 `forms/` 폴더까지의 상대 경로입니다.
+
+### 진단명 · 질환명의 영문 병기 (2026-08-18 원장 지시)
+
+검색이 쉽도록 **진단명·질환명은 괄호 안에 영문명을 함께** 적습니다. 회원이 한글로 찾든 영문으로 찾든 같은 문서가 나와야 합니다.
+
+| 곳 | 표기 |
+|---|---|
+| 질환·처치별 동의서 문서 안 | `진 단 명  백내장 (Cataract)` — `data/procedures.json`의 `dx_en` |
+| 질환 안내문 문서 안 | `진 단 명` 칸 옆 `영문 · 이명` 칸 — `data/diseases.json`의 `eng` |
+| 양식 모음 화면 설명줄 | `진단명 백내장 (Cataract)` · `질환명 만성 신장병 (Chronic Kidney Disease, CKD)` |
+| 검색어(`kw`) | 한글·영문·약어를 모두 넣습니다 (`CKD`, `Chronic Kidney Disease`) |
+
+문서 안 칸은 높이가 고정돼 있으므로, 영문이 붙어 길어진 진단명은 `form_style_docx.js`의 `fitSize()`(워드)와 `form_style.py`의 `fit_cells()`(PDF)가 **글자 크기를 자동으로 줄여** 한 줄에 맞춥니다. 길다고 문구를 임의로 잘라내지 마십시오.
+
 ### 양식 라이브러리 구조
 
 양식은 분류 폴더로 나누어 보관합니다. 새 양식을 추가할 때는 해당 분류 폴더에 넣습니다.
