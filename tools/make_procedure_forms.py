@@ -53,12 +53,25 @@ DECL = ("「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의
         "이에 위 진료의 시행에 동의하며, 시행 과정에서 필요한 수의학적 판단과 처리를 담당 수의사에게 위임합니다.")
 
 
-def two_box(left_label, left_val, right_label, right_val, h=9 * mm):
-    """진단명 · 수술 방법을 나란히 놓는 두 칸."""
+def two_box(left_label, left_val, right_label, right_val, h=11 * mm):
+    """진단명 · 수술 방법을 나란히 놓는 두 칸.
+
+    영문명을 병기하면서 값이 길어졌다. 칸 폭에 맞춰 글자를 줄이되 읽을 수 있는
+    크기(7.6pt)까지만 줄이고, 그래도 넘치면 두 줄로 둔다. 칸 높이는 두 줄이
+    들어가도록 잡아 한 줄이든 두 줄이든 세로 가운데에 오게 한다.
+    """
+    from reportlab.pdfbase.pdfmetrics import stringWidth
     half = (W - 4) / 2
     lw = 26 * mm
+    def vsize(val):
+        avail = half - lw - 12
+        s = 8.8
+        while s > 7.6 and stringWidth(val, "Nanum", s) > avail:
+            s -= 0.2
+        return round(s, 1)
     def one(lbl, val):
-        t = Table([[P(lbl, bold=True, size=8.8), P(val, size=8.8)]],
+        vs = vsize(val)
+        t = Table([[P(lbl, bold=True, size=8.8), P(val, size=vs, leading=vs + 3.4)]],
                   colWidths=[lw, half - lw], rowHeights=[h])
         t.setStyle(TableStyle([
             ("BOX", (0, 0), (-1, -1), 0.9, LINE),

@@ -26,6 +26,21 @@
     return hay.replace(/\s+/g, "").indexOf(q.replace(/\s+/g, "")) !== -1;
   }
 
+  function mb(bytes) {
+    return (bytes / 1024 / 1024).toFixed(0) + "MB";
+  }
+
+  // 전체를 한 번에 받는 줄. forms.json 의 bundle 정보가 있을 때만 그린다.
+  function bundleBar(b, base) {
+    if (!b || !b.path) return "";
+    return '<div class="fbundle">'
+      + '<div class="t"><strong>전체 내려받기</strong>'
+      + "<span>양식 전체를 분류 폴더 그대로 담은 압축 파일입니다(PDF·워드 " + b.files + "개). "
+      + "병원 컴퓨터에 받아 두고 쓰실 수 있습니다. · " + mb(b.bytes) + " · " + esc(b.date) + " 기준</span></div>"
+      + '<a class="dl" href="' + encodeURI(base + b.path) + '" download>ZIP 내려받기</a>'
+      + "</div>";
+  }
+
   function View(el, opts) {
     this.el = el;
     this.base = (opts && opts.base) || "";
@@ -61,6 +76,7 @@
 
     this.el.innerHTML = '<div class="forms-head"><h1>' + esc(this.title) + "</h1>"
       + "<p>" + esc(intro) + "</p></div>"
+      + bundleBar(data.bundle, this.base)
       + '<div class="fsearch"><input type="search" class="fq" '
       + 'placeholder="양식 · 진단명 검색 (예: 슬개골, 백내장, cataract, 연차)" '
       + 'aria-label="양식 검색" autocomplete="off">'

@@ -15,7 +15,8 @@ const {
 
 const BASE = path.dirname(__dirname);
 const OUT = path.join(BASE, "forms");
-const LOGO = fs.readFileSync(path.join(BASE, "assets", "kaha-logo.png"));
+// 푸터에 122x24pt 로만 넣으므로 웹용 원본(66KB) 대신 인쇄용 축소본(10KB)을 쓴다
+const LOGO = fs.readFileSync(path.join(BASE, "assets", "kaha-logo-print.png"));
 const EMBLEM = fs.readFileSync(path.join(BASE, "assets", "kaha-emblem.png"));
 const WATERMARK = fs.readFileSync(path.join(BASE, "assets", "kaha-watermark.png"));
 

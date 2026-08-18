@@ -17,6 +17,8 @@
   footer_mark()  하단 협회 로고와 회원병원 표기 (onPage 콜백에서 그림)
 """
 import os
+from reportlab import rl_config
+rl_config.useA85 = 0
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -34,7 +36,9 @@ pdfmetrics.registerFont(TTFont("NanumEB", os.path.join(FONT_DIR, "NanumSquareB.t
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(BASE, "forms")
-LOGO = os.path.join(BASE, "assets", "kaha-logo.png")
+# 푸터 로고는 8.6mm 높이로만 그린다. 웹용 원본(1197px)을 그대로 넣으면 파일마다
+# 50KB 넘게 낭비되므로 인쇄에 충분한 크기로 줄인 것을 쓴다.
+LOGO = os.path.join(BASE, "assets", "kaha-logo-print.png")
 EMBLEM = os.path.join(BASE, "assets", "kaha-emblem.png")
 LOGO_W, LOGO_H = 1197, 238
 

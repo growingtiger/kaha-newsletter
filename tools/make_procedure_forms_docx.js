@@ -48,10 +48,10 @@ function twoBox(dx, proc, h) {
   // 진단명에 영문명이 붙어 길어지면 한 줄 안에 들어오도록 글자를 줄인다.
   return table([lw, dxW, 80, lw, pcW], [[
     cell("진 단 명", { w: lw, label: true, size: 16 }),
-    cell(dx, { w: dxW, size: fitSize(dx, dxW) }),
+    cell(dx, { w: dxW, size: fitSize(dx, dxW, 16, 15) }),
     plainCell([para("", { size: 2 })], { w: 80 }),
     cell("시행 방법", { w: lw, label: true, size: 16 }),
-    cell(proc, { w: pcW, size: fitSize(proc, pcW) }),
+    cell(proc, { w: pcW, size: fitSize(proc, pcW, 16, 15) }),
   ]], h);
 }
 
@@ -76,7 +76,7 @@ function makeDoc(e, opt) {
         ["수의사", [["동물병원명", "", "수의사 성명", ""], ["면허번호", "", null, null]]],
       ], IN_W, infoH),
       gap(g),
-      twoBox(dxLabel(e), e.proc, mm(9)),
+      twoBox(dxLabel(e), e.proc, mm(11)),
       gap(g),
     ],
     e.about ? [
