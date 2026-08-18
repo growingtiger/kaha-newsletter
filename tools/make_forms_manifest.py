@@ -63,6 +63,18 @@ ADMIN_CAT_LABEL = {
 }
 
 
+def dx_label(e):
+    """진단명 + 영문명. 한글 쪽 영문 약어는 괄호가 겹치지 않게 영문 안으로 합친다.
+    (tools/make_procedure_forms.py 의 같은 이름 함수와 같은 규칙)"""
+    dx, en = e["dx"], e.get("dx_en", "")
+    if not en:
+        return dx
+    m = re.search(r"\s*\(([A-Za-z0-9]+)\)\s*$", dx)
+    if m and m.group(1).lower() not in en.lower():
+        dx, en = dx[:m.start()], "%s, %s" % (en, m.group(1))
+    return "%s (%s)" % (dx, en)
+
+
 def flat_paren(text):
     """괄호 안에 또 괄호가 겹치지 않게 편다 — "A (B)" → "A, B"."""
     return re.sub(r"\s*\(([^()]*)\)", r", \1", text).strip(" ,")
@@ -124,8 +136,7 @@ def build():
     add_group("proc", "질환 · 처치별 동의서",
               "진단명과 시행 방법이 미리 채워진 동의서입니다. 빈 줄에 병원별 항목을 더해 쓰십시오.",
               PROC_ROOT, "procedures.json", PROC_CAT_LABEL, "title",
-              lambda e: (e["title"], "진단명 " + e["dx"]
-                         + (" (%s)" % e["dx_en"] if e.get("dx_en") else "")))
+              lambda e: (e["title"], "진단명 " + dx_label(e)))
 
     add_group("guide", "질환 안내문 (보호자 설명용)",
               "보호자에게 건네는 설명 자료입니다. 증상·치료·가정 관리·응급 신호를 한 장에 담았습니다.",

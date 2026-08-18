@@ -21,8 +21,24 @@ const L = mm(26), M = mm(30);
 const V = Math.floor((TOTAL - L - 2 * M) / 2);
 const IN_W = [L, M, V, M, TOTAL - L - 2 * M - V];
 
-const LEGAL = "본 동의서는 「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 작성되었습니다.";
-const DECL = "「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 위와 같이 수의사로부터 진료의 필요성 · 방법 · 내용과 전형적으로 예상되는 후유증 및 부작용에 관한 설명을 충분히 듣고 이해하였습니다. 이에 위 진료의 시행에 동의하며, 시행 과정에서 필요한 수의학적 판단과 처리를 담당 수의사에게 위임합니다.";
+/** 진단명 옆에 영문명을 괄호로 병기한다. 한글 쪽에 영문 약어가 이미 붙어 있으면
+ *  괄호가 두 번 겹치지 않도록 영문 안으로 합친다.
+ *    "위확장 염전 (GDV)" + "Gastric Dilatation-Volvulus"
+ *    → "위확장 염전 (Gastric Dilatation-Volvulus, GDV)"
+ *  괄호 안이 한글 설명일 때는(예: "중성화 (암컷)") 그대로 둔다. */
+function dxLabel(e) {
+  let dx = e.dx, en = e.dx_en || "";
+  if (!en) return dx;
+  const m = dx.match(/\s*\(([A-Za-z0-9]+)\)\s*$/);
+  if (m && !en.toLowerCase().includes(m[1].toLowerCase())) {
+    dx = dx.slice(0, m.index);
+    en = en + ", " + m[1];
+  }
+  return dx + " (" + en + ")";
+}
+
+const LEGAL = "본 동의서는 「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의2에 따라 작성되었습니다.";
+const DECL = "「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의2에 따라 위와 같이 수의사로부터 진료의 필요성 · 방법 · 내용과 전형적으로 예상되는 후유증 및 부작용에 관한 설명을 충분히 듣고 이해하였습니다. 이에 위 진료의 시행에 동의하며, 시행 과정에서 필요한 수의학적 판단과 처리를 담당 수의사에게 위임합니다.";
 
 /** 진단명 · 시행 방법을 나란히 놓는 두 칸 */
 function twoBox(dx, proc, h) {
@@ -55,12 +71,12 @@ function makeDoc(e, opt) {
     [
       infoTable([
         ["보호자", [["성명", "", "연락처", ""], ["주소", "", null, null]]],
-        ["반려동물", [["이름", "", "종 / 품종", ""], ["성별 / 중성화", "", "연령 / 체중", ""],
+        ["반려동물", [["이름", "", "종 / 품종", ""], ["성별 / 중성화", "□ 암  □ 수    □ 중성화", "연령 / 체중", ""],
                      ["특이사항", "", null, null]]],
-        ["수의사", [["동물병원명", "", "수의사 성명", ""]]],
+        ["수의사", [["동물병원명", "", "수의사 성명", ""], ["면허번호", "", null, null]]],
       ], IN_W, infoH),
       gap(g),
-      twoBox(e.dx + (e.dx_en ? " (" + e.dx_en + ")" : ""), e.proc, mm(9)),
+      twoBox(dxLabel(e), e.proc, mm(9)),
       gap(g),
       sec("진료의 필요성 ·\n방법 및 내용",
         bulletLines(e.need.concat(Array(blanks).fill(" ")), { size: 16, lineH }),
@@ -118,7 +134,7 @@ const INFO_MIN = mm(7.6), INFO_MAX = mm(12);
 
     // 3) 남는 공간의 절반은 기입 칸 높이로 (볼펜으로 쓰기 편하도록)
     let room = USABLE - totalHeight(makeDoc(e, opt));
-    opt.infoH = Math.min(INFO_MAX, INFO_MIN + Math.max(0, Math.floor(room * 0.5 / 6)));
+    opt.infoH = Math.min(INFO_MAX, INFO_MIN + Math.max(0, Math.floor(room * 0.5 / 7)));
 
     // 4) 그러고도 남는 공간은 서명 앞으로 — 서명줄을 맨 아래에 둔다
     room = USABLE - totalHeight(makeDoc(e, opt));

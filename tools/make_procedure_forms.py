@@ -7,6 +7,7 @@
 """
 import json
 import os
+import re
 import sys
 
 from reportlab.lib.pagesizes import A4
@@ -29,8 +30,25 @@ L, M = 28 * mm, 26 * mm
 V = (W - L - 2 * M) / 2
 IN_W = [L, M, V, M, V]
 
-LEGAL = "본 동의서는 「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 작성되었습니다."
-DECL = ("「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 위와 같이 수의사로부터 진료의 필요성 · 방법 · "
+
+def dx_label(e):
+    """진단명 옆에 영문명을 괄호로 병기한다.
+
+    한글 쪽에 이미 영문 약어가 붙어 있으면 괄호가 두 번 겹치지 않도록 영문 안으로 합친다.
+      '위확장 염전 (GDV)' + 'Gastric Dilatation-Volvulus'
+      → '위확장 염전 (Gastric Dilatation-Volvulus, GDV)'
+    괄호 안이 한글 설명일 때는(예: '중성화 (암컷)') 그대로 둔다.
+    """
+    dx, en = e["dx"], e.get("dx_en", "")
+    if not en:
+        return dx
+    m = re.search(r"\s*\(([A-Za-z0-9]+)\)\s*$", dx)
+    if m and m.group(1).lower() not in en.lower():
+        dx, en = dx[:m.start()], "%s, %s" % (en, m.group(1))
+    return "%s (%s)" % (dx, en)
+
+LEGAL = "본 동의서는 「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의2에 따라 작성되었습니다."
+DECL = ("「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의2에 따라 위와 같이 수의사로부터 진료의 필요성 · 방법 · "
         "내용과 전형적으로 예상되는 후유증 및 부작용에 관한 설명을 충분히 듣고 이해하였습니다. "
         "이에 위 진료의 시행에 동의하며, 시행 과정에서 필요한 수의학적 판단과 처리를 담당 수의사에게 위임합니다.")
 
@@ -77,13 +95,13 @@ def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6, info_h=7.6 * mm, tail=0):
     s.append(info_table([
         ("보호자", [[P("성명"), "", P("연락처"), ""], [P("주소"), "", None, None]]),
         ("반려동물", [[P("이름"), "", P("종 / 품종"), ""],
-                    [P("성별 / 중성화"), "", P("연령 / 체중"), ""],
+                    [P("성별 / 중성화"), P("□ 암  □ 수    □ 중성화"), P("연령 / 체중"), ""],
                     [P("특이사항"), "", None, None]]),
-        ("수의사", [[P("동물병원명"), "", P("수의사 성명"), ""]]),
-    ], widths=IN_W, heights=[info_h] * 6))
+        ("수의사", [[P("동물병원명"), "", P("수의사 성명"), ""],
+                  [P("면허번호"), "", None, None]]),
+    ], widths=IN_W, heights=[info_h] * 7))
     s.append(Spacer(1, gap))
-    dx = e["dx"] + (" (%s)" % e["dx_en"] if e.get("dx_en") else "")
-    s.append(two_box("진 단 명", dx, "시행 방법", e["proc"]))
+    s.append(two_box("진 단 명", dx_label(e), "시행 방법", e["proc"]))
     s.append(Spacer(1, gap))
 
     def block(label, items, extra=None):
@@ -139,7 +157,7 @@ def main():
 
         # 3) 그래도 남는 공간의 절반은 기입 칸을 키우는 데 쓴다 (볼펜으로 쓰기 편하도록)
         room = AVAIL - SAFETY - h
-        info_h = min(INFO_MAX, INFO_MIN + max(0, room * 0.5) / 6)
+        info_h = min(INFO_MAX, INFO_MIN + max(0, room * 0.5) / 7)
         story = build_one(e, blanks, gap * mm, lead, info_h)
         h = height(story)
 

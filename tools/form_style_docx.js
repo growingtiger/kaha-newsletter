@@ -188,7 +188,9 @@ function infoTable(groups, widths, rowH) {
         let span = 1;
         while (c + span < cells.length && cells[c + span] === null) span += 1;
         const w = widths.slice(c + 1, c + 1 + span).reduce((a, b) => a + b, 0);
-        out.push(cell(cells[c], { w, span: span > 1 ? span : undefined, label: c % 2 === 0 }));
+        // 칸 폭보다 글자가 길면 크기를 줄인다 (체크칸·영문 병기로 길어진 경우 대비)
+        out.push(cell(cells[c], { w, span: span > 1 ? span : undefined,
+          label: c % 2 === 0, size: fitSize(cells[c], w, 17, 12) }));
         c += span;
       }
       rows.push(out);
@@ -400,27 +402,26 @@ function buildDoc(name, children, filename) {
   return Packer.toBuffer(doc).then((b) => fs.writeFileSync(dest, b));
 }
 
-/** 글자 폭을 어림잡는다 (twip). sz 는 half-point 단위. */
+/** 글자 폭을 어림잡는다 (twip). sz 는 half-point 단위.
+ *  tools/check_forms.py 의 추정과 같은 기준을 쓴다 — 한글·전각 1em, 그 밖은 0.5em.
+ *  실제보다 넉넉하게 잡아야 사용자 PC의 폰트가 달라도 잘리지 않는다. */
 function textWidth(text, sz) {
   const em = sz * 10;
   let w = 0;
   for (const ch of String(text)) {
-    const c = ch.codePointAt(0);
-    if (c > 0x2e00) w += em;                                  // 한글·한자 등 전각
-    else if (ch === " ") w += em * 0.32;
-    else if (/[A-Z]/.test(ch)) w += em * 0.62;
-    else if (/[a-z0-9]/.test(ch)) w += em * 0.52;
-    else w += em * 0.34;                                      // 괄호·하이픈 등
+    w += ch.codePointAt(0) > 0x1100 ? em : em * 0.5;
   }
   return w;
 }
 
 /** 한 줄짜리 칸에 글자가 다 들어가도록 글자 크기를 줄인다.
- *  칸 안에서 줄이 넘어가면 워드에서 잘려 보이므로, 넘칠 때만 한 단계씩 줄인다. */
+ *  칸 안에서 줄이 넘어가면 워드에서 잘려 보이므로, 넘칠 때만 한 단계씩 줄인다.
+ *  FONT_SLACK 은 사용자 PC의 폰트가 조금 넓어도 견디도록 두는 여유 — 검사 스크립트와 같은 값. */
+const FONT_SLACK = 1.06;
 function fitSize(text, cellW, maxSize = 16, minSize = 12, pad = 160) {
   const room = cellW - pad;
   let sz = maxSize;
-  while (sz > minSize && textWidth(text, sz) > room) sz -= 1;
+  while (sz > minSize && textWidth(text, sz) * FONT_SLACK > room) sz -= 1;
   return sz;
 }
 
