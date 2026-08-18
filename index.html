@@ -192,6 +192,29 @@
   .forms-head { margin: 0 0 1.6rem; }
   .forms-head h1 { font-size: 1.45rem; margin: 0 0 0.4rem; letter-spacing: -0.02em; }
   .forms-head p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.6; }
+  .fsearch {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+    margin: 0 0 1rem;
+  }
+  .fsearch input {
+    flex: 1 1 16rem; font: inherit; font-size: 0.9rem;
+    padding: 0.5rem 0.8rem; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--card); color: var(--ink);
+  }
+  .fsearch input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  .fsearch .cnt { color: var(--ink-soft); font-size: 0.82rem; white-space: nowrap; }
+  .fchips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0 0 1.4rem; }
+  .fchip {
+    border: 1px solid var(--line); border-radius: 999px; background: none;
+    font: inherit; font-size: 0.78rem; padding: 0.26rem 0.7rem;
+    color: var(--ink-soft); cursor: pointer; white-space: nowrap;
+  }
+  .fchip:hover { border-color: var(--accent); color: var(--accent); }
+  .fchip.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .fgroup > h2 {
+    font-size: 1.05rem; margin: 0 0 0.2rem; color: var(--ink);
+  }
+  .fgroup > p { margin: 0.3rem 0 1rem; color: var(--ink-soft); font-size: 0.84rem; }
   .fcat { margin: 0 0 2rem; }
   .fcat > h2 {
     font-size: 1rem; margin: 0 0 0.15rem; color: var(--accent);
@@ -351,22 +374,75 @@
       .catch(function () { formsEl.innerHTML = "<p>양식 목록을 불러오지 못했습니다.</p>"; });
   }
 
+  var FQ = "", FCAT = "";
+
+  function fmatch(it, q) {
+    if (!q) return true;
+    var hay = (it.name + " " + (it.desc || "") + " " + (it.kw || "")).toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
   function renderForms(data) {
-    var h = '<div class="forms-head"><h1>양식 모음</h1>'
-      + '<p>회원병원에서 바로 쓰실 수 있는 양식 ' + data.count + '종입니다. '
-      + '인쇄해서 바로 쓰실 수 있고, 워드 파일은 자유롭게 고쳐 쓰실 수 있습니다. 모두 A4 한 장입니다.</p></div>';
-    data.categories.forEach(function (c) {
-      h += '<div class="fcat"><h2>' + esc(c.label) + '</h2><p>' + esc(c.blurb) + '</p>';
-      c.items.forEach(function (it) {
-        h += '<div class="fitem"><div class="t"><strong>' + esc(it.name) + '</strong>'
-          + (it.desc ? '<span>' + esc(it.desc) + '</span>' : '') + '</div><div class="dl">';
-        if (it.pdf) h += '<a class="pdf" href="' + encodeURI(it.pdf) + '" target="_blank" rel="noopener noreferrer">PDF</a>';
-        if (it.docx) h += '<a href="' + encodeURI(it.docx) + '" target="_blank" rel="noopener noreferrer">워드</a>';
-        h += '</div></div>';
+    var q = FQ.trim().toLowerCase();
+    var shown = 0, body = "";
+    data.groups.forEach(function (g) {
+      var cats = "";
+      g.cats.forEach(function (c) {
+        if (FCAT && FCAT !== g.key + "/" + c.folder) return;
+        var hits = c.items.filter(function (it) { return fmatch(it, q); });
+        if (!hits.length) return;
+        shown += hits.length;
+        cats += '<div class="fcat"><h2>' + esc(c.label) + "</h2>"
+          + (c.blurb ? "<p>" + esc(c.blurb) + "</p>" : "");
+        hits.forEach(function (it) {
+          cats += '<div class="fitem"><div class="t"><strong>' + esc(it.name) + "</strong>"
+            + (it.desc ? "<span>" + esc(it.desc) + "</span>" : "") + '</div><div class="dl">';
+          if (it.pdf) cats += '<a class="pdf" href="' + encodeURI(it.pdf) + '" target="_blank" rel="noopener noreferrer">PDF</a>';
+          if (it.docx) cats += '<a href="' + encodeURI(it.docx) + '" target="_blank" rel="noopener noreferrer">워드</a>';
+          cats += "</div></div>";
+        });
+        cats += "</div>";
       });
-      h += '</div>';
+      if (cats) {
+        body += '<div class="fgroup"><h2>' + esc(g.label) + "</h2>"
+          + (g.blurb ? "<p>" + esc(g.blurb) + "</p>" : "") + cats + "</div>";
+      }
     });
-    formsEl.innerHTML = h;
+    if (!body) body = "<p>검색 결과가 없습니다.</p>";
+
+    var chips = '<div class="fchips"><button type="button" class="fchip' + (FCAT ? "" : " on")
+      + '" data-cat="">전체</button>';
+    data.groups.forEach(function (g) {
+      g.cats.forEach(function (c) {
+        var key = g.key + "/" + c.folder;
+        chips += '<button type="button" class="fchip' + (FCAT === key ? " on" : "")
+          + '" data-cat="' + key + '">' + esc(c.label) + " " + c.items.length + "</button>";
+      });
+    });
+    chips += "</div>";
+
+    formsEl.innerHTML = '<div class="forms-head"><h1>양식 모음</h1>'
+      + "<p>회원병원에서 바로 쓰실 수 있는 양식 " + data.count + "종입니다. "
+      + "인쇄해서 바로 쓰실 수 있고, 워드 파일은 자유롭게 고쳐 쓰실 수 있습니다. 모두 A4 한 장입니다.</p></div>"
+      + '<div class="fsearch"><input type="search" id="fq" placeholder="양식 · 진단명 검색 (예: 슬개골, 백내장, 수혈, 발치)" '
+      + 'value="' + esc(FQ) + '" autocomplete="off"><span class="cnt">' + shown + "종 표시</span></div>"
+      + chips + body;
+
+    var box = document.getElementById("fq");
+    box.addEventListener("input", function () {
+      FQ = box.value;
+      var pos = box.selectionStart;
+      renderForms(data);
+      var nb = document.getElementById("fq");
+      nb.focus();
+      try { nb.setSelectionRange(pos, pos); } catch (e) {}
+    });
+    formsEl.querySelectorAll(".fchip").forEach(function (b) {
+      b.addEventListener("click", function () {
+        FCAT = b.getAttribute("data-cat");
+        renderForms(data);
+      });
+    });
   }
 
   navForms.addEventListener("click", function () {

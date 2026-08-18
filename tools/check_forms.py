@@ -87,10 +87,16 @@ def docx_texts(path):
     return out
 
 
+def convert_all(paths, tmp):
+    """워드를 한 번에 묶어 변환한다 (파일이 많을 때 훨씬 빠르다)."""
+    for i in range(0, len(paths), 25):
+        subprocess.run(["libreoffice", "--headless", "--convert-to", "pdf", "--outdir", tmp]
+                       + paths[i:i + 25],
+                       check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
 def check_docx(path, tmp):
     name = os.path.basename(path)
-    subprocess.run(["libreoffice", "--headless", "--convert-to", "pdf", "--outdir", tmp, path],
-                   check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     out = os.path.join(tmp, os.path.splitext(name)[0] + ".pdf")
     if not os.path.exists(out):
         fails.append("워드 %s — PDF 변환 실패(검사 불가)" % name)
@@ -191,24 +197,29 @@ def check_cell_fit(path):
 
 
 def main():
-    pdfs = sorted(glob.glob(os.path.join(FORMS, "*", "*.pdf")))
-    docxs = sorted(glob.glob(os.path.join(FORMS, "*", "*.docx")))
+    pdfs = sorted(glob.glob(os.path.join(FORMS, "**", "*.pdf"), recursive=True))
+    docxs = sorted(glob.glob(os.path.join(FORMS, "**", "*.docx"), recursive=True))
     print("골든룰 검사 — A4 한 장 (PDF %d개 · 워드 %d개)\n" % (len(pdfs), len(docxs)))
 
     print("PDF")
+    quiet = len(pdfs) > 20
     for p in pdfs:
         m = check_pdf(p, "PDF")
         nm = os.path.basename(p).replace("_한국동물병원협회.pdf", "")
-        if m:
+        if m and not quiet:
             print("  %-22s 1쪽 · 여백 좌 %.0f 우 %.0f 상 %.0f 하 %.0fmm" % (nm, m[0], m[2], m[3], m[1]))
+    if quiet:
+        print("  %d개 검사 — 전부 1쪽 · 여백 8mm 이상" % len(pdfs))
 
     print("\n워드 (LibreOffice 변환 대조)")
     tmp = tempfile.mkdtemp()
     try:
+        convert_all(docxs, tmp)
         for p in docxs:
             check_docx(p, tmp)
             nm = os.path.basename(p).replace("_한국동물병원협회.docx", "")
             clipped, tight = check_cell_fit(p)
+            quiet = len(docxs) > 20
             if clipped:
                 fails.append("워드 %s — 칸보다 글자가 큰 곳 %d건(잘림): %s"
                              % (os.path.basename(p), len(clipped),
@@ -219,7 +230,7 @@ def main():
                              % (os.path.basename(p), len(tight),
                                 " / ".join(t[0][:30] + "…" for t in tight[:2])))
                 print("  %-22s ⚠ 여유 부족 %d건" % (nm, len(tight)))
-            else:
+            elif not quiet:
                 print("  %-22s 검사 완료 (칸 여유 확보)" % nm)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

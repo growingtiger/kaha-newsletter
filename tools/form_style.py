@@ -64,6 +64,91 @@ def P(text, size=9.4, bold=False, color=INK, leading=None, align=None):
     return Paragraph(text, st)
 
 
+# ── 칸 안에서 글자가 잘리지 않게 하는 장치 ────────────────────────────
+# 칸 폭보다 글자가 길면 크기를 줄여 한 줄에 넣는다. 그래도 안 들어가면
+# 여러 줄로 두되, 아래 AUDIT 기록으로 칸 높이가 충분한지 검사한다.
+import re as _re
+
+AUDIT = []          # (양식명, 문구, 필요 높이, 칸 높이) — check_forms.py 가 읽는다
+_CUR = [""]         # 현재 만들고 있는 양식 이름
+
+
+def set_form(name):
+    _CUR[0] = name
+
+
+def _plain(t):
+    return _re.sub(r"<[^>]+>", "", t).replace("&nbsp;", " ")
+
+
+def afit(text, avail_w, size=8.8, min_size=6.6, bold=False, color=INK, step=0.2):
+    """칸 폭에 맞춰 글자 크기를 줄인 문단. 한 줄에 들어갈 때까지 줄인다."""
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+    font = "NanumB" if bold else "Nanum"
+    plain = _plain(text)
+    s = size
+    while s > min_size and stringWidth(plain, font, s) > avail_w:
+        s -= step
+    return P(text, size=round(s, 1), bold=bold, color=color)
+
+
+def fit_cells(rows, widths, heights, pad_lr=9, pad_tb=4, min_size=6.4):
+    """표의 칸마다 글자가 다 들어가는지 보고, 넘치면 글자 크기를 줄인다.
+
+    widths 는 열 폭 목록이거나 행별 폭 목록(병합 반영)일 수 있다.
+    줄여도 안 들어가면 AUDIT 에 남겨 check_forms.py 가 잡아낸다.
+    """
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+    import math
+    if heights is None:
+        return rows
+    for r, row in enumerate(rows):
+        h = heights[r] if isinstance(heights, (list, tuple)) else heights
+        wrow = widths[r] if widths and isinstance(widths[0], (list, tuple)) else widths
+        for c, cell in enumerate(row):
+            if not isinstance(cell, Paragraph):
+                continue
+            txt = _plain(getattr(cell, "text", "") or "")
+            if not txt.strip():
+                continue
+            w = wrow[c] if c < len(wrow) else 0
+            avail = max(w - pad_lr, 1)
+            st = cell.style
+            size, leading = st.fontSize, st.leading
+            ratio = leading / size if size else 1.4
+            max_lines = max(1, int((h - pad_tb) / leading))
+            def lines_at(sz):
+                return max(1, int(math.ceil(stringWidth(txt, st.fontName, sz) / avail)))
+            if lines_at(size) * leading + pad_tb <= h:
+                continue
+            # 한 줄에 들어갈 때까지 글자를 줄인다
+            sz = size
+            while sz > min_size:
+                sz -= 0.2
+                if lines_at(sz) * (sz * ratio) + pad_tb <= h:
+                    break
+            if lines_at(sz) * (sz * ratio) + pad_tb <= h:
+                st2 = ParagraphStyle("f", parent=st, fontSize=round(sz, 1),
+                                     leading=round(sz * ratio, 1))
+                row[c] = Paragraph(cell.text, st2)
+            else:
+                AUDIT.append((_CUR[0], txt[:60],
+                              lines_at(sz) * (sz * ratio) + pad_tb, h))
+    return rows
+
+
+
+def _eff_widths(rows, widths, styles):
+    """SPAN 을 반영해 칸마다 실제로 쓸 수 있는 폭을 계산한다."""
+    eff = [list(widths) + [0] * max(0, len(row) - len(widths)) for row in rows]
+    for st in styles:
+        if st and st[0] == "SPAN":
+            (c0, r0), (c1, r1) = st[1], st[2]
+            if r0 == r1 and c1 > c0 and r0 < len(eff):
+                eff[r0][c0] = sum(widths[c0:c1 + 1])
+    return eff
+
+
 def _label_cell(text, note="", size=9.3):
     body = '<font size="%.1f">' % size + text.replace("\n", "<br/>") + "</font>"
     if note:
@@ -149,6 +234,8 @@ def info_table(groups, widths, heights=None):
             rows.append(row)
             r += 1
         styles.append(("SPAN", (0, start), (0, r - 1)))
+    eff = _eff_widths(rows, widths, styles)
+    fit_cells(rows, eff, heights, pad_lr=11, pad_tb=2)
     t = Table(rows, colWidths=widths, rowHeights=heights)
     styles += [
         ("GRID", (0, 0), (-1, -1), 0.6, LINE),
@@ -213,6 +300,8 @@ def fields(rows, widths, heights, valign_top=(), size=8.8):
             else:
                 c += 1
         body.append(row)
+    eff = _eff_widths(body, widths, styles)
+    fit_cells(body, eff, heights, pad_lr=9, pad_tb=4)
     t = Table(body, colWidths=widths, rowHeights=heights)
     styles += [
         ("GRID", (0, 0), (-1, -1), 0.5, LINE),
@@ -234,6 +323,7 @@ def rec_table(headers, widths, n_rows, row_h=5.4 * mm, head_h=5.4 * mm, size=7.8
                                            leading=size + 2.4, textColor=INK,
                                            alignment=TA_CENTER))
     rows = [[C(h) for h in headers]] + [[""] * len(headers) for _ in range(n_rows)]
+    fit_cells(rows, widths, [head_h] + [row_h] * n_rows, pad_lr=6, pad_tb=0)
     t = Table(rows, colWidths=widths, rowHeights=[head_h] + [row_h] * n_rows)
     t.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), LABEL_BG),
@@ -303,6 +393,7 @@ def asa_table(total_w, row_h=4.9 * mm):
     w = [10 * mm, 14 * mm, total_w - 40 * mm, 16 * mm]
     rows = [[C("체크", size=7.4), C("ASA 등급", size=7.4), C("정 의", size=7.4), C("사망률(%)", size=7.4)]]
     rows += [[C("□", size=9), C(g, size=7.6), C(d, size=7.6), C(m, size=7.6)] for g, d, m in ASA_ROWS]
+    fit_cells(rows, w, [row_h] * 6, pad_lr=6, pad_tb=0)
     t = Table(rows, colWidths=w, rowHeights=[row_h] * 6)
     t.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), LABEL_BG),

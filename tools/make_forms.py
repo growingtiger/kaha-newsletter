@@ -12,7 +12,7 @@ from reportlab.platypus import Spacer, Table, TableStyle, Paragraph
 from reportlab.lib.styles import ParagraphStyle
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from form_style import (W, P, title_block, info_table, sec, bullets, fields,
+from form_style import (W, P, title_block, info_table, sec, bullets, fields, set_form, AUDIT,
                         grid_list, asa_table, rec_table, stack, closing,
                         sign_row, build, LINE, OUT)
 
@@ -40,6 +40,7 @@ def gap(h=None):
 # 1. 수술등중대진료(마취) 동의서
 # ═══════════════════════════════════════════════════════════════════
 G[0] = 1.7 * mm
+set_form("수술등중대진료(마취) 동의서")
 s = title_block("수술등중대진료(마취) 동의서",
                 "본 동의서는 「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 작성되었습니다.",
                 title_size=22)
@@ -105,6 +106,7 @@ build("01_수술마취/마취동의서_한국동물병원협회.pdf", "수술등
 # 2. 입원 동의서
 # ═══════════════════════════════════════════════════════════════════
 G[0] = 3.4 * mm
+set_form("입원 동의서")
 s = title_block("입원 동의서",
                 "본 동의서는 입원 진료의 내용 · 비용 · 연락 방식에 관한 설명과 동의를 확인하기 위해 작성되었습니다.",
                 title_size=24)
@@ -176,6 +178,7 @@ build("02_입원응급/입원동의서_한국동물병원협회.pdf", "입원 �
 # 3. 퇴원 안내문
 # ═══════════════════════════════════════════════════════════════════
 G[0] = 3.4 * mm
+set_form("퇴원 안내문")
 s = title_block("퇴원 안내문",
                 "본 안내문은 가정에서의 투약과 관리, 재진 일정에 관한 설명 내용을 기록하기 위해 작성되었습니다.",
                 title_size=24)
@@ -245,6 +248,7 @@ build("02_입원응급/퇴원안내문_한국동물병원협회.pdf", "퇴원 �
 # 4. 마취 전 평가 · 모니터링 체크리스트  (원내 기록용)
 # ═══════════════════════════════════════════════════════════════════
 G[0] = 3 * mm
+set_form("마취 전 평가·모니터링 체크리스트")
 s = title_block("마취 전 평가 · 모니터링 체크리스트",
                 "본 기록지는 마취 전 준비와 마취 중 경과, 회복기 관리를 원내에서 기록하기 위한 서식입니다.",
                 title_size=19)
@@ -300,6 +304,7 @@ build("06_진료기록/마취전평가체크리스트_한국동물병원협회.p
 # 5. 영양 평가 · BCS / MCS 기록지  (원내 기록용)
 # ═══════════════════════════════════════════════════════════════════
 G[0] = 3.4 * mm
+set_form("영양 평가·BCS/MCS 기록지")
 s = title_block("영양 평가 · BCS / MCS 기록지",
                 "본 기록지는 모든 환자의 영양 상태를 내원 시마다 선별하고 기록하기 위한 서식입니다.",
                 title_size=21)
@@ -365,7 +370,12 @@ s.append(Spacer(1, 4 * mm))
 s.append(sign_row(["평가자"]))
 build("06_진료기록/영양평가기록지_한국동물병원협회.pdf", "영양 평가·BCS/MCS 기록지", s)
 
-print("생성 완료")
+import json
+over = [a for a in AUDIT if a[2] > a[3] + 1]
+json.dump([{"form": a[0], "text": a[1], "need": a[2], "have": a[3]} for a in over],
+          open(os.path.join(OUT, "..", "build_audit.json"), "w", encoding="utf-8"),
+          ensure_ascii=False, indent=1)
+print("생성 완료 — 칸 넘침 %d건 (build_audit.json)" % len(over))
 for root, _, files in sorted(os.walk(OUT)):
     for f in sorted(files):
         if f.endswith(".pdf"):
