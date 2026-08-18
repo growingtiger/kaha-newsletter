@@ -56,12 +56,22 @@ FOOTER_Y = 14 * mm         # 하단 협회 표기의 아래 기준선 — 인쇄
 W = A4[0] - 2 * MARGIN
 
 
+def keep_spaces(text):
+    """연속된 공백을 그대로 살린다.
+
+    reportlab 의 Paragraph 는 HTML 처럼 이어진 공백을 하나로 합쳐 버린다.
+    체크칸 사이를 벌려 놓아도 인쇄하면 붙어 나오므로, 두 칸 이상은 &nbsp; 로 바꾼다.
+    (워드는 xml:space="preserve" 로 이미 그대로 나온다 — 두 형식을 맞추는 장치다)
+    """
+    return _re.sub(r"  +", lambda m: "&nbsp;" * len(m.group(0)), text)
+
+
 def P(text, size=9.4, bold=False, color=INK, leading=None, align=None):
     st = ParagraphStyle("p", fontName="NanumB" if bold else "Nanum",
                         fontSize=size, leading=leading or (size + 4.4), textColor=color)
     if align is not None:
         st.alignment = align
-    return Paragraph(text, st)
+    return Paragraph(keep_spaces(text), st)
 
 
 # ── 칸 안에서 글자가 잘리지 않게 하는 장치 ────────────────────────────
@@ -274,7 +284,7 @@ def bullets(lines, size=9, leading=13.6, marker="· ", indent=None):
     ind = indent if indent is not None else stringWidth(marker or "· ", "Nanum", size)
     st = ParagraphStyle("bl", fontName="Nanum", fontSize=size, leading=leading,
                         textColor=INK, leftIndent=ind, firstLineIndent=-ind)
-    paras = [[Paragraph(marker + x, st)] for x in lines]
+    paras = [[Paragraph(keep_spaces(marker + x), st)] for x in lines]
     t = Table(paras, colWidths=["*"])
     t.setStyle(TableStyle([
         ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
