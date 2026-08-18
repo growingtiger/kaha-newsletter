@@ -80,21 +80,11 @@ def grid(rows, widths, heights=None, label_cols=(0,), valign_top=()):
     return t
 
 
-def header(title, subtitle, form_no):
+def header(title, subtitle):
+    """로고 + 제목 + 부제. 배부·기록용 모두 서식번호 없이 바로 쓰는 구성."""
     lh = 9.5 * mm
     logo = RLImage(LOGO, width=lh * LOGO_W / LOGO_H, height=lh)
-    meta = Table([[P("서식번호", bold=True, size=7.4, color=BLUE_DK), P(form_no, size=7.4)],
-                  [P("시행일자", bold=True, size=7.4, color=BLUE_DK), P("2026. 8.", size=7.4)]],
-                 colWidths=[16 * mm, 24 * mm], rowHeights=[5 * mm, 5 * mm])
-    meta.setStyle(TableStyle([
-        ("GRID", (0, 0), (-1, -1), 0.5, LINE),
-        ("BACKGROUND", (0, 0), (0, -1), BLUE_BG),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 4),
-        ("TOPPADDING", (0, 0), (-1, -1), 0),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
-    ]))
-    top = Table([[logo, "", meta]], colWidths=[W - 60 * mm, 20 * mm, 40 * mm])
+    top = Table([[logo]], colWidths=[W])
     top.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("LEFTPADDING", (0, 0), (-1, -1), 0),
@@ -185,21 +175,7 @@ def cap(title, note=""):
     return [Spacer(1, 1.6 * mm), t, Spacer(1, 0.7 * mm)]
 
 
-def footer_fn(form_no, y=12 * mm):
-    def draw(canvas, doc):
-        canvas.saveState()
-        canvas.setStrokeColor(BLUE)
-        canvas.setLineWidth(0.8)
-        canvas.line(MARGIN, y + 4.2 * mm, A4[0] - MARGIN, y + 4.2 * mm)
-        canvas.setFont("Nanum", 7)
-        canvas.setFillColor(GREY)
-        canvas.drawString(MARGIN, y, "사단법인 한국동물병원협회 · 회원병원 실무 소식지 제공 양식 — 병원 실정에 맞게 수정 후 사용하십시오.")
-        canvas.drawRightString(A4[0] - MARGIN, y, form_no)
-        canvas.restoreState()
-    return draw
-
-
-def build(filename, form_no, title, story, top=12 * mm, bottom=18 * mm, footer=True):
+def build(filename, title, story, top=12 * mm, bottom=18 * mm):
     dest = os.path.join(OUT, filename)
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     d = SimpleDocTemplate(dest, pagesize=A4,
@@ -207,15 +183,11 @@ def build(filename, form_no, title, story, top=12 * mm, bottom=18 * mm, footer=T
                           leftMargin=MARGIN, rightMargin=MARGIN,
                           title=title, author="사단법인 한국동물병원협회",
                           subject="KAHA 회원병원 실무 소식지 제공 양식")
-    if footer:
-        fn = footer_fn(form_no, y=bottom - 6 * mm)
-        d.build(story, onFirstPage=fn, onLaterPages=fn)
-    else:
-        d.build(story)
+    d.build(story)
 
 
 # ═══════════════════════════════════════════════════════════════════
-# 1. 수술·마취 동의서  (KAHA-F-2601)
+# 1. 수술·마취 동의서
 # ═══════════════════════════════════════════════════════════════════
 s = band_header("수술등중대진료(마취) 동의서",
                 "수의사법 제13조의2 및 같은 법 시행규칙 제13조의3에 따른 설명 · 서면동의")
@@ -356,15 +328,14 @@ s.append(grid([
 ], [13 * mm, 38 * mm, 13 * mm, 47 * mm, 20 * mm, W - 131 * mm],
     heights=[11 * mm], label_cols=(0, 2, 4)))
 
-build("01_수술마취/마취동의서_한국동물병원협회.pdf", "KAHA-F-2601", "수술등중대진료(마취) 동의서", s,
-      top=10 * mm, bottom=10 * mm, footer=False)
+build("01_수술마취/마취동의서_한국동물병원협회.pdf", "수술등중대진료(마취) 동의서", s,
+      top=10 * mm, bottom=10 * mm)
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. 마취 전 평가·모니터링 체크리스트  (KAHA-F-2602)
+# 2. 마취 전 평가·모니터링 체크리스트
 # ═══════════════════════════════════════════════════════════════════
 s = header("마취 전 평가 · 모니터링 체크리스트",
-           "2020 AAHA Anesthesia and Monitoring Guidelines for Dogs and Cats 기반 (aaha.org 전문 무료 공개)",
-           "KAHA-F-2602")
+           "마취 전 준비 · 마취 중 모니터링 · 회복기 관리 기록")
 
 s += section("환자 정보")
 s.append(grid([
@@ -382,10 +353,10 @@ s.append(grid([
 
 s += section("마취 전 준비")
 s.append(grid([
-    [P("□  금식 확인 — 음식 ______ 시간 · 물 ______ 시간   (병원 프로토콜 · AAHA 금식 권고표 참고)")],
+    [P("□  금식 확인 — 음식 ______ 시간 · 물 ______ 시간   (병원 프로토콜 기준)")],
     [P("□  IV 카테터 장착      □  기관튜브 3종 준비 ( ____ / ____ / ____ )      □  응급약물 용량 사전 계산 · 비치")],
     [P("□  마취 회로 · 산소 · 흡인기 점검      □  항불안 처치 필요 여부 평가 (겁 많음 · 공격성)")],
-    [P("□  보호자 설명 및 동의서 작성 완료 (서식 KAHA-F-2601)")],
+    [P("□  보호자 설명 및 수술등중대진료(마취) 동의서 작성 완료")],
 ], [W], heights=[7.4 * mm] * 4, label_cols=()))
 
 s += section("마취 중 모니터링 기록  (15분 간격 권장)")
@@ -417,14 +388,13 @@ s.append(grid([
      P("회복기 담당"), P("성명 : __________ (서명)")],
 ], [20 * mm, 69 * mm, 22 * mm, W - 111 * mm], heights=[11 * mm], label_cols=(0, 2)))
 
-build("06_진료기록/마취전평가체크리스트_한국동물병원협회.pdf", "KAHA-F-2602", "마취 전 평가·모니터링 체크리스트", s)
+build("06_진료기록/마취전평가체크리스트_한국동물병원협회.pdf", "마취 전 평가·모니터링 체크리스트", s)
 
 # ═══════════════════════════════════════════════════════════════════
-# 3. 영양 평가·BCS/MCS 기록지  (KAHA-F-2603)
+# 3. 영양 평가·BCS/MCS 기록지
 # ═══════════════════════════════════════════════════════════════════
 s = header("영양 평가 · BCS / MCS 기록지",
-           "WSAVA 영양 평가 가이드라인(2011, JSAP) · 글로벌 영양 툴킷 기반 — 모든 환자, 모든 내원 시 스크리닝",
-           "KAHA-F-2603")
+           "모든 환자 · 모든 내원 시 영양 상태 선별 및 기록")
 
 s += section("환자 정보")
 s.append(grid([
@@ -484,14 +454,13 @@ s.append(grid([
      P("평가자"), P("성명 : __________ (서명)")],
 ], [16 * mm, 44 * mm, 16 * mm, W - 76 * mm], heights=[10.5 * mm], label_cols=(0, 2)))
 
-build("06_진료기록/영양평가기록지_한국동물병원협회.pdf", "KAHA-F-2603", "영양 평가·BCS/MCS 기록지", s)
+build("06_진료기록/영양평가기록지_한국동물병원협회.pdf", "영양 평가·BCS/MCS 기록지", s)
 
 # ═══════════════════════════════════════════════════════════════════
-# 4. 입원 동의서  (KAHA-F-2604)
+# 4. 입원 동의서
 # ═══════════════════════════════════════════════════════════════════
 s = header("입원 동의서",
-           "입원 진료에 관한 설명·비용·연락 방식 합의서 — 본 서식은 수의사법 제13조의2의 수술등중대진료 동의서가 아닙니다.",
-           "KAHA-F-2604")
+           "입원 진료의 설명 · 비용 · 경과 보고 · 응급 상황 처리에 관한 동의")
 
 s += section("동물 · 보호자 정보")
 s.append(grid([
@@ -554,7 +523,7 @@ s.append(grid([
 s += section("6. 입원 중 중대진료가 필요해지는 경우")
 s.append(grid([
     [P("전신마취를 동반하는 내부장기 · 뼈 · 관절 수술 또는 전신마취를 동반하는 수혈이 필요해지면, 수의사법 제13조의2에 따라 "
-       "<b>별도의 수술등중대진료 동의서</b>(서식 KAHA-F-2601)를 작성합니다. 본 입원 동의서가 이를 대신하지 않습니다.", size=8.6)],
+       "<b>별도의 수술등중대진료 동의서</b>를 작성합니다. 본 입원 동의서가 이를 대신하지 않습니다.", size=8.6)],
 ], [W], heights=[11.5 * mm], label_cols=(), valign_top=(0,)))
 
 s.append(Spacer(1, 1.8 * mm))
@@ -575,14 +544,13 @@ s.append(grid([
 ], [14 * mm, 42 * mm, 14 * mm, 44 * mm, 20 * mm, W - 134 * mm],
     heights=[10 * mm], label_cols=(0, 2, 4)))
 
-build("02_입원응급/입원동의서_한국동물병원협회.pdf", "KAHA-F-2604", "입원 동의서", s)
+build("02_입원응급/입원동의서_한국동물병원협회.pdf", "입원 동의서", s)
 
 # ═══════════════════════════════════════════════════════════════════
-# 5. 퇴원 안내문  (KAHA-F-2605)
+# 5. 퇴원 안내문
 # ═══════════════════════════════════════════════════════════════════
 s = header("퇴원 안내문",
-           "가정 투약 · 관리 · 재진 안내 — 2020 AAHA 마취·모니터링 가이드라인의 서면 지침 권고를 참고한 참고용 서식 (처방전이 아닙니다)",
-           "KAHA-F-2605")
+           "가정 투약 · 가정 관리 · 재진 및 응급 연락 안내")
 
 s += section("환자 정보")
 s.append(grid([
@@ -666,7 +634,7 @@ s.append(grid([
 ], [16 * mm, 46 * mm, 16 * mm, 44 * mm, 16 * mm, W - 138 * mm],
     heights=[9 * mm], label_cols=(0, 2, 4)))
 
-build("02_입원응급/퇴원안내문_한국동물병원협회.pdf", "KAHA-F-2605", "퇴원 안내문", s)
+build("02_입원응급/퇴원안내문_한국동물병원협회.pdf", "퇴원 안내문", s)
 
 print("생성 완료")
 for root, _, files in sorted(os.walk(OUT)):

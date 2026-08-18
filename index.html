@@ -354,7 +354,7 @@
   function renderForms(data) {
     var h = '<div class="forms-head"><h1>양식 모음</h1>'
       + '<p>회원병원에서 바로 쓰실 수 있는 양식 ' + data.count + '종입니다. '
-      + 'PDF는 인쇄해서 바로, 워드 파일은 병원 실정에 맞게 고쳐서 쓰시면 됩니다. 모두 A4 한 장입니다.</p></div>';
+      + '인쇄해서 바로 쓰실 수 있고, 워드 파일은 자유롭게 고쳐 쓰실 수 있습니다. 모두 A4 한 장입니다.</p></div>';
     data.categories.forEach(function (c) {
       h += '<div class="fcat"><h2>' + esc(c.label) + '</h2><p>' + esc(c.blurb) + '</p>';
       c.items.forEach(function (it) {

@@ -208,14 +208,6 @@ function header(title, subtitle) {
   ];
 }
 
-function footerRow(formNo) {
-  return table([TOTAL], [[plainCell(
-    [para(`사단법인 한국동물병원협회 · 회원병원 실무 소식지 제공 양식 (${formNo}) — 병원 실정에 맞게 수정 후 사용하십시오.`,
-      { size: 14, color: GREY })],
-    { w: TOTAL, borders: { ...NONE_ALL, top: { style: BorderStyle.SINGLE, size: 8, color: BLUE } },
-      margins: { top: 60, bottom: 0, left: 0, right: 0 } })]], 320);
-}
-
 function buildDoc(name, children) {
   // 마지막 요소는 반드시 문단이어야 한다 — 표로 끝나면 워드가 빈 문단을
   // 스스로 덧붙이고, 그 높이는 우리가 통제할 수 없어 장을 넘길 수 있다.
@@ -394,7 +386,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
   for (let r = 0; r < 10; r++) monRows.push(mon.map((w) => cell("", { w })));
   const doc = buildDoc("마취 전 평가·모니터링 체크리스트", [
     ...header("마취 전 평가 · 모니터링 체크리스트",
-      "2020 AAHA Anesthesia and Monitoring Guidelines for Dogs and Cats 기반 (aaha.org 전문 무료 공개, 참고용) / 서식번호 KAHA-F-2602"),
+      "마취 전 준비 · 마취 중 모니터링 · 회복기 관리 기록"),
     sectionBar("환자 정보"),
     table([2000, 2100, 1400, 2100, 1200, 1290], [[
       cell("동물명 / 차트번호", { w: 2000, label: true }), cell("", { w: 2100 }),
@@ -410,10 +402,10 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
     gap(),
     sectionBar("마취 전 준비"),
     table([TOTAL], [
-      [cell("□  금식 확인 — 음식 ______ 시간 · 물 ______ 시간   (병원 프로토콜 · AAHA 금식 권고표 참고)", { w: TOTAL })],
+      [cell("□  금식 확인 — 음식 ______ 시간 · 물 ______ 시간   (병원 프로토콜 기준)", { w: TOTAL })],
       [cell("□  IV 카테터 장착      □  기관튜브 3종 준비 ( ____ / ____ / ____ )      □  응급약물 용량 사전 계산 · 비치", { w: TOTAL })],
       [cell("□  마취 회로 · 산소 · 흡인기 점검      □  항불안 처치 필요 여부 평가 (겁 많음 · 공격성)", { w: TOTAL })],
-      [cell("□  보호자 설명 및 동의서 작성 완료 (서식 KAHA-F-2601)", { w: TOTAL })],
+      [cell("□  보호자 설명 및 수술등중대진료(마취) 동의서 작성 완료", { w: TOTAL })],
     ], 380),
     gap(),
     sectionBar("마취 중 모니터링 기록  (15분 간격 권장)"),
@@ -430,7 +422,6 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
       cell("마취 담당", { w: 1400, label: true }), cell("성명 : __________ (서명)", { w: 3645 }),
       cell("회복기 담당", { w: 1500, label: true }), cell("성명 : __________ (서명)", { w: 3545 }),
     ]], 560),
-    footerRow("KAHA-F-2602"),
   ]);
   Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "06_진료기록/마취전평가체크리스트_한국동물병원협회.docx"), b));
 })();
@@ -444,7 +435,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
     .concat(Array.from({ length: 9 }, (_, i) => cell(`□ ${i + 1}`, { w: bcs[i + 1], size: 16 })));
   const doc = buildDoc("영양 평가·BCS/MCS 기록지", [
     ...header("영양 평가 · BCS / MCS 기록지",
-      "WSAVA 영양 평가 가이드라인(2011, JSAP) · 글로벌 영양 툴킷 기반 (참고용) — 모든 환자, 모든 내원 시 스크리닝 / 서식번호 KAHA-F-2603"),
+      "모든 환자 · 모든 내원 시 영양 상태 선별 및 기록"),
     sectionBar("환자 정보"),
     table([1900, 1750, 1300, 1650, 900, 1000, 900, 690 + 2000 - 2000], [[
       cell("동물명 / 차트번호", { w: 1900, label: true }), cell("", { w: 1750 }),
@@ -490,18 +481,17 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
       cell("평가일", { w: 1200, label: true }), cell("20____년  ____월  ____일", { w: 3200 }),
       cell("평가자", { w: 1200, label: true }), cell("성명 : ______________ (서명)", { w: 4490 }),
     ]], 560),
-    footerRow("KAHA-F-2603"),
   ]);
   Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "06_진료기록/영양평가기록지_한국동물병원협회.docx"), b));
 })();
 
-// ═══ 4. 입원 동의서 (KAHA-F-2604) ═════════════════════════════════
+// ═══ 4. 입원 동의서 ═════════════════════════════════
 (function () {
   const c4 = [1700, 3350, 1700, 3340];
   const c8 = [900, 1300, 1150, 1150, 1150, 1400, 900, 2140];
   const doc = buildDoc("입원 동의서", [
     ...header("입원 동의서",
-      "입원 진료에 관한 설명·비용·연락 방식 합의서 — 본 서식은 수의사법 제13조의2의 수술등중대진료 동의서가 아닙니다. / 서식번호 KAHA-F-2604"),
+      "입원 진료의 설명 · 비용 · 경과 보고 · 응급 상황 처리에 관한 동의"),
     sectionBar("동물 · 보호자 정보"),
     table(c4, [
       [cell("동 물 명", { w: c4[0], label: true }), cell("", { w: c4[1] }), cell("보호자 성명", { w: c4[2], label: true }), cell("", { w: c4[3] })],
@@ -560,7 +550,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
     ], 380),
     gap(),
     sectionBar("6. 입원 중 중대진료가 필요해지는 경우"),
-    table([TOTAL], [[cell("전신마취를 동반하는 내부장기 · 뼈 · 관절 수술 또는 전신마취를 동반하는 수혈이 필요해지면, 수의사법 제13조의2에 따라 별도의 수술등중대진료 동의서(서식 KAHA-F-2601)를 작성합니다. 본 입원 동의서가 이를 대신하지 않습니다.", { w: TOTAL, size: 17 })]], 560),
+    table([TOTAL], [[cell("전신마취를 동반하는 내부장기 · 뼈 · 관절 수술 또는 전신마취를 동반하는 수혈이 필요해지면, 수의사법 제13조의2에 따라 별도의 수술등중대진료 동의서를 작성합니다. 본 입원 동의서가 이를 대신하지 않습니다.", { w: TOTAL, size: 17 })]], 560),
     gap(),
     table([TOTAL], [[cell("본인은 위 내용에 대하여 설명을 듣고 이해하였으며, 입원 및 위 조건에 동의합니다.", { w: TOTAL, bold: true, size: 19, fill: BLUE_BG })]], 400),
     gap(),
@@ -569,12 +559,11 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
       cell("보호자", { w: 1100, label: true }), cell("성명 : __________ (서명)", { w: 2600 }),
       cell("설명 수의사", { w: 1400, label: true }), cell("성명 : ______ (서명)", { w: 1590 }),
     ]], 560),
-    footerRow("KAHA-F-2604"),
   ]);
   Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "02_입원응급/입원동의서_한국동물병원협회.docx"), b));
 })();
 
-// ═══ 5. 퇴원 안내문 (KAHA-F-2605) ═════════════════════════════════
+// ═══ 5. 퇴원 안내문 ═════════════════════════════════
 (function () {
   const med = [1500, 1650, 1150, 800, 1000, 1150, 1050, 1790];
   const medHead = ["약품명", "무엇 때문에", "1회 용량", "경로", "1일 횟수", "종료일", "식전/식후", "주의할 점"];
@@ -590,7 +579,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
 
   const doc = buildDoc("퇴원 안내문", [
     ...header("퇴원 안내문",
-      "가정 투약 · 관리 · 재진 안내 — 2020 AAHA 마취·모니터링 가이드라인의 서면 지침 권고를 참고한 참고용 서식 (처방전이 아닙니다) / 서식번호 KAHA-F-2605"),
+      "가정 투약 · 가정 관리 · 재진 및 응급 연락 안내"),
     sectionBar("환자 정보"),
     table([1500, 1900, 1700, 1900, 1300, 1790], [
       [cell("동 물 명", { w: 1500, label: true }), cell("", { w: 1900 }),
@@ -643,7 +632,6 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
       cell("보호자", { w: 1100, label: true }), cell("성명 : __________ (서명)", { w: 2600 }),
       cell("설명자", { w: 1100, label: true }), cell("성명 : ______ (서명)", { w: 1690 }),
     ]], 560),
-    footerRow("KAHA-F-2605"),
   ]);
   Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "02_입원응급/퇴원안내문_한국동물병원협회.docx"), b));
 })();
