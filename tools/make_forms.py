@@ -14,6 +14,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table,
                                 TableStyle, Image as RLImage)
 from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
 
 FONT_DIR = "/usr/share/fonts/truetype/nanum"
 pdfmetrics.registerFont(TTFont("Nanum", os.path.join(FONT_DIR, "NanumGothic.ttf")))
@@ -106,10 +107,81 @@ def header(title, subtitle, form_no):
             Paragraph(subtitle, st_sub)]
 
 
-def footer_fn(form_no):
+def band_header(title, legal, form_no):
+    """상단 브랜드 밴드 — 왼쪽 제목·근거법령, 오른쪽 흰 칩 안에 공식 로고."""
+    tw = W - 62 * mm - 9 * mm
+    tcell = Table([[Paragraph(title, ParagraphStyle(
+                        "bt", fontName="NanumB", fontSize=17.5, leading=21, textColor=colors.white))],
+                   [Spacer(1, 1.2 * mm)],
+                   [Paragraph(legal, ParagraphStyle(
+                        "bl", fontName="Nanum", fontSize=7.4, leading=10,
+                        textColor=colors.HexColor("#C8DCEF")))]],
+                  colWidths=[tw])
+    tcell.setStyle(TableStyle([
+        ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    lh = 9.2 * mm
+    logo = RLImage(LOGO, width=lh * LOGO_W / LOGO_H, height=lh)
+    chip = Table([[logo]], colWidths=[62 * mm], rowHeights=[16.5 * mm])
+    chip.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), colors.white),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    band = Table([[tcell, chip]], colWidths=[W - 62 * mm, 62 * mm], rowHeights=[16.5 * mm])
+    band.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (0, -1), BLUE_DK),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (0, -1), 6 * mm), ("RIGHTPADDING", (0, 0), (0, -1), 3 * mm),
+        ("LEFTPADDING", (1, 0), (1, -1), 0), ("RIGHTPADDING", (1, 0), (1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    meta = Table([[P("서식번호 " + form_no + "  ·  시행일자 2026. 8.  ·  작성 후 1년 보존",
+                     size=7.4, color=colors.white)]], colWidths=[W], rowHeights=[5.4 * mm])
+    meta.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), BLUE),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (0, 0), (-1, -1), "RIGHT"),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6 * mm),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    return [band, meta]
+
+
+def divider(text):
+    """양옆에 가는 선을 둔 가운데 정렬 구분 제목."""
+    st = ParagraphStyle("dv", fontName="NanumB", fontSize=11, leading=13,
+                        textColor=BLUE_DK, alignment=TA_CENTER)
+    t = Table([["", Paragraph(text, st), ""]],
+              colWidths=[(W - 44 * mm) / 2, 44 * mm, (W - 44 * mm) / 2], rowHeights=[7 * mm])
+    t.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LINEBELOW", (0, 0), (0, 0), 0.7, LINE),
+        ("LINEBELOW", (2, 0), (2, 0), 0.7, LINE),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    return [Spacer(1, 1.6 * mm), t, Spacer(1, 0.6 * mm)]
+
+
+def cap(title, note=""):
+    """가운데 정렬 소제목 바 — 연한 파랑 바탕 + 왼쪽 파란 강조선(KAHA 식별)."""
+    body = title if not note else title + '  <font size="7.6" color="#6B7683">' + note + "</font>"
+    t = Table([["", Paragraph(body, ParagraphStyle(
+        "cp", fontName="NanumB", fontSize=9.4, leading=12, textColor=BLUE_DK,
+        alignment=TA_CENTER))]], colWidths=[2.2 * mm, W - 2.2 * mm], rowHeights=[6 * mm])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (0, 0), BLUE),
+        ("BACKGROUND", (1, 0), (1, 0), BLUE_BG),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
+    return [Spacer(1, 1.6 * mm), t, Spacer(1, 0.7 * mm)]
+
+
+def footer_fn(form_no, y=12 * mm):
     def draw(canvas, doc):
         canvas.saveState()
-        y = 12 * mm
         canvas.setStrokeColor(BLUE)
         canvas.setLineWidth(0.8)
         canvas.line(MARGIN, y + 4.2 * mm, A4[0] - MARGIN, y + 4.2 * mm)
@@ -121,93 +193,169 @@ def footer_fn(form_no):
     return draw
 
 
-def build(filename, form_no, title, story):
+def build(filename, form_no, title, story, top=12 * mm, bottom=18 * mm):
     d = SimpleDocTemplate(os.path.join(OUT, filename), pagesize=A4,
-                          topMargin=12 * mm, bottomMargin=18 * mm,
+                          topMargin=top, bottomMargin=bottom,
                           leftMargin=MARGIN, rightMargin=MARGIN,
                           title=title, author="사단법인 한국동물병원협회",
                           subject="KAHA 회원병원 실무 소식지 제공 양식")
-    fn = footer_fn(form_no)
+    fn = footer_fn(form_no, y=bottom - 6 * mm)
     d.build(story, onFirstPage=fn, onLaterPages=fn)
 
 
 # ═══════════════════════════════════════════════════════════════════
 # 1. 수술·마취 동의서  (KAHA-F-2601)
 # ═══════════════════════════════════════════════════════════════════
-s = header("수술·마취 동의서",
-           "수의사법 제13조의2(수술등중대진료 설명·서면동의)에 따른 동의서 — 전신마취 동반 내부장기·뼈·관절 수술 및 수혈 / 작성 후 1년 보존",
-           "KAHA-F-2601")
+s = band_header("수술등중대진료(마취) 동의서",
+                "수의사법 제13조의2 및 같은 법 시행규칙 제13조의3에 따른 설명·서면동의 — 전신마취를 동반하는 내부장기·뼈·관절 수술 및 수혈",
+                "KAHA-F-2601")
 
-s += section("동물·보호자 정보")
-s.append(grid([
-    [P("동 물 명"), "", P("보호자 성명"), ""],
-    [P("종 / 품종"), "", P("연 락 처"), ""],
-    [P("성별 / 중성화"), "", P("동물과의 관계"), P("□ 소유자        □ 대리인")],
-], [30 * mm, 60 * mm, 30 * mm, W - 120 * mm],
-    heights=[7.5 * mm] * 3, label_cols=(0, 2)))
-s.append(grid([
-    [P("연령(생년월일)"), "", P("체중(kg)"), "", P("차트번호"), ""],
-], [30 * mm, 34 * mm, 22 * mm, 24 * mm, 22 * mm, W - 132 * mm],
-    heights=[7.5 * mm], label_cols=(0, 2, 4)))
-
-s += section("1. 진단명 및 현재 상태")
-s.append(grid([
-    [P("진단명 (추정 포함)"), ""],
-    [P("현재 상태 요약"), ""],
-    [P("ASA 신체상태 분류"), P("□ Ⅰ 건강    □ Ⅱ 경미한 전신질환    □ Ⅲ 중등도 전신질환    □ Ⅳ 생명 위협    □ Ⅴ 위중    □ E 응급")],
-], [34 * mm, W - 34 * mm], heights=[8 * mm, 9 * mm, 7.5 * mm], valign_top=(1,)))
-s.append(Paragraph("※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, Brodbelt 등 2008) — 건강 개체(ASA Ⅰ–Ⅱ): 개 0.05% · 고양이 0.11% / 질환 동반(ASA Ⅲ–Ⅴ): 개 1.33% · 고양이 1.40%", st_note))
-
-s += section("2. 예정 진료의 필요성 · 방법 · 내용")
-s.append(grid([
-    [P("수술 / 처치명"), "", P("예정 일시"), ""],
-    [P("집도 수의사"), "", P("마취 방식"), ""],
-], [34 * mm, 66 * mm, 26 * mm, W - 126 * mm], heights=[7.8 * mm] * 2, label_cols=(0, 2)))
-s.append(grid([
-    [P("필 요 성"), ""],
-    [P("방법 및 내용"), ""],
-], [34 * mm, W - 34 * mm], heights=[8 * mm, 9.5 * mm], valign_top=(0, 1)))
-
-s += section("3. 전형적으로 발생이 예상되는 후유증 · 부작용")
-s.append(grid([
-    [P("□  마취 관련 : 저혈압, 저체온, 부정맥, 드물게 심정지 등")],
-    [P("□  수술 관련 : 출혈, 감염, 봉합 부위 벌어짐, 재수술 가능성 등")],
-    [P("□  개체 상태에 따른 추가 위험 :")],
-    [P("※  위 내용은 전형적으로 예상되는 사항이며, 예측하지 못한 상황이 발생할 수 있음을 설명받았습니다.", size=8.4, color=GREY)],
-], [W], heights=[7 * mm, 7 * mm, 8 * mm, 7 * mm], label_cols=()))
-
-s += section("4. 보호자 준수사항")
-s.append(grid([
-    [P("□  수술 전 금식 : 음식 ________ 시간  ·  물 ________ 시간")],
-    [P("□  수술 후 주의사항(넥카라 · 활동 제한 · 투약 등) 준수     □  응급상황 연락 가능한 연락처 유지")],
-], [W], heights=[7 * mm, 7 * mm], label_cols=()))
-
-s += section("5. 추가 확인")
-s.append(grid([
-    [P("□  수술 중 상태에 따라 범위가 변경될 수 있음을 설명받음   ( 변경 시 :  □ 사전 연락 요망   □ 수의사 판단에 위임 )")],
-    [P("□  예상 진료비용 안내를 받음   ( 예상 범위 : ____________________ 원 )")],
-    [P("□  심폐소생술(CPR) :  □ 시행   □ 시행하지 않음(DNR)")],
-], [W], heights=[7 * mm] * 3, label_cols=()))
-
-s.append(Spacer(1, 1.8 * mm))
-agree = Table([[P("본인은 위 내용에 대하여 충분한 설명을 듣고 이해하였으며, 수술 및 마취 시행에 동의합니다.",
-                  bold=True, size=9.5)]], colWidths=[W], rowHeights=[8 * mm])
-agree.setStyle(TableStyle([
-    ("BOX", (0, 0), (-1, -1), 1, BLUE),
-    ("BACKGROUND", (0, 0), (-1, -1), BLUE_BG),
+# ── 인적사항: 보호자 · 반려동물 · 수의사 3구획 (좌측 라벨 병합) ──
+LC, KC = 20 * mm, 24 * mm
+VC = (W - LC - KC * 2) / 2
+info = [
+    [P("보호자", bold=True, size=9.5, color=BLUE_DK), P("성 명"), "", P("생년월일"), ""],
+    ["", P("연 락 처"), "", P("제2연락처"), ""],
+    ["", P("주 소"), "", "", ""],
+    [P("반려동물", bold=True, size=9.5, color=BLUE_DK), P("이 름"), "", P("종 / 품종"), ""],
+    ["", P("성별 / 중성화"), "", P("연령 / 체중"), ""],
+    ["", P("차트번호"), "", P("특이사항"), ""],
+    [P("수의사", bold=True, size=9.5, color=BLUE_DK), P("동물병원명"), "", P("면허번호"), ""],
+    ["", P("성 명"), "", P("보호자 관계"), P("□ 소유자   □ 대리인", size=8.4)],
+]
+it = Table(info, colWidths=[LC, KC, VC, KC, VC], rowHeights=[6.5 * mm] * 8)
+it.setStyle(TableStyle([
+    ("GRID", (1, 0), (-1, -1), 0.5, LINE),
+    ("BOX", (0, 0), (-1, -1), 0.5, LINE),
+    ("SPAN", (0, 0), (0, 2)), ("SPAN", (0, 3), (0, 5)), ("SPAN", (0, 6), (0, 7)),
+    ("SPAN", (2, 2), (4, 2)),
+    ("LINEBELOW", (0, 2), (-1, 2), 0.9, BLUE),
+    ("LINEBELOW", (0, 5), (-1, 5), 0.9, BLUE),
+    ("BACKGROUND", (0, 0), (0, -1), BLUE_BG),
+    ("BACKGROUND", (1, 0), (1, -1), BLUE_BG),
+    ("BACKGROUND", (3, 0), (3, -1), BLUE_BG),
     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-    ("LEFTPADDING", (0, 0), (-1, -1), 7),
+    ("ALIGN", (0, 0), (0, -1), "CENTER"),
+    ("LEFTPADDING", (0, 0), (-1, -1), 5), ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+    ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+]))
+s.append(Spacer(1, 2 * mm))
+s.append(it)
+
+s += divider("설명 및 동의 사항")
+
+# ── 1. 필요성 · 방법 및 내용 ──
+s += cap("수술등중대진료의 필요성, 방법 및 내용")
+s.append(grid([
+    [P("진단명 (추정 포함)"), "", P("예정 일시"), ""],
+    [P("수술 / 처치명"), "", P("마취 방식"), ""],
+], [30 * mm, W / 2 - 30 * mm, 26 * mm, W / 2 - 26 * mm], heights=[6.6 * mm] * 2, label_cols=(0, 2)))
+s.append(grid([
+    [P("필요성 · 현재 상태"), ""],
+    [P("방법 및 내용"), ""],
+], [30 * mm, W - 30 * mm], heights=[8.4 * mm, 8.4 * mm], valign_top=(0, 1)))
+
+# ── 2. 후유증 · 부작용 + ASA 등급 ──
+s += cap("수술등중대진료에 따라 전형적으로 발생이 예상되는 후유증 또는 부작용")
+risk_items = [
+    "1)  저혈압 · 저체온 · 고체온", "2)  약물 과민반응에 의한 쇼크",
+    "3)  순환부전에 의한 쇼크", "4)  췌장염 · 신부전 및 폐수종",
+    "5)  기저질환 발현 및 현증 악화", "6)  삽관에 의한 일시적 기침",
+    "7)  출혈 · 감염 · 봉합 부위 벌어짐", "8)  드물게 심정지 및 사망",
+]
+rt = Table([[P(risk_items[i], size=8.4) for i in range(0, 4)],
+            [P(risk_items[i], size=8.4) for i in range(4, 8)]],
+           colWidths=[W / 4] * 4, rowHeights=[5.6 * mm] * 2)
+rt.setStyle(TableStyle([
+    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+    ("LEFTPADDING", (0, 0), (-1, -1), 5), ("RIGHTPADDING", (0, 0), (-1, -1), 2),
+    ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+]))
+s.append(rt)
+s.append(Spacer(1, 1 * mm))
+
+ASA_W = [13 * mm, 18 * mm, W - 97 * mm, 66 * mm]
+ac = ParagraphStyle("ac", fontName="Nanum", fontSize=8.2, leading=10.4, alignment=TA_CENTER,
+                    textColor=INK)
+ah = ParagraphStyle("ah", fontName="NanumB", fontSize=8.6, leading=11, alignment=TA_CENTER,
+                    textColor=BLUE_DK)
+
+
+def AC(t, bold=False, color=INK):
+    st = ParagraphStyle("x", parent=ah if bold else ac, textColor=color)
+    return Paragraph(t, st)
+
+
+asa_rows = [
+    [AC("체크", bold=True), AC("ASA 등급", bold=True), AC("정 의", bold=True),
+     AC("마취 관련 사망 위험 (CEPSAF)", bold=True)],
+    [AC("□"), AC("Ⅰ"), AC("정상적이고 건강한 개체"),
+     AC("개 0.05 %　·　고양이 0.11 %<br/><font size='7.2' color='#6B7683'>ASA Ⅰ–Ⅱ 건강 개체 기준</font>")],
+    [AC("□"), AC("Ⅱ"), AC("활동을 제한하지 않는 가벼운 전신질환"), ""],
+    [AC("□"), AC("Ⅲ"), AC("활동이 가능한 중등도의 전신질환"),
+     AC("개 1.33 %　·　고양이 1.40 %<br/><font size='7.2' color='#6B7683'>ASA Ⅲ–Ⅴ 질환 동반 개체 기준</font>")],
+    [AC("□"), AC("Ⅳ"), AC("지속적으로 생명을 위협하며 활동이 불가능한 전신질환"), ""],
+    [AC("□"), AC("Ⅴ"), AC("수술과 관계없이 24시간 이내 사망할 수 있는 빈사 상태"), ""],
+    [AC("□"), AC("E"), AC("위 등급에 해당하면서 응급으로 시행하는 경우"),
+     AC("응급 상황은 위험을 더 높입니다", color=GREY)],
+]
+at = Table(asa_rows, colWidths=ASA_W, rowHeights=[5.8 * mm] * 7)
+at.setStyle(TableStyle([
+    ("BACKGROUND", (0, 0), (-1, 0), BLUE_BG),
+    ("LINEABOVE", (0, 0), (-1, 0), 0.9, BLUE),
+    ("LINEBELOW", (0, 0), (-1, 0), 0.9, BLUE),
+    ("LINEBELOW", (0, -1), (-1, -1), 0.9, BLUE),
+    ("INNERGRID", (0, 1), (-1, -1), 0.4, LINE),
+    ("SPAN", (3, 1), (3, 2)), ("SPAN", (3, 3), (3, 5)),
+    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+    ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+]))
+s.append(at)
+s.append(Paragraph("※ 위험 수치 출처 : 영국 CEPSAF 연구(Brodbelt 등, 2008, 개 98,036두 · 고양이 79,178두). 전체 평균 개 0.17 % · 고양이 0.24 %이며, "
+                   "개별 위험은 질환 · 수술 종류 · 연령에 따라 달라집니다. 위 후유증은 전형적으로 예상되는 사항으로 예측하지 못한 상황이 발생할 수 있습니다.",
+                   st_note))
+
+# ── 3. 보호자 준수·숙지 사항 및 추가 확인 ──
+s += cap("수술등중대진료 전후에 보호자가 준수 및 숙지하여야 할 사항", "— 해당 항목에 표시하여 주십시오")
+s.append(grid([
+    [P("□  마취 시 수술 전 일정 시간의 금식과 금수가 필요합니다.  ( 음식 ______ 시간 · 물 ______ 시간 )", size=8.6)],
+    [P("□  마취를 시행함에 있어 발생할 수 있는 부작용 · 합병증 또는 후유증에 대한 설명을 충분히 듣고 이해하였습니다.", size=8.6)],
+    [P("□  마취 과정에 있어 불가항력적이거나 환자의 특이체질로 인한 우발사고의 가능성을 인정합니다.", size=8.6)],
+    [P("□  수술 후 주의사항(넥카라 · 활동 제한 · 투약 등)을 준수하고, 응급상황에 연락 가능한 연락처를 유지합니다.", size=8.6)],
+], [W], heights=[6 * mm] * 4, label_cols=()))
+s.append(grid([
+    [P("□  심폐소생술(CPR) :  □ 시행 원함   □ 원하지 않음(DNR)", size=8.6),
+     P("□  마취 및 수술비 설명을 들었음  ( 예상 : __________ 원 )", size=8.6)],
+    [P("□  수술 중 상태에 따라 범위가 변경될 수 있음을 설명받음", size=8.6),
+     P("변경 시 :  □ 사전 연락 요망   □ 수의사 판단에 위임", size=8.6)],
+], [W / 2, W / 2], heights=[6 * mm] * 2, label_cols=()))
+
+# ── 동의문 · 서명 ──
+s.append(Spacer(1, 1.8 * mm))
+agree = Table([[Paragraph(
+    "「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 위와 같이 수의사로부터 수술등중대진료에 관한 설명을 들었으며, "
+    "그 필요성 · 방법 · 내용과 전형적으로 예상되는 후유증 및 부작용을 충분히 이해하였습니다. 이에 위 수술등중대진료 및 마취의 시행에 동의하며, "
+    "관련한 수의학적 처치를 담당 수의사에게 위임합니다.",
+    ParagraphStyle("ag", fontName="Nanum", fontSize=8.4, leading=12, textColor=INK))]],
+    colWidths=[W])
+agree.setStyle(TableStyle([
+    ("BOX", (0, 0), (-1, -1), 0.9, BLUE),
+    ("BACKGROUND", (0, 0), (-1, -1), BLUE_BG),
+    ("LEFTPADDING", (0, 0), (-1, -1), 7), ("RIGHTPADDING", (0, 0), (-1, -1), 7),
+    ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
 ]))
 s.append(agree)
-s.append(Spacer(1, 1.5 * mm))
+s.append(Spacer(1, 1.8 * mm))
 s.append(grid([
-    [P("작성일"), P("20____년  ____월  ____일"),
-     P("보호자"), P("성명 : __________ (서명)"),
-     P("설명 수의사"), P("성명 : __________ (서명)")],
-], [14 * mm, 42 * mm, 14 * mm, 44 * mm, 20 * mm, W - 134 * mm],
-    heights=[10 * mm], label_cols=(0, 2, 4)))
+    [P("작성일", size=8.6), P("20____년  ____월  ____일", size=8.6),
+     P("보호자", size=8.6), P("성명 : __________ (서명 또는 인)", size=8.6),
+     P("설명 수의사", size=8.6), P("성명 : __________ (서명 또는 인)", size=8.6)],
+], [13 * mm, 38 * mm, 13 * mm, 47 * mm, 20 * mm, W - 131 * mm],
+    heights=[9.6 * mm], label_cols=(0, 2, 4)))
 
-build("surgery-anesthesia-consent.pdf", "KAHA-F-2601", "수술·마취 동의서", s)
+build("surgery-anesthesia-consent.pdf", "KAHA-F-2601", "수술등중대진료(마취) 동의서", s,
+      top=10 * mm, bottom=15 * mm)
 
 # ═══════════════════════════════════════════════════════════════════
 # 2. 마취 전 평가·모니터링 체크리스트  (KAHA-F-2602)

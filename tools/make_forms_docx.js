@@ -6,6 +6,7 @@ const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell,
   WidthType, ShadingType, AlignmentType, BorderStyle, VerticalAlign, LineRuleType,
+  HeightRule,
 } = require("docx");
 
 const BASE = path.dirname(__dirname);
@@ -54,12 +55,85 @@ function cell(text, { w, label = false, bold = false, size = 18, color = INK, sp
   });
 }
 
-function table(columnWidths, rows) {
+function table(columnWidths, rows, heights) {
   return new Table({
     columnWidths,
     width: { size: TOTAL, type: WidthType.DXA },
-    rows: rows.map((cells) => new TableRow({ children: cells })),
+    rows: rows.map((cells, i) => new TableRow({
+      children: cells,
+      ...(heights ? { height: { value: Array.isArray(heights) ? heights[i] : heights, rule: HeightRule.EXACT } } : {}),
+    })),
   });
+}
+
+// ── 벳아너스 서식을 벤치마킹한 KAHA 동의서 전용 스타일 ─────────────
+const NO_BORDER = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+const NONE_ALL = { top: NO_BORDER, bottom: NO_BORDER, left: NO_BORDER, right: NO_BORDER };
+
+function plainCell(children, { w, fill, span, rowSpan, borders = NONE_ALL, margins } = {}) {
+  return new TableCell({
+    children,
+    width: { size: w, type: WidthType.DXA },
+    columnSpan: span,
+    rowSpan,
+    borders,
+    verticalAlign: VerticalAlign.CENTER,
+    shading: fill ? { type: ShadingType.CLEAR, fill } : undefined,
+    margins: margins || { top: 20, bottom: 20, left: 90, right: 60 },
+  });
+}
+
+function centered(text, opts = {}) {
+  return para(text, opts, { alignment: AlignmentType.CENTER });
+}
+
+/** 상단 브랜드 밴드 — 짙은 파랑 제목부 + 흰 바탕 공식 로고 + 서식번호 띠 */
+function brandBand(title, legal, formNo) {
+  const L = 6575, R = 3515;
+  return [
+    table([L, R], [[
+      plainCell([
+        para(title, { bold: true, size: 32, color: "FFFFFF" }),
+        para(legal, { size: 14, color: "C8DCEF" }),
+      ], { w: L, fill: BLUE_DK, margins: { top: 60, bottom: 60, left: 260, right: 160 } }),
+      plainCell([new Paragraph({
+        children: [new ImageRun({ type: "png", data: LOGO, transformation: { width: 176, height: 35 } })],
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 0, after: 0, line: 760, lineRule: LineRuleType.EXACT },
+      })], { w: R, fill: "FFFFFF", margins: { top: 0, bottom: 0, left: 0, right: 0 } }),
+    ]], 935),
+    table([TOTAL], [[
+      plainCell([para(`서식번호 ${formNo} · 시행일자 2026. 8. · 작성 후 1년 보존`,
+        { size: 14, color: "FFFFFF" }, { alignment: AlignmentType.RIGHT })],
+        { w: TOTAL, fill: BLUE, margins: { top: 20, bottom: 20, left: 120, right: 260 } }),
+    ]], 300),
+  ];
+}
+
+/** 가운데 정렬 구분 제목 — 양옆 가는 선 */
+function divider(text) {
+  const S = 3800, M = TOTAL - S * 2;
+  const rule = { top: NO_BORDER, left: NO_BORDER, right: NO_BORDER,
+                 bottom: { style: BorderStyle.SINGLE, size: 4, color: LINE } };
+  return table([S, M, S], [[
+    plainCell([para("", { size: 2 })], { w: S, borders: rule }),
+    plainCell([centered(text, { bold: true, size: 21, color: BLUE_DK })], { w: M }),
+    plainCell([para("", { size: 2 })], { w: S, borders: rule }),
+  ]], 400);
+}
+
+/** 소제목 바 — 왼쪽 파란 강조선 + 연한 파랑 바탕 (KAHA 식별) */
+function capBar(title, note = "") {
+  const A = 130;
+  const runs = [run(title, { bold: true, size: 19, color: BLUE_DK })];
+  if (note) runs.push(run("  " + note, { size: 15, color: GREY }));
+  return table([A, TOTAL - A], [[
+    plainCell([para("", { size: 2 })], { w: A, fill: BLUE }),
+    plainCell([new Paragraph({
+      children: runs, alignment: AlignmentType.CENTER,
+      spacing: { before: 0, after: 0, line: 266, lineRule: LineRuleType.EXACT },
+    })], { w: TOTAL - A, fill: BLUE_BG }),
+  ]], 340);
 }
 
 function sectionBar(title) {
@@ -107,73 +181,166 @@ function buildDoc(children) {
 const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등도 전신질환  □ Ⅳ 생명 위협  □ Ⅴ 위중  □ E 응급";
 const CEPSAF = "※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, Brodbelt 등 2008) — 건강 개체(ASA Ⅰ–Ⅱ): 개 0.05% · 고양이 0.11% / 질환 동반(ASA Ⅲ–Ⅴ): 개 1.33% · 고양이 1.40%";
 
-// ═══ 1. 수술·마취 동의서 ═══════════════════════════════════════════
+// ═══ 1. 수술등중대진료(마취) 동의서 ════════════════════════════════
 (function () {
-  const c4 = [1750, 3300, 1750, 3290];
-  const c6 = [1750, 1900, 1300, 1450, 1300, 2390];
-  const c2 = [2000, 8090];
-  const cs = [1000, 2400, 1100, 2600, 1400, 1590];
+  // ── 인적사항: 보호자 · 반려동물 · 수의사 (좌측 라벨 세로 병합) ──
+  const LC = 1134, KC = 1361, VC = 3117;
+  const IW = [LC, KC, VC, KC, VC];
+  const blueBelow = { top: border, left: border, right: border,
+                      bottom: { style: BorderStyle.SINGLE, size: 8, color: BLUE } };
+  const gcell = (text, o = {}) => cell(text, { ...o, w: o.w });
+  const group = (name, rows) => rows.map((r, i) => {
+    const cells = i === 0
+      ? [new TableCell({
+          children: [centered(name, { bold: true, size: 19, color: BLUE_DK })],
+          width: { size: LC, type: WidthType.DXA }, rowSpan: rows.length,
+          borders: BORDERS, verticalAlign: VerticalAlign.CENTER,
+          shading: { type: ShadingType.CLEAR, fill: BLUE_BG },
+          margins: { top: 20, bottom: 20, left: 60, right: 60 },
+        })]
+      : [];
+    return cells.concat(r);
+  });
+  const kv = (k, v, kw = KC, vw = VC, opts = {}) => [
+    cell(k, { w: kw, label: true, size: 17 }), cell(v, { w: vw, size: 17, ...opts }),
+  ];
+  const infoRows = [].concat(
+    group("보호자", [
+      [...kv("성 명", ""), ...kv("생년월일", "")],
+      [...kv("연 락 처", ""), ...kv("제2연락처", "")],
+      [cell("주 소", { w: KC, label: true, size: 17 }), cell("", { w: VC * 2 + KC, span: 3 })],
+    ]),
+    group("반려동물", [
+      [...kv("이 름", ""), ...kv("종 / 품종", "")],
+      [...kv("성별 / 중성화", ""), ...kv("연령 / 체중", "")],
+      [...kv("차트번호", ""), ...kv("특이사항", "")],
+    ]),
+    group("수의사", [
+      [...kv("동물병원명", ""), ...kv("면허번호", "")],
+      [...kv("성 명", ""), ...kv("보호자 관계", "□ 소유자   □ 대리인")],
+    ]),
+  );
+
+  // ── 후유증 8항목 (테두리 없는 4열) ──
+  const RISK = [
+    "1) 저혈압 · 저체온 · 고체온", "2) 약물 과민반응에 의한 쇼크",
+    "3) 순환부전에 의한 쇼크", "4) 췌장염 · 신부전 및 폐수종",
+    "5) 기저질환 발현 및 현증 악화", "6) 삽관에 의한 일시적 기침",
+    "7) 출혈 · 감염 · 봉합 부위 벌어짐", "8) 드물게 심정지 및 사망",
+  ];
+  const RW = Math.floor(TOTAL / 4);
+  const riskRow = (from) => RISK.slice(from, from + 4).map((t, i) =>
+    plainCell([para(t, { size: 16 })], { w: i === 3 ? TOTAL - RW * 3 : RW }));
+
+  // ── ASA 등급표 (벳아너스 서식 참고 · 위험 수치는 CEPSAF 검증치) ──
+  const AW = [737, 1021, 4590, 3742];
+  const topLine = { style: BorderStyle.SINGLE, size: 8, color: BLUE };
+  const thin = { style: BorderStyle.SINGLE, size: 3, color: LINE };
+  const acell = (text, o = {}) => new TableCell({
+    children: Array.isArray(text) ? text : [centered(text, { size: 16, ...(o.run || {}) })],
+    width: { size: o.w, type: WidthType.DXA }, rowSpan: o.rowSpan,
+    borders: o.borders || { top: thin, bottom: thin, left: NO_BORDER, right: NO_BORDER },
+    verticalAlign: VerticalAlign.CENTER,
+    shading: o.fill ? { type: ShadingType.CLEAR, fill: o.fill } : undefined,
+    margins: { top: 10, bottom: 10, left: 40, right: 40 },
+  });
+  const headBorders = { top: topLine, bottom: topLine, left: NO_BORDER, right: NO_BORDER };
+  const vline = { style: BorderStyle.SINGLE, size: 3, color: LINE };
+  const riskBox = (a, b) => [
+    centered(a, { size: 17 }),
+    centered(b, { size: 14, color: GREY }),
+  ];
+  const asaRows = [
+    [acell("체크", { w: AW[0], fill: BLUE_BG, borders: headBorders, run: { bold: true, color: BLUE_DK } }),
+     acell("ASA 등급", { w: AW[1], fill: BLUE_BG, borders: headBorders, run: { bold: true, color: BLUE_DK } }),
+     acell("정 의", { w: AW[2], fill: BLUE_BG, borders: headBorders, run: { bold: true, color: BLUE_DK } }),
+     acell("마취 관련 사망 위험 (CEPSAF)", { w: AW[3], fill: BLUE_BG, borders: headBorders, run: { bold: true, color: BLUE_DK } })],
+    [acell("□", { w: AW[0] }), acell("Ⅰ", { w: AW[1] }), acell("정상적이고 건강한 개체", { w: AW[2] }),
+     acell(riskBox("개 0.05 %　·　고양이 0.11 %", "ASA Ⅰ–Ⅱ 건강 개체 기준"),
+       { w: AW[3], rowSpan: 2, borders: { top: thin, bottom: thin, left: vline, right: NO_BORDER } })],
+    [acell("□", { w: AW[0] }), acell("Ⅱ", { w: AW[1] }), acell("활동을 제한하지 않는 가벼운 전신질환", { w: AW[2] })],
+    [acell("□", { w: AW[0] }), acell("Ⅲ", { w: AW[1] }), acell("활동이 가능한 중등도의 전신질환", { w: AW[2] }),
+     acell(riskBox("개 1.33 %　·　고양이 1.40 %", "ASA Ⅲ–Ⅴ 질환 동반 개체 기준"),
+       { w: AW[3], rowSpan: 3, borders: { top: thin, bottom: thin, left: vline, right: NO_BORDER } })],
+    [acell("□", { w: AW[0] }), acell("Ⅳ", { w: AW[1] }), acell("지속적으로 생명을 위협하며 활동이 불가능한 전신질환", { w: AW[2] })],
+    [acell("□", { w: AW[0] }), acell("Ⅴ", { w: AW[1] }), acell("수술과 관계없이 24시간 이내 사망할 수 있는 빈사 상태", { w: AW[2] })],
+    [acell("□", { w: AW[0], borders: { top: thin, bottom: topLine, left: NO_BORDER, right: NO_BORDER } }),
+     acell("E", { w: AW[1], borders: { top: thin, bottom: topLine, left: NO_BORDER, right: NO_BORDER } }),
+     acell("위 등급에 해당하면서 응급으로 시행하는 경우", { w: AW[2], borders: { top: thin, bottom: topLine, left: NO_BORDER, right: NO_BORDER } }),
+     acell("응급 상황은 위험을 더 높입니다", { w: AW[3], run: { color: GREY }, borders: { top: thin, bottom: topLine, left: vline, right: NO_BORDER } })],
+  ];
+
+  const HALF = TOTAL / 2;
   const doc = buildDoc([
-    ...header("수술·마취 동의서",
-      "수의사법 제13조의2(수술등중대진료 설명·서면동의)에 따른 동의서 — 전신마취 동반 내부장기·뼈·관절 수술 및 수혈 / 작성 후 1년 보존 / 서식번호 KAHA-F-2601"),
-    sectionBar("동물·보호자 정보"),
-    table(c4, [
-      [cell("동 물 명", { w: c4[0], label: true }), cell("", { w: c4[1] }), cell("보호자 성명", { w: c4[2], label: true }), cell("", { w: c4[3] })],
-      [cell("종 / 품종", { w: c4[0], label: true }), cell("", { w: c4[1] }), cell("연 락 처", { w: c4[2], label: true }), cell("", { w: c4[3] })],
-      [cell("성별 / 중성화", { w: c4[0], label: true }), cell("", { w: c4[1] }), cell("동물과의 관계", { w: c4[2], label: true }), cell("□ 소유자      □ 대리인", { w: c4[3] })],
-    ]),
-    table(c6, [[
-      cell("연령(생년월일)", { w: c6[0], label: true }), cell("", { w: c6[1] }),
-      cell("체중(kg)", { w: c6[2], label: true }), cell("", { w: c6[3] }),
-      cell("차트번호", { w: c6[4], label: true }), cell("", { w: c6[5] }),
-    ]]),
-    gap(),
-    sectionBar("1. 진단명 및 현재 상태"),
-    table(c2, [
-      [cell("진단명 (추정 포함)", { w: c2[0], label: true }), cell("", { w: c2[1] })],
-      [cell("현재 상태 요약", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 2 })],
-      [cell("ASA 신체상태 분류", { w: c2[0], label: true }), cell(ASA_TEXT, { w: c2[1], size: 16 })],
-    ]),
-    para(CEPSAF, { size: 14, color: GREY }),
-    gap(),
-    sectionBar("2. 예정 진료의 필요성 · 방법 · 내용"),
-    table([2000, 3900, 1500, 2690], [
-      [cell("수술 / 처치명", { w: 2000, label: true }), cell("", { w: 3900 }), cell("예정 일시", { w: 1500, label: true }), cell("", { w: 2690 })],
-      [cell("집도 수의사", { w: 2000, label: true }), cell("", { w: 3900 }), cell("마취 방식", { w: 1500, label: true }), cell("", { w: 2690 })],
-    ]),
-    table(c2, [
-      [cell("필 요 성", { w: c2[0], label: true }), cell("", { w: c2[1] })],
-      [cell("방법 및 내용", { w: c2[0], label: true }), cell("", { w: c2[1], empty: 2 })],
-    ]),
-    gap(),
-    sectionBar("3. 전형적으로 발생이 예상되는 후유증 · 부작용"),
+    ...brandBand("수술등중대진료(마취) 동의서",
+      "수의사법 제13조의2 및 같은 법 시행규칙 제13조의3에 따른 설명·서면동의 — 전신마취를 동반하는 내부장기·뼈·관절 수술 및 수혈",
+      "KAHA-F-2601"),
+    gap(80),
+    table(IW, infoRows, 370),
+    gap(80),
+    divider("설명 및 동의 사항"),
+    gap(60),
+
+    capBar("수술등중대진료의 필요성, 방법 및 내용"),
+    table([1700, 3345, 1475, 3570], [
+      [cell("진단명 (추정 포함)", { w: 1700, label: true, size: 17 }), cell("", { w: 3345 }),
+       cell("예정 일시", { w: 1475, label: true, size: 17 }), cell("", { w: 3570 })],
+      [cell("수술 / 처치명", { w: 1700, label: true, size: 17 }), cell("", { w: 3345 }),
+       cell("마취 방식", { w: 1475, label: true, size: 17 }), cell("", { w: 3570 })],
+    ], 374),
+    table([1700, 8390], [
+      [cell("필요성 · 현재 상태", { w: 1700, label: true, size: 17 }), cell("", { w: 8390 })],
+      [cell("방법 및 내용", { w: 1700, label: true, size: 17 }), cell("", { w: 8390 })],
+    ], 476),
+    gap(70),
+
+    capBar("수술등중대진료에 따라 전형적으로 발생이 예상되는 후유증 또는 부작용"),
+    table([RW, RW, RW, TOTAL - RW * 3], [riskRow(0), riskRow(4)], 318),
+    table(AW, asaRows, [329, 329, 329, 329, 329, 329, 329]),
+    para("※ 위험 수치 출처 : 영국 CEPSAF 연구(Brodbelt 등, 2008, 개 98,036두 · 고양이 79,178두). 전체 평균 개 0.17 % · 고양이 0.24 %이며, 개별 위험은 질환 · 수술 종류 · 연령에 따라 달라집니다. 위 후유증은 전형적으로 예상되는 사항으로 예측하지 못한 상황이 발생할 수 있습니다.",
+      { size: 14, color: GREY }),
+    gap(70),
+
+    capBar("수술등중대진료 전후에 보호자가 준수 및 숙지하여야 할 사항", "— 해당 항목에 표시하여 주십시오"),
     table([TOTAL], [
-      [cell("□  마취 관련 : 저혈압, 저체온, 부정맥, 드물게 심정지 등", { w: TOTAL })],
-      [cell("□  수술 관련 : 출혈, 감염, 봉합 부위 벌어짐, 재수술 가능성 등", { w: TOTAL })],
-      [cell("□  개체 상태에 따른 추가 위험 :", { w: TOTAL })],
-      [cell("※  위 내용은 전형적으로 예상되는 사항이며, 예측하지 못한 상황이 발생할 수 있음을 설명받았습니다.", { w: TOTAL, size: 16, color: GREY })],
-    ]),
-    gap(),
-    sectionBar("4. 보호자 준수사항"),
-    table([TOTAL], [
-      [cell("□  수술 전 금식 : 음식 ________ 시간  ·  물 ________ 시간", { w: TOTAL })],
-      [cell("□  수술 후 주의사항(넥카라 · 활동 제한 · 투약 등) 준수     □  응급상황 연락 가능한 연락처 유지", { w: TOTAL })],
-    ]),
-    gap(),
-    sectionBar("5. 추가 확인"),
-    table([TOTAL], [
-      [cell("□  수술 중 상태에 따라 범위가 변경될 수 있음을 설명받음   ( 변경 시 :  □ 사전 연락 요망   □ 수의사 판단에 위임 )", { w: TOTAL })],
-      [cell("□  예상 진료비용 안내를 받음   ( 예상 범위 : ____________________ 원 )", { w: TOTAL })],
-      [cell("□  심폐소생술(CPR) :  □ 시행   □ 시행하지 않음(DNR)", { w: TOTAL })],
-    ]),
-    gap(),
-    table([TOTAL], [[cell("본인은 위 내용에 대하여 충분한 설명을 듣고 이해하였으며, 수술 및 마취 시행에 동의합니다.", { w: TOTAL, bold: true, size: 19, fill: BLUE_BG })]]),
-    gap(),
-    table(cs, [[
-      cell("작성일", { w: cs[0], label: true }), cell("20____년  ____월  ____일", { w: cs[1] }),
-      cell("보호자", { w: cs[2], label: true }), cell("성명 : __________ (서명)", { w: cs[3] }),
-      cell("설명 수의사", { w: cs[4], label: true }), cell("성명 : ______ (서명)", { w: cs[5] }),
-    ]]),
+      [cell("□  마취 시 수술 전 일정 시간의 금식과 금수가 필요합니다.  ( 음식 ______ 시간 · 물 ______ 시간 )", { w: TOTAL, size: 17 })],
+      [cell("□  마취를 시행함에 있어 발생할 수 있는 부작용 · 합병증 또는 후유증에 대한 설명을 충분히 듣고 이해하였습니다.", { w: TOTAL, size: 17 })],
+      [cell("□  마취 과정에 있어 불가항력적이거나 환자의 특이체질로 인한 우발사고의 가능성을 인정합니다.", { w: TOTAL, size: 17 })],
+      [cell("□  수술 후 주의사항(넥카라 · 활동 제한 · 투약 등)을 준수하고, 응급상황에 연락 가능한 연락처를 유지합니다.", { w: TOTAL, size: 17 })],
+    ], 340),
+    table([HALF, HALF], [
+      [cell("□  심폐소생술(CPR) :  □ 시행 원함   □ 원하지 않음(DNR)", { w: HALF, size: 17 }),
+       cell("□  마취 및 수술비 설명을 들었음  ( 예상 : _________ 원 )", { w: HALF, size: 17 })],
+      [cell("□  수술 중 상태에 따라 범위가 변경될 수 있음을 설명받음", { w: HALF, size: 17 }),
+       cell("변경 시 :  □ 사전 연락 요망   □ 수의사 판단에 위임", { w: HALF, size: 17 })],
+    ], 340),
+    gap(90),
+
+    new Table({
+      columnWidths: [TOTAL],
+      width: { size: TOTAL, type: WidthType.DXA },
+      rows: [new TableRow({
+        children: [new TableCell({
+          children: [para("「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 위와 같이 수의사로부터 수술등중대진료에 관한 설명을 들었으며, 그 필요성 · 방법 · 내용과 전형적으로 예상되는 후유증 및 부작용을 충분히 이해하였습니다. 이에 위 수술등중대진료 및 마취의 시행에 동의하며, 관련한 수의학적 처치를 담당 수의사에게 위임합니다.",
+            { size: 17 })],
+          width: { size: TOTAL, type: WidthType.DXA },
+          borders: {
+            top: { style: BorderStyle.SINGLE, size: 8, color: BLUE },
+            bottom: { style: BorderStyle.SINGLE, size: 8, color: BLUE },
+            left: { style: BorderStyle.SINGLE, size: 8, color: BLUE },
+            right: { style: BorderStyle.SINGLE, size: 8, color: BLUE },
+          },
+          shading: { type: ShadingType.CLEAR, fill: BLUE_BG },
+          margins: { top: 90, bottom: 90, left: 150, right: 150 },
+        })],
+      })],
+    }),
+    gap(90),
+    table([737, 2155, 737, 2665, 1134, 2662], [[
+      cell("작성일", { w: 737, label: true, size: 17 }), cell("20____년  ____월  ____일", { w: 2155, size: 17 }),
+      cell("보호자", { w: 737, label: true, size: 17 }), cell("성명 : __________ (서명 또는 인)", { w: 2665, size: 17 }),
+      cell("설명 수의사", { w: 1134, label: true, size: 17 }), cell("성명 : __________ (서명 또는 인)", { w: 2662, size: 17 }),
+    ]], 545),
     footerPara("KAHA-F-2601"),
   ]);
   Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "surgery-anesthesia-consent.docx"), b));
