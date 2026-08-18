@@ -136,7 +136,7 @@ def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6, info_h=7.6 * mm, tail=0):
     s.append(Spacer(1, gap))
     s.append(block("진료 전후에\n보호자의\n준수 및 숙지 사항", e["care"]))
     s.append(Spacer(1, 3 * mm + tail))
-    s.append(closing(DECL, note="*기타 내용이 발생할 경우 별지를 포함합니다."))
+    s.append(closing(DECL))
     s.append(Spacer(1, 2.6 * mm))
     s.append(sign_row(["보호자", "설명 수의사"]))
     return s

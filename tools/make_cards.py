@@ -209,7 +209,7 @@ def make_set(date, data):
     y += 44
     cf = F("bold", 40)
     d.text((80, y), "전체 내용 · 양식 PDF · 워드 파일은 소식지에서", font=cf, fill=INK)
-    d.text((80, y + 62), "프로필 링크 · 매 평일 발행 · 한국동물병원협회 정책기획위원회",
+    d.text((80, y + 62), "프로필 링크 · 매 평일 발행 · 한국동물병원협회",
            font=F("regular", 30), fill=GREY)
     if y + 62 + 30 > CONTENT_MAX_Y:
         OVERFLOW.append("%s outro: y=%d (한계 %d)" % (date, y + 92, CONTENT_MAX_Y))

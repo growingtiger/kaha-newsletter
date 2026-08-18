@@ -32,7 +32,9 @@ function totalHeight(body) {
 
 // ── 질환 안내문 ────────────────────────────────────────────────────
 const G_SUB = "이 안내문은 보호자께 반려동물의 질환을 설명해 드리기 위한 자료입니다.";
-const G_FOOT = "이 안내문은 일반적인 설명이며, 실제 경과와 치료 방침은 개체 상태에 따라 달라집니다. 궁금한 점은 언제든 담당 수의사에게 물어봐 주십시오.";
+// 문장마다 줄을 나눈다 — 한 문단으로 두면 어색하게 끊긴다
+const G_FOOT1 = "이 안내문은 일반적인 내용을 담은 것으로, 실제 경과와 치료 방법은 반려동물의 상태에 따라 달라질 수 있습니다.";
+const G_FOOT2 = "궁금한 점이 있으시면 언제든 담당 수의사에게 문의해 주십시오.";
 
 function twoBox(a, b, h) {
   const half = Math.floor(TOTAL / 2) - 40;
@@ -67,7 +69,7 @@ function guideDoc(e, o) {
       sec("담당 수의사\n메모", bulletLines(Array(memo).fill(" "), { size: 16, lineH }),
         { height: secH("담당 수의사\n메모", memo * lineH) }),
       gap(150 + tail),
-      table([TOTAL], [[plainCell(closing(G_FOOT),
+      table([TOTAL], [[plainCell(closing(G_FOOT1, G_FOOT2),
         { w: TOTAL, margins: { top: 0, bottom: 0, left: 0, right: 0 } })]], mm(11)),
       gap(150),
       signRow(["보호자", "설명자"]),

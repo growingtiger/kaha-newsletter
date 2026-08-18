@@ -100,7 +100,7 @@ function makeDoc(e, opt) {
         bulletLines(e.care.concat(Array(blanks).fill(" ")), { size: 16, lineH }),
         { height: blockHeight(e.care, blanks, false, lineH) }),
       gap(180 + tail),
-      table([TOTAL], [[plainCell(closing(DECL, "*기타 내용이 발생할 경우 별지를 포함합니다."),
+      table([TOTAL], [[plainCell(closing(DECL),
         { w: TOTAL, margins: { top: 0, bottom: 0, left: 0, right: 0 } })]], mm(17)),
       gap(150),
       signRow(["보호자", "설명 수의사"]),
