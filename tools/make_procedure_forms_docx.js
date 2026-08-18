@@ -78,15 +78,23 @@ function makeDoc(e, opt) {
       gap(g),
       twoBox(dxLabel(e), e.proc, mm(9)),
       gap(g),
+    ],
+    e.about ? [
+      sec("질환에 대한 설명",
+        bulletLines(e.about.concat(Array(blanks).fill(" ")), { size: 16, lineH }),
+        { height: blockHeight(e.about, blanks, false, lineH) }),
+      gap(g),
+    ] : [],
+    [
       sec("진료의 필요성 ·\n방법 및 내용",
         bulletLines(e.need.concat(Array(blanks).fill(" ")), { size: 16, lineH }),
         { height: blockHeight(e.need, blanks, false, lineH) }),
       gap(g),
+      // ASA 등급표는 마취 동의서에만 둔다 (2026-08-18 원장 지시) — 여기서 빈 자리는
+      // 질환 설명과 후유증 항목을 늘리는 데 쓴다.
       sec("전형적으로\n발생이 예상되는\n후유증 또는 부작용",
-        bulletLines(e.risk, { size: 16, lineH })
-          .concat(e.anes ? [para("", { size: 8 }), asaTable(IW, mm(4.8))] : [])
-          .concat(bulletLines(Array(blanks).fill(" "), { size: 16, lineH })),
-        { height: blockHeight(e.risk, blanks, e.anes, lineH) }),
+        bulletLines(e.risk.concat(Array(blanks).fill(" ")), { size: 16, lineH }),
+        { height: blockHeight(e.risk, blanks, false, lineH) }),
       gap(g),
       sec("진료 전후에\n보호자의\n준수 및 숙지 사항",
         bulletLines(e.care.concat(Array(blanks).fill(" ")), { size: 16, lineH }),

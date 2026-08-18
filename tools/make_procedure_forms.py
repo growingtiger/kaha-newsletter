@@ -112,10 +112,14 @@ def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6, info_h=7.6 * mm, tail=0):
             rows.append(blank_lines(blanks, leading=lead))
         return sec(label, stack(rows, IW) if len(rows) > 1 else rows[0], pad_top=4)
 
+    if e.get("about"):
+        s.append(block("질환에 대한 설명", e["about"]))
+        s.append(Spacer(1, gap))
     s.append(block("진료의 필요성 ·\n방법 및 내용", e["need"]))
     s.append(Spacer(1, gap))
-    s.append(block("전형적으로\n발생이 예상되는\n후유증 또는 부작용", e["risk"],
-                   extra=asa_table(IW, row_h=4.5 * mm) if e["anes"] else None))
+    # ASA 등급표는 마취 동의서에만 둔다 (2026-08-18 원장 지시) — 여기서 빈 자리는
+    # 질환 설명과 후유증 항목을 늘리는 데 쓴다.
+    s.append(block("전형적으로\n발생이 예상되는\n후유증 또는 부작용", e["risk"]))
     s.append(Spacer(1, gap))
     s.append(block("진료 전후에\n보호자의\n준수 및 숙지 사항", e["care"]))
     s.append(Spacer(1, 3 * mm + tail))
