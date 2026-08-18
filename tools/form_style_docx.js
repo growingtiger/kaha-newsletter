@@ -281,12 +281,18 @@ function closing(text, note = "") {
 /** 서명줄 — 점선 상자 */
 function signRow(roles) {
   const dotted = { style: BorderStyle.DOTTED, size: 4, color: "9A9A9A" };
-  const dateW = 3180, labelW = 1100, noteW = 1250;
-  const lineW = Math.floor((TOTAL - dateW - roles.length * (labelW + noteW)) / roles.length);
+  // 서명자가 셋 이상이면 폭이 모자라므로 날짜 칸과 안내 문구를 줄인다
+  const many = roles.length >= 3;
+  const dateW = many ? 2270 : 3180;
+  const labelW = many ? 950 : 1100;
+  let noteW = many ? 700 : 1250;
+  let lineW = Math.floor((TOTAL - dateW - roles.length * (labelW + noteW)) / roles.length);
+  if (lineW < 900) { noteW = 0; lineW = Math.floor((TOTAL - dateW - roles.length * labelW) / roles.length); }
   const underline = { top: NO_BORDER, left: NO_BORDER, right: NO_BORDER,
                       bottom: { style: BorderStyle.SINGLE, size: 4, color: "9A9A9A" } };
   const dUnit = 620;
-  const dW = [400, dUnit, 300, dUnit, 300, dUnit, 300, 280];
+  const dUnit2 = many ? 420 : dUnit;
+  const dW = [400, dUnit2, 300, dUnit2, 300, dUnit2, 300, many ? 50 : 280];
   const dTxt = ["20", "", "년", "", "월", "", "일", ""];
   const dCells = dW.map((w, i) => new TableCell({
     children: [para(dTxt[i], { size: 17 })],
@@ -310,9 +316,13 @@ function signRow(roles) {
       verticalAlign: VerticalAlign.CENTER,
       margins: { top: 20, bottom: 20, left: 60, right: 60 },
     }));
-    cells.push(plainCell([para("(서명 또는 인)", { size: 14, color: SOFT })], { w: noteW,
-      margins: { top: 0, bottom: 0, left: 60, right: 0 } }));
-    widths.push(labelW, lineW, noteW);
+    if (noteW) {
+      cells.push(plainCell([para(many ? "(서명)" : "(서명 또는 인)", { size: 13, color: SOFT })],
+        { w: noteW, margins: { top: 0, bottom: 0, left: 40, right: 0 } }));
+      widths.push(labelW, lineW, noteW);
+    } else {
+      widths.push(labelW, lineW);
+    }
   });
   return table(widths, [cells], 570);
 }

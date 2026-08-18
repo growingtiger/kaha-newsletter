@@ -11,6 +11,8 @@ import os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FORMS = os.path.join(BASE, "forms")
 PROC_ROOT = "07_질환별동의서"
+GUIDE_ROOT = "08_질환안내문"
+ADMIN_ROOT = "09_노무행정"
 
 BASIC_CATS = [
     ("01_수술마취", "수술 · 마취", "전신마취를 동반하는 수술과 시술 동의서"),
@@ -42,6 +44,21 @@ PROC_CAT_LABEL = {
     "13_영상검사": "영상 · 검사", "14_내과처치": "내과 처치",
     "15_예방건강관리": "예방 · 건강관리", "16_임종완화": "임종 · 완화",
     "17_부가서비스": "부가 서비스",
+}
+
+
+GUIDE_CAT_LABEL = {
+    "01_신장비뇨기": "신장 · 비뇨기", "02_내분비": "내분비", "03_심장": "심장",
+    "04_소화기": "소화기", "05_간담췌": "간 · 담 · 췌", "06_호흡기": "호흡기",
+    "07_피부": "피부", "08_안과": "안과", "09_근골격": "근골격", "10_신경": "신경",
+    "11_종양": "종양", "12_감염": "감염", "13_고양이": "고양이", "14_노령": "노령",
+    "15_행동": "행동", "16_응급": "응급", "17_생활관리": "생활 관리",
+}
+
+ADMIN_CAT_LABEL = {
+    "01_채용근로계약": "채용 · 근로계약", "02_근태휴가": "근태 · 휴가",
+    "03_인사관리": "인사 관리", "04_퇴직": "퇴직",
+    "05_병원운영": "병원 운영", "06_안전보건": "안전 · 보건",
 }
 
 
@@ -78,25 +95,40 @@ def build():
                        "blurb": "모든 병원에서 공통으로 쓰는 동의서와 기록지입니다.",
                        "cats": basic})
 
-    proc_path = os.path.join(BASE, "data", "procedures.json")
-    if os.path.exists(proc_path):
-        procs = json.load(open(proc_path, encoding="utf-8"))
+    def add_group(key, label, blurb, root, path_json, labels, name_key, desc_fn):
+        jp = os.path.join(BASE, "data", path_json)
+        if not os.path.exists(jp):
+            return
+        rows = json.load(open(jp, encoding="utf-8"))
         by_dir = {}
-        for e in procs:
+        for e in rows:
             by_dir.setdefault(e["dir"], []).append(e)
         cats = []
         for folder in sorted(by_dir):
             items = []
-            for e in sorted(by_dir[folder], key=lambda x: x["title"]):
-                rel = "%s/%s" % (PROC_ROOT, folder)
-                items.append(item(rel, e["file"], e["title"],
-                                  "진단명 " + e["dx"], e["kw"] + " " + e["dx"]))
-            cats.append({"folder": folder, "label": PROC_CAT_LABEL.get(folder, folder),
+            for e in sorted(by_dir[folder], key=lambda x: x[name_key]):
+                rel = "%s/%s" % (root, folder)
+                items.append(item(rel, e["file"], desc_fn(e)[0],
+                                  desc_fn(e)[1], e.get("kw", "")))
+            cats.append({"folder": folder, "label": labels.get(folder, folder),
                          "blurb": "", "items": items})
         if cats:
-            groups.append({"key": "proc", "label": "질환 · 처치별 동의서",
-                           "blurb": "진단명과 시행 방법이 미리 채워진 동의서입니다. 빈 줄에 병원별 항목을 더해 쓰십시오.",
-                           "cats": cats})
+            groups.append({"key": key, "label": label, "blurb": blurb, "cats": cats})
+
+    add_group("proc", "질환 · 처치별 동의서",
+              "진단명과 시행 방법이 미리 채워진 동의서입니다. 빈 줄에 병원별 항목을 더해 쓰십시오.",
+              PROC_ROOT, "procedures.json", PROC_CAT_LABEL, "title",
+              lambda e: (e["title"], "진단명 " + e["dx"]))
+
+    add_group("guide", "질환 안내문 (보호자 설명용)",
+              "보호자에게 건네는 설명 자료입니다. 증상·치료·가정 관리·응급 신호를 한 장에 담았습니다.",
+              GUIDE_ROOT, "diseases.json", GUIDE_CAT_LABEL, "name",
+              lambda e: (e["name"] + " 안내문", e.get("eng", "")))
+
+    add_group("admin", "노무 · 병원 행정 서식",
+              "근로계약, 근태·휴가, 인사, 퇴직, 병원 운영, 안전보건 서식입니다.",
+              ADMIN_ROOT, "admin_forms.json", ADMIN_CAT_LABEL, "title",
+              lambda e: (e["title"], e.get("sub", "")))
 
     n = sum(len(c["items"]) for g in groups for c in g["cats"])
     return {"groups": groups, "count": n}

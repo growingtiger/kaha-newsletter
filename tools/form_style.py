@@ -424,9 +424,16 @@ def sign_row(roles):
     note_txt = "(서명 또는 인)"
     n = len(roles)
     date_w = 56 * mm
+    # 서명자가 셋 이상이면 폭이 모자라므로 날짜 칸과 안내 문구를 줄인다
+    if n >= 3:
+        note_txt = "(서명)"
+        date_w = 40 * mm
     label_w = max(stringWidth(r, "NanumB", 9.6) for r in roles) + 10
     note_w = stringWidth(note_txt, "Nanum", 7.8) + 8
     line_w = (W - date_w - n * (label_w + note_w)) / n
+    if line_w < 16 * mm:          # 그래도 좁으면 안내 문구를 뺀다
+        note_txt, note_w = "", 0
+        line_w = (W - date_w - n * label_w) / n
     # 날짜: 20 [   ] 년 [   ] 월 [   ] 일 — 숫자를 적을 빈칸을 실제로 벌려 둔다
     unit = (date_w - stringWidth("20 년 월 일", "Nanum", 9.6) - 14 - 5 * mm) / 3
     dcells = [P("20", size=9.6), "", P("년", size=9.6), "", P("월", size=9.6), "", P("일", size=9.6), ""]
@@ -442,16 +449,20 @@ def sign_row(roles):
     ]))
     cells, widths = [date_tbl], [date_w]
     for r in roles:
-        cells += [P(r, size=9.6, bold=True), P("", size=9), P(note_txt, size=7.8, color=SOFT)]
-        widths += [label_w, line_w, note_w]
+        cells += [P(r, size=9.6, bold=True), P("", size=9)]
+        widths += [label_w, line_w]
+        if note_w:
+            cells.append(P(note_txt, size=7.8, color=SOFT))
+            widths.append(note_w)
     t = Table([cells], colWidths=widths, rowHeights=[11 * mm], hAlign="CENTER")
     style = [
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
         ("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
     ]
+    step = 3 if note_w else 2
     for i in range(n):
-        c = 2 + i * 3
+        c = 2 + i * step
         # 사무국 양식과 같이 점선 상자로 서명 자리를 표시한다
         style.append(("BOX", (c, 0), (c, 0), 0.7, colors.HexColor("#9A9A9A"), None, (1.6, 1.6)))
         style.append(("TOPPADDING", (c, 0), (c, 0), 1))

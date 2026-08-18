@@ -13,6 +13,7 @@
 실행: python3 tools/check_forms.py
 """
 import glob
+import html
 import os
 import re
 import shutil
@@ -81,6 +82,7 @@ def docx_texts(path):
     out = []
     for para in re.findall(r"<w:p[ >].*?</w:p>", body, re.S):
         txt = "".join(re.findall(r"<w:t[^>]*>([^<]*)</w:t>", para))
+        txt = html.unescape(txt)          # &apos; 등 XML 실체참조를 되돌린다
         txt = re.sub(r"\s+", "", txt)
         if len(txt) >= 12:
             out.append(txt)
@@ -130,21 +132,33 @@ def _em_width(text, half_pt):
 
 
 def _para_height(p, avail_w, scale):
-    txt = "".join(t.text or "" for t in p.iter(W + "t"))
+    """문단 높이. 줄바꿈(<w:br/>)으로 나눈 각 조각이 각각 몇 줄을 차지하는지 센다."""
+    import math
     sz = p.find("./%spPr/%srPr/%ssz" % (W, W, W))
     if sz is None:
-        r = p.find("./%sr/%srPr/%ssz" % (W, W, W))
-        sz = r
+        sz = p.find("./%sr/%srPr/%ssz" % (W, W, W))
     size = int(sz.get(W + "val")) if sz is not None else 17
     sp = p.find("./%spPr/%sspacing" % (W, W))
     line = int(sp.get(W + "line")) if sp is not None and sp.get(W + "line") else 240
-    breaks = len(p.findall(".//%sbr" % W))
-    if not txt:
-        return line * (1 + breaks)
-    import math
-    need = _em_width(txt, size) * scale
-    lines = max(1, int(math.ceil(need / max(avail_w, 1)))) + breaks
-    return line * lines
+
+    # 문서 순서대로 훑으며 <w:br/> 에서 조각을 끊는다
+    segments, cur = [], ""
+    for node in p.iter():
+        if node.tag == W + "br":
+            segments.append(cur)
+            cur = ""
+        elif node.tag == W + "t":
+            cur += node.text or ""
+    segments.append(cur)
+
+    lines = 0
+    for seg in segments:
+        if not seg:
+            lines += 1
+            continue
+        need = _em_width(seg, size) * scale
+        lines += max(1, int(math.ceil(need / max(avail_w, 1))))
+    return line * max(1, lines)
 
 
 def _cell_height(tc, scale):
