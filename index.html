@@ -374,18 +374,68 @@
       .catch(function () { formsEl.innerHTML = "<p>양식 목록을 불러오지 못했습니다.</p>"; });
   }
 
-  var FQ = "", FCAT = "";
+  var FQ = "", FCAT = "", FDATA = null, FCOMPOSING = false;
 
   function fmatch(it, q) {
     if (!q) return true;
     var hay = (it.name + " " + (it.desc || "") + " " + (it.kw || "")).toLowerCase();
-    return hay.indexOf(q) !== -1;
+    if (hay.indexOf(q) !== -1) return true;
+    // 띄어쓰기를 무시하고 한 번 더 본다 ("유선종양" ↔ "유선 종양")
+    return hay.replace(/\s+/g, "").indexOf(q.replace(/\s+/g, "")) !== -1;
   }
 
+  // 검색창과 분류 칩은 한 번만 그리고, 입력할 때는 목록만 바꾼다.
+  // (매번 다시 그리면 한글 입력 중 조합이 끊겨 자모가 분리된다)
   function renderForms(data) {
+    FDATA = data;
+    formsEl.innerHTML = '<div class="forms-head"><h1>양식 모음</h1>'
+      + "<p>회원병원에서 바로 쓰실 수 있는 양식 " + data.count + "종입니다. "
+      + "인쇄해서 바로 쓰실 수 있고, 워드 파일은 자유롭게 고쳐 쓰실 수 있습니다. 모두 A4 한 장입니다.</p></div>"
+      + '<div class="fsearch"><input type="search" id="fq" '
+      + 'placeholder="양식 · 진단명 검색 (예: 슬개골, 백내장, 수혈, 발치)" autocomplete="off">'
+      + '<span class="cnt" id="fcnt"></span></div>'
+      + '<div class="fchips" id="fchips"></div><div id="flist"></div>';
+
+    var box = document.getElementById("fq");
+    box.addEventListener("compositionstart", function () { FCOMPOSING = true; });
+    box.addEventListener("compositionend", function () {
+      FCOMPOSING = false;
+      FQ = box.value;
+      renderList();
+    });
+    box.addEventListener("input", function () {
+      FQ = box.value;
+      if (!FCOMPOSING) renderList();      // 한글 조합 중에는 목록을 건드리지 않는다
+    });
+
+    renderChips();
+    renderList();
+  }
+
+  function renderChips() {
+    var h = '<button type="button" class="fchip' + (FCAT ? "" : " on") + '" data-cat="">전체</button>';
+    FDATA.groups.forEach(function (g) {
+      g.cats.forEach(function (c) {
+        var key = g.key + "/" + c.folder;
+        h += '<button type="button" class="fchip' + (FCAT === key ? " on" : "")
+          + '" data-cat="' + key + '">' + esc(c.label) + " " + c.items.length + "</button>";
+      });
+    });
+    var wrap = document.getElementById("fchips");
+    wrap.innerHTML = h;
+    wrap.querySelectorAll(".fchip").forEach(function (b) {
+      b.addEventListener("click", function () {
+        FCAT = b.getAttribute("data-cat");
+        renderChips();
+        renderList();
+      });
+    });
+  }
+
+  function renderList() {
     var q = FQ.trim().toLowerCase();
     var shown = 0, body = "";
-    data.groups.forEach(function (g) {
+    FDATA.groups.forEach(function (g) {
       var cats = "";
       g.cats.forEach(function (c) {
         if (FCAT && FCAT !== g.key + "/" + c.folder) return;
@@ -408,41 +458,8 @@
           + (g.blurb ? "<p>" + esc(g.blurb) + "</p>" : "") + cats + "</div>";
       }
     });
-    if (!body) body = "<p>검색 결과가 없습니다.</p>";
-
-    var chips = '<div class="fchips"><button type="button" class="fchip' + (FCAT ? "" : " on")
-      + '" data-cat="">전체</button>';
-    data.groups.forEach(function (g) {
-      g.cats.forEach(function (c) {
-        var key = g.key + "/" + c.folder;
-        chips += '<button type="button" class="fchip' + (FCAT === key ? " on" : "")
-          + '" data-cat="' + key + '">' + esc(c.label) + " " + c.items.length + "</button>";
-      });
-    });
-    chips += "</div>";
-
-    formsEl.innerHTML = '<div class="forms-head"><h1>양식 모음</h1>'
-      + "<p>회원병원에서 바로 쓰실 수 있는 양식 " + data.count + "종입니다. "
-      + "인쇄해서 바로 쓰실 수 있고, 워드 파일은 자유롭게 고쳐 쓰실 수 있습니다. 모두 A4 한 장입니다.</p></div>"
-      + '<div class="fsearch"><input type="search" id="fq" placeholder="양식 · 진단명 검색 (예: 슬개골, 백내장, 수혈, 발치)" '
-      + 'value="' + esc(FQ) + '" autocomplete="off"><span class="cnt">' + shown + "종 표시</span></div>"
-      + chips + body;
-
-    var box = document.getElementById("fq");
-    box.addEventListener("input", function () {
-      FQ = box.value;
-      var pos = box.selectionStart;
-      renderForms(data);
-      var nb = document.getElementById("fq");
-      nb.focus();
-      try { nb.setSelectionRange(pos, pos); } catch (e) {}
-    });
-    formsEl.querySelectorAll(".fchip").forEach(function (b) {
-      b.addEventListener("click", function () {
-        FCAT = b.getAttribute("data-cat");
-        renderForms(data);
-      });
-    });
+    document.getElementById("flist").innerHTML = body || "<p>검색 결과가 없습니다.</p>";
+    document.getElementById("fcnt").textContent = shown + "종 표시";
   }
 
   navForms.addEventListener("click", function () {
