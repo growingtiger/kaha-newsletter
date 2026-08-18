@@ -45,7 +45,7 @@ function blockHeight(items, blanks, hasAsa, lineH) {
 }
 
 function makeDoc(e, opt) {
-  const { blanks, g, lineH } = opt;
+  const { blanks, g, lineH, infoH = mm(7.6), tail = 0 } = opt;
   const kids = [];
   const body = [].concat(
     titleBlock(e.title, LEGAL, e.title.length < 18 ? 40 : 32),
@@ -55,7 +55,7 @@ function makeDoc(e, opt) {
         ["반려동물", [["이름", "", "종 / 품종", ""], ["성별 / 중성화", "", "연령 / 체중", ""],
                      ["특이사항", "", null, null]]],
         ["수의사", [["동물병원명", "", "수의사 성명", ""]]],
-      ], IN_W, mm(7.6)),
+      ], IN_W, infoH),
       gap(g),
       twoBox(e.dx, e.proc, mm(9)),
       gap(g),
@@ -72,7 +72,7 @@ function makeDoc(e, opt) {
       sec("진료 전후에\n보호자의\n준수 및 숙지 사항",
         bulletLines(e.care.concat(Array(blanks).fill(" ")), { size: 16, lineH }),
         { height: blockHeight(e.care, blanks, false, lineH) }),
-      gap(180),
+      gap(180 + tail),
       table([TOTAL], [[plainCell(closing(DECL, "*기타 내용이 발생할 경우 별지를 포함합니다."),
         { w: TOTAL, margins: { top: 0, bottom: 0, left: 0, right: 0 } })]], mm(17)),
       gap(150),
@@ -84,6 +84,8 @@ function makeDoc(e, opt) {
 function totalHeight(body) {
   return body.reduce((s, el) => s + (typeof el.__h === "number" ? el.__h : 0), 0) + 120;
 }
+
+const INFO_MIN = mm(7.6), INFO_MAX = mm(12);
 
 (async () => {
   const data = JSON.parse(fs.readFileSync(path.join(BASE, "data", "procedures.json"), "utf8"));
@@ -97,15 +99,31 @@ function totalHeight(body) {
   let made = 0;
   const failed = [];
   for (const e of data) {
-    let body = null;
+    // 1) 내용이 들어가는 조합을 찾는다
+    let opt = opts[opts.length - 1];
     for (const o of opts) {
-      const b = makeDoc(e, o);
-      if (totalHeight(b) <= USABLE) { body = b; break; }
-      body = b;
+      if (totalHeight(makeDoc(e, o)) <= USABLE) { opt = o; break; }
     }
+    opt = Object.assign({}, opt);
+
+    // 2) 공간이 남으면 빈 줄을 늘려 적을 자리를 넓힌다
+    while (opt.blanks < 4) {
+      const t = Object.assign({}, opt, { blanks: opt.blanks + 1 });
+      if (totalHeight(makeDoc(e, t)) > USABLE - mm(12)) break;
+      opt = t;
+    }
+
+    // 3) 남는 공간의 절반은 기입 칸 높이로 (볼펜으로 쓰기 편하도록)
+    let room = USABLE - totalHeight(makeDoc(e, opt));
+    opt.infoH = Math.min(INFO_MAX, INFO_MIN + Math.max(0, Math.floor(room * 0.5 / 6)));
+
+    // 4) 그러고도 남는 공간은 서명 앞으로 — 서명줄을 맨 아래에 둔다
+    room = USABLE - totalHeight(makeDoc(e, opt));
+    if (room > 30) opt.tail = room - 20;
+
     const rel = path.join(ROOT, e.dir, e.file + ".docx");
     try {
-      await buildDoc(e.title, body, rel);
+      await buildDoc(e.title, makeDoc(e, opt), rel);
       made += 1;
     } catch (err) {
       failed.push(e.title + " — " + err.message.split("\n")[0]);

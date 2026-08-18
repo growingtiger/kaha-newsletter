@@ -51,7 +51,7 @@ s.append(info_table([
                 [P("특이사항"), "", None, None]]),
     ("수의사", [[P("동물병원명"), "", P("수의사 성명"), ""],
               [P("면허번호"), "", None, None]]),
-], widths=IN_W, heights=[8.0 * mm] * 7))
+], widths=IN_W, heights=[8.5 * mm] * 7))
 s.append(gap())
 
 s.append(sec("설명 및\n동의사항", stack([
@@ -187,7 +187,7 @@ s.append(info_table([
     ("반려동물", [[P("이름"), "", P("종 / 품종"), ""],
                 [P("차트번호"), "", P("퇴원 일시"), ""]]),
     ("수의사", [[P("동물병원명"), "", P("담당 수의사"), ""]]),
-], widths=IN_W, heights=[8.6 * mm] * 4))
+], widths=IN_W, heights=[9.0 * mm] * 4))
 s.append(gap())
 
 lw = 26 * mm
@@ -256,7 +256,7 @@ s.append(info_table([
     ("반려동물", [[P("이름 / 차트번호"), "", P("종 / 품종"), ""],
                 [P("성별 / 중성화"), "", P("연령 / 체중"), ""]]),
     ("수의사", [[P("동물병원명"), "", P("담당 수의사"), ""]]),
-], widths=IN_W, heights=[8.6 * mm] * 3))
+], widths=IN_W, heights=[10.3 * mm] * 3))
 s.append(gap())
 
 lw = 26 * mm
@@ -312,7 +312,7 @@ s.append(info_table([
     ("반려동물", [[P("이름 / 차트번호"), "", P("종 / 품종"), ""],
                 [P("연령"), "", P("중성화"), P("□ 예     □ 아니오")]]),
     ("수의사", [[P("동물병원명"), "", P("평가자"), ""]]),
-], widths=IN_W, heights=[8.6 * mm] * 3))
+], widths=IN_W, heights=[12.5 * mm] * 3))
 s.append(gap())
 
 lw = 28 * mm

@@ -65,8 +65,13 @@ def blank_lines(n, size=8.6, leading=12.6):
     return bullets([" "] * n, size=size, leading=leading, marker="· ")
 
 
-def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6):
-    """한 건의 story 를 만든다. blanks = 각 구획에 남길 빈 줄 수."""
+def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6, info_h=7.6 * mm, tail=0):
+    """한 건의 story 를 만든다.
+
+    blanks  각 구획에 남길 빈 줄 수
+    info_h  보호자·반려동물·수의사 기입 칸의 행 높이 (남는 공간만큼 키운다)
+    tail    동의 선언문 앞에 넣는 여백 — 남는 공간을 여기로 보내 서명줄을 맨 아래로 내린다
+    """
     set_form(e["title"])
     s = title_block(e["title"], LEGAL, title_size=22 if len(e["title"]) < 20 else 18)
     s.append(info_table([
@@ -75,7 +80,7 @@ def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6):
                     [P("성별 / 중성화"), "", P("연령 / 체중"), ""],
                     [P("특이사항"), "", None, None]]),
         ("수의사", [[P("동물병원명"), "", P("수의사 성명"), ""]]),
-    ], widths=IN_W, heights=[7.6 * mm] * 6))
+    ], widths=IN_W, heights=[info_h] * 6))
     s.append(Spacer(1, gap))
     s.append(two_box("진 단 명", e["dx"], "시행 방법", e["proc"]))
     s.append(Spacer(1, gap))
@@ -94,7 +99,7 @@ def build_one(e, blanks=2, gap=2.4 * mm, lead=12.6):
                    extra=asa_table(IW, row_h=4.5 * mm) if e["anes"] else None))
     s.append(Spacer(1, gap))
     s.append(block("진료 전후에\n보호자의\n준수 및 숙지 사항", e["care"]))
-    s.append(Spacer(1, 3 * mm))
+    s.append(Spacer(1, 3 * mm + tail))
     s.append(closing(DECL, note="*기타 내용이 발생할 경우 별지를 포함합니다."))
     s.append(Spacer(1, 2.6 * mm))
     s.append(sign_row(["보호자", "설명 수의사"]))
@@ -105,21 +110,47 @@ def height(story):
     return sum(f.wrap(W, AVAIL)[1] for f in story)
 
 
+INFO_MIN = 7.6 * mm
+INFO_MAX = 12 * mm
+SAFETY = 5 * mm
+
+
 def main():
     data = json.load(open(os.path.join(BASE, "data", "procedures.json"), encoding="utf-8"))
     made, tight = 0, []
     for e in data:
-        # 내용이 길면 빈 줄 → 간격 → 줄간격 순으로 줄여 한 장에 맞춘다
+        # 1) 내용이 들어가는 조합을 찾는다 (빈 줄 → 간격 → 줄간격 순으로 줄임)
         for blanks, gap, lead in ((2, 2.4, 12.6), (1, 2.4, 12.6), (1, 2.0, 12.0),
                                   (0, 2.0, 12.0), (0, 1.6, 11.4)):
             story = build_one(e, blanks, gap * mm, lead)
             h = height(story)
-            if h <= AVAIL - 6 * mm:
+            if h <= AVAIL - SAFETY:
                 break
-        if h > AVAIL - 6 * mm:
+
+        # 2) 공간이 남으면 각 구획의 빈 줄을 늘려 병원이 적을 자리를 넓힌다
+        while blanks < 4:
+            trial = build_one(e, blanks + 1, gap * mm, lead)
+            th = height(trial)
+            if th > AVAIL - SAFETY - 12 * mm:
+                break
+            blanks += 1
+            story, h = trial, th
+
+        # 3) 그래도 남는 공간의 절반은 기입 칸을 키우는 데 쓴다 (볼펜으로 쓰기 편하도록)
+        room = AVAIL - SAFETY - h
+        info_h = min(INFO_MAX, INFO_MIN + max(0, room * 0.5) / 6)
+        story = build_one(e, blanks, gap * mm, lead, info_h)
+        h = height(story)
+
+        # 4) 그러고도 남는 공간은 서명 앞으로 보내 서명줄을 맨 아래에 둔다
+        tail = max(0, AVAIL - SAFETY - h)
+        if tail > 0.5 * mm:
+            story = build_one(e, blanks, gap * mm, lead, info_h, tail)
+            h = height(story)
+
+        if h > AVAIL - 1 * mm:
             tight.append((e["title"], (h - AVAIL) / mm))
-        path = os.path.join(ROOT, e["dir"], e["file"] + ".pdf")
-        build(path, e["title"], story)
+        build(os.path.join(ROOT, e["dir"], e["file"] + ".pdf"), e["title"], story)
         made += 1
     print("질환별 동의서 PDF %d건 생성" % made)
     over = [a for a in AUDIT if a[2] > a[3] + 1]
@@ -132,7 +163,7 @@ def main():
         for t in tight[:5]:
             print("     %s (%+.1fmm)" % t)
     if not over and not tight:
-        print("  ✓ 전 건 A4 한 장 · 칸 넘침 없음")
+        print("  ✓ 전 건 A4 한 장 · 칸 넘침 없음 · 서명줄 하단 정렬")
 
 
 if __name__ == "__main__":
