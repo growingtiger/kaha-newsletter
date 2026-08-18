@@ -200,7 +200,9 @@ def footer_fn(form_no, y=12 * mm):
 
 
 def build(filename, form_no, title, story, top=12 * mm, bottom=18 * mm, footer=True):
-    d = SimpleDocTemplate(os.path.join(OUT, filename), pagesize=A4,
+    dest = os.path.join(OUT, filename)
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    d = SimpleDocTemplate(dest, pagesize=A4,
                           topMargin=top, bottomMargin=bottom,
                           leftMargin=MARGIN, rightMargin=MARGIN,
                           title=title, author="사단법인 한국동물병원협회",
@@ -354,7 +356,7 @@ s.append(grid([
 ], [13 * mm, 38 * mm, 13 * mm, 47 * mm, 20 * mm, W - 131 * mm],
     heights=[11 * mm], label_cols=(0, 2, 4)))
 
-build("마취동의서_한국동물병원협회.pdf", "KAHA-F-2601", "수술등중대진료(마취) 동의서", s,
+build("01_수술마취/마취동의서_한국동물병원협회.pdf", "KAHA-F-2601", "수술등중대진료(마취) 동의서", s,
       top=10 * mm, bottom=10 * mm, footer=False)
 
 # ═══════════════════════════════════════════════════════════════════
@@ -415,7 +417,7 @@ s.append(grid([
      P("회복기 담당"), P("성명 : __________ (서명)")],
 ], [20 * mm, 69 * mm, 22 * mm, W - 111 * mm], heights=[11 * mm], label_cols=(0, 2)))
 
-build("마취전평가체크리스트_한국동물병원협회.pdf", "KAHA-F-2602", "마취 전 평가·모니터링 체크리스트", s)
+build("06_진료기록/마취전평가체크리스트_한국동물병원협회.pdf", "KAHA-F-2602", "마취 전 평가·모니터링 체크리스트", s)
 
 # ═══════════════════════════════════════════════════════════════════
 # 3. 영양 평가·BCS/MCS 기록지  (KAHA-F-2603)
@@ -482,7 +484,7 @@ s.append(grid([
      P("평가자"), P("성명 : __________ (서명)")],
 ], [16 * mm, 44 * mm, 16 * mm, W - 76 * mm], heights=[10.5 * mm], label_cols=(0, 2)))
 
-build("영양평가기록지_한국동물병원협회.pdf", "KAHA-F-2603", "영양 평가·BCS/MCS 기록지", s)
+build("06_진료기록/영양평가기록지_한국동물병원협회.pdf", "KAHA-F-2603", "영양 평가·BCS/MCS 기록지", s)
 
 # ═══════════════════════════════════════════════════════════════════
 # 4. 입원 동의서  (KAHA-F-2604)
@@ -573,7 +575,7 @@ s.append(grid([
 ], [14 * mm, 42 * mm, 14 * mm, 44 * mm, 20 * mm, W - 134 * mm],
     heights=[10 * mm], label_cols=(0, 2, 4)))
 
-build("입원동의서_한국동물병원협회.pdf", "KAHA-F-2604", "입원 동의서", s)
+build("02_입원응급/입원동의서_한국동물병원협회.pdf", "KAHA-F-2604", "입원 동의서", s)
 
 # ═══════════════════════════════════════════════════════════════════
 # 5. 퇴원 안내문  (KAHA-F-2605)
@@ -664,8 +666,10 @@ s.append(grid([
 ], [16 * mm, 46 * mm, 16 * mm, 44 * mm, 16 * mm, W - 138 * mm],
     heights=[9 * mm], label_cols=(0, 2, 4)))
 
-build("퇴원안내문_한국동물병원협회.pdf", "KAHA-F-2605", "퇴원 안내문", s)
+build("02_입원응급/퇴원안내문_한국동물병원협회.pdf", "KAHA-F-2605", "퇴원 안내문", s)
 
 print("생성 완료")
-for f in sorted(os.listdir(OUT)):
-    print(" -", f, os.path.getsize(os.path.join(OUT, f)), "bytes")
+for root, _, files in sorted(os.walk(OUT)):
+    for f in sorted(files):
+        fp = os.path.join(root, f)
+        print(" -", os.path.relpath(fp, OUT), os.path.getsize(fp), "bytes")

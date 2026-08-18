@@ -382,7 +382,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
       cell("설명 수의사", { w: 1134, label: true, size: 17 }), cell("성명 : __________ (서명 또는 인)", { w: 2662, size: 17 }),
     ]], 600),
   ]);
-  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "마취동의서_한국동물병원협회.docx"), b));
+  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "01_수술마취/마취동의서_한국동물병원협회.docx"), b));
 })();
 
 // ═══ 2. 마취 전 평가·모니터링 체크리스트 ═══════════════════════════
@@ -432,7 +432,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
     ]], 560),
     footerRow("KAHA-F-2602"),
   ]);
-  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "마취전평가체크리스트_한국동물병원협회.docx"), b));
+  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "06_진료기록/마취전평가체크리스트_한국동물병원협회.docx"), b));
 })();
 
 // ═══ 3. 영양 평가·BCS/MCS 기록지 ═══════════════════════════════════
@@ -492,7 +492,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
     ]], 560),
     footerRow("KAHA-F-2603"),
   ]);
-  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "영양평가기록지_한국동물병원협회.docx"), b));
+  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "06_진료기록/영양평가기록지_한국동물병원협회.docx"), b));
 })();
 
 // ═══ 4. 입원 동의서 (KAHA-F-2604) ═════════════════════════════════
@@ -571,7 +571,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
     ]], 560),
     footerRow("KAHA-F-2604"),
   ]);
-  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "입원동의서_한국동물병원협회.docx"), b));
+  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "02_입원응급/입원동의서_한국동물병원협회.docx"), b));
 })();
 
 // ═══ 5. 퇴원 안내문 (KAHA-F-2605) ═════════════════════════════════
@@ -645,7 +645,7 @@ const ASA_TEXT = "□ Ⅰ 건강  □ Ⅱ 경미한 전신질환  □ Ⅲ 중등
     ]], 560),
     footerRow("KAHA-F-2605"),
   ]);
-  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "퇴원안내문_한국동물병원협회.docx"), b));
+  Packer.toBuffer(doc).then((b) => fs.writeFileSync(path.join(OUT, "02_입원응급/퇴원안내문_한국동물병원협회.docx"), b));
 })();
 
 console.log("워드 양식 5종 생성 요청 완료");

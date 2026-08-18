@@ -179,6 +179,43 @@
   }
   article table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; }
   article th, article td { border: 1px solid var(--line); padding: 0.45em 0.7em; font-size: 0.92rem; }
+  /* ── 양식 모음 ── */
+  .nav-link {
+    background: none; border: 1px solid var(--line); border-radius: 999px;
+    padding: 0.3rem 0.8rem; font: inherit; font-size: 0.82rem;
+    color: var(--ink-soft); cursor: pointer; white-space: nowrap;
+  }
+  .nav-link:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-link.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  #forms { display: none; }
+  #forms.on { display: block; }
+  .forms-head { margin: 0 0 1.6rem; }
+  .forms-head h1 { font-size: 1.45rem; margin: 0 0 0.4rem; letter-spacing: -0.02em; }
+  .forms-head p { margin: 0; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.6; }
+  .fcat { margin: 0 0 2rem; }
+  .fcat > h2 {
+    font-size: 1rem; margin: 0 0 0.15rem; color: var(--accent);
+    border-bottom: 2px solid var(--accent-soft); padding-bottom: 0.4rem;
+  }
+  .fcat > p { margin: 0.45rem 0 0.9rem; color: var(--ink-soft); font-size: 0.82rem; }
+  .fitem {
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 0.85rem 1rem; margin-bottom: 0.6rem;
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+    align-items: center; justify-content: space-between;
+  }
+  .fitem .t { flex: 1 1 15rem; min-width: 0; }
+  .fitem .t strong { display: block; font-size: 0.95rem; word-break: keep-all; }
+  .fitem .t span { display: block; color: var(--ink-soft); font-size: 0.82rem; margin-top: 0.2rem; word-break: keep-all; }
+  .fitem .dl { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .fitem .dl a {
+    text-decoration: none; font-size: 0.8rem; font-weight: 600;
+    border: 1px solid var(--line); border-radius: 7px;
+    padding: 0.32rem 0.7rem; color: var(--ink-soft);
+  }
+  .fitem .dl a:hover { border-color: var(--accent); color: var(--accent); }
+  .fitem .dl a.pdf { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .fitem .dl a.pdf:hover { background: var(--accent-dk, #023A68); color: #fff; }
   footer {
     max-width: 46rem;
     margin: 0 auto;
@@ -208,6 +245,7 @@
       <label>지난 호
         <select id="datePicker" aria-label="소식지 날짜 선택"></select>
       </label>
+      <button type="button" class="nav-link" id="navForms">양식 모음</button>
     </div>
   </div>
   <nav class="themes" id="themeNav" aria-label="요일별 테마"></nav>
@@ -216,6 +254,7 @@
   <span id="issue-badge"></span>
   <p id="status">소식지를 불러오는 중…</p>
   <article id="content"></article>
+  <section id="forms" aria-label="양식 모음"></section>
 </main>
 <footer>
   본 소식지는 KAHA 회원병원 수의사를 위한 참고 자료입니다.
@@ -276,12 +315,64 @@
   }
 
   function loadDate(d) {
+    showIssueView();
     status.textContent = "소식지를 불러오는 중…";
     fetch("issues/" + d + ".md", { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
       .then(function (md) { show(md, d); })
       .catch(function () { status.textContent = "이 날짜의 소식지를 불러오지 못했습니다."; });
   }
+
+  // ── 양식 모음 ────────────────────────────────────────────────
+  var formsEl = document.getElementById("forms");
+  var navForms = document.getElementById("navForms");
+  var FORMS = null;
+
+  function showIssueView() {
+    formsEl.classList.remove("on");
+    content.style.display = "";
+    badge.style.display = badge.textContent ? "inline-block" : "none";
+    themeNav.style.display = "";
+    navForms.classList.remove("active");
+  }
+
+  function showFormsView() {
+    content.style.display = "none";
+    badge.style.display = "none";
+    themeNav.style.display = "none";
+    status.textContent = "";
+    formsEl.classList.add("on");
+    navForms.classList.add("active");
+    if (FORMS) return;
+    formsEl.innerHTML = "<p>양식 목록을 불러오는 중…</p>";
+    fetch("forms.json", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (data) { FORMS = data; renderForms(data); })
+      .catch(function () { formsEl.innerHTML = "<p>양식 목록을 불러오지 못했습니다.</p>"; });
+  }
+
+  function renderForms(data) {
+    var h = '<div class="forms-head"><h1>양식 모음</h1>'
+      + '<p>회원병원에서 바로 쓰실 수 있는 양식 ' + data.count + '종입니다. '
+      + 'PDF는 인쇄해서 바로, 워드 파일은 병원 실정에 맞게 고쳐서 쓰시면 됩니다. 모두 A4 한 장입니다.</p></div>';
+    data.categories.forEach(function (c) {
+      h += '<div class="fcat"><h2>' + esc(c.label) + '</h2><p>' + esc(c.blurb) + '</p>';
+      c.items.forEach(function (it) {
+        h += '<div class="fitem"><div class="t"><strong>' + esc(it.name) + '</strong>'
+          + (it.desc ? '<span>' + esc(it.desc) + '</span>' : '') + '</div><div class="dl">';
+        if (it.pdf) h += '<a class="pdf" href="' + encodeURI(it.pdf) + '" target="_blank" rel="noopener noreferrer">PDF</a>';
+        if (it.docx) h += '<a href="' + encodeURI(it.docx) + '" target="_blank" rel="noopener noreferrer">워드</a>';
+        h += '</div></div>';
+      });
+      h += '</div>';
+    });
+    formsEl.innerHTML = h;
+  }
+
+  navForms.addEventListener("click", function () {
+    if (formsEl.classList.contains("on")) showIssueView();
+    else showFormsView();
+  });
 
   // ── 전체 호 검색 ──────────────────────────────────────────────
   var searchBox = document.getElementById("searchBox");
