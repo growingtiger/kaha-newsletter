@@ -46,7 +46,8 @@ LINE = colors.HexColor("#BFBFBF")      # 표 괘선
 SOFT = colors.HexColor("#767676")      # 보조 설명
 
 # ── 페이지 규격 ──────────────────────────────────────────────────
-FRAME_INSET = 6 * mm       # 남색 테두리가 종이 끝에서 떨어진 거리
+FRAME_INSET = 9.5 * mm     # 남색 테두리가 종이 끝에서 떨어진 거리
+                           # (프린터 인쇄 불가 영역에 걸리지 않도록 안쪽으로)
 FRAME_W = 2.4 * mm         # 남색 테두리 두께
 MARGIN = 17 * mm           # 본문 좌우 여백
 TOP = 15 * mm

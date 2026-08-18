@@ -109,9 +109,21 @@ function cell(text, { w, label = false, bold = false, size = 17, color = INK, sp
   });
 }
 
+/** 칸 안이 표로 끝나면 워드가 기본 높이(240 twips)의 빈 문단을 스스로 붙인다.
+ *  그 높이는 통제할 수 없어 칸을 넘치게 하므로, 아주 낮은 빈 문단을 직접 넣어 막는다. */
+function sealCell(children) {
+  const last = children[children.length - 1];
+  if (last && last.constructor && last.constructor.name === "Table") {
+    return children.concat([new Paragraph({
+      children: [], spacing: { before: 0, after: 0, line: 20, lineRule: LineRuleType.EXACT },
+    })]);
+  }
+  return children;
+}
+
 function plainCell(children, { w, fill, span, rowSpan, borders = NONE_ALL, margins, valignTop } = {}) {
   return new TableCell({
-    children, width: { size: w, type: WidthType.DXA }, columnSpan: span, rowSpan, borders,
+    children: sealCell(children), width: { size: w, type: WidthType.DXA }, columnSpan: span, rowSpan, borders,
     verticalAlign: valignTop ? VerticalAlign.TOP : VerticalAlign.CENTER,
     shading: fill ? { type: ShadingType.CLEAR, fill } : undefined,
     margins: margins || { top: 20, bottom: 20, left: 90, right: 70 },
@@ -350,7 +362,7 @@ function markFooter() {
 function buildDoc(name, children, filename) {
   const body = children.concat([gap(120)]);
   assertOnePage(name, body);
-  const navy = { style: BorderStyle.SINGLE, size: 18, color: NAVY, space: 20 };
+  const navy = { style: BorderStyle.SINGLE, size: 18, color: NAVY, space: 27 };  // 종이 끝에서 약 9.5mm
   const doc = new Document({
     styles: { default: { document: { run: { font: FONT, size: 17, color: INK } } } },
     sections: [{
