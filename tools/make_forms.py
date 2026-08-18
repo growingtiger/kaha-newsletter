@@ -377,7 +377,6 @@ s.append(grid([
     [P("사전 혈액검사"), P("□ CBC     □ 혈액화학     □ 전해질     □ 응고계     □ 기타 : ")],
     [P("ASA 분류"), P("□ Ⅰ 건강    □ Ⅱ 경미한 전신질환    □ Ⅲ 중등도 전신질환    □ Ⅳ 생명 위협    □ Ⅴ 위중    □ E 응급")],
 ], [32 * mm, W - 32 * mm], heights=[8 * mm, 8 * mm]))
-s.append(Paragraph("※ 등급별 마취 관련 사망 위험(영국 CEPSAF 연구, Brodbelt 등 2008) — 건강 개체(ASA Ⅰ–Ⅱ): 개 0.05% · 고양이 0.11% / 질환 동반(ASA Ⅲ–Ⅴ): 개 1.33% · 고양이 1.40%", st_note))
 
 s += section("마취 전 준비")
 s.append(grid([
