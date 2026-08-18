@@ -107,8 +107,12 @@ def header(title, subtitle, form_no):
             Paragraph(subtitle, st_sub)]
 
 
-def band_header(title, legal, form_no):
-    """상단 브랜드 밴드 — 왼쪽 제목·근거법령, 오른쪽 흰 칩 안에 공식 로고."""
+def band_header(title, legal, form_no=None):
+    """상단 브랜드 밴드 — 왼쪽 제목·근거법령, 오른쪽 흰 칩 안에 공식 로고.
+
+    form_no를 주면 아래에 서식번호 띠를 붙인다(내부 관리용 양식).
+    보호자에게 바로 배부하는 동의서는 생략한다.
+    """
     tw = W - 62 * mm - 9 * mm
     tcell = Table([[Paragraph(title, ParagraphStyle(
                         "bt", fontName="NanumB", fontSize=17.5, leading=21, textColor=colors.white))],
@@ -137,6 +141,8 @@ def band_header(title, legal, form_no):
         ("LEFTPADDING", (1, 0), (1, -1), 0), ("RIGHTPADDING", (1, 0), (1, -1), 0),
         ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
     ]))
+    if not form_no:
+        return [band]
     meta = Table([[P("서식번호 " + form_no + "  ·  시행일자 2026. 8.  ·  작성 후 1년 보존",
                      size=7.4, color=colors.white)]], colWidths=[W], rowHeights=[5.4 * mm])
     meta.setStyle(TableStyle([
@@ -193,42 +199,44 @@ def footer_fn(form_no, y=12 * mm):
     return draw
 
 
-def build(filename, form_no, title, story, top=12 * mm, bottom=18 * mm):
+def build(filename, form_no, title, story, top=12 * mm, bottom=18 * mm, footer=True):
     d = SimpleDocTemplate(os.path.join(OUT, filename), pagesize=A4,
                           topMargin=top, bottomMargin=bottom,
                           leftMargin=MARGIN, rightMargin=MARGIN,
                           title=title, author="사단법인 한국동물병원협회",
                           subject="KAHA 회원병원 실무 소식지 제공 양식")
-    fn = footer_fn(form_no, y=bottom - 6 * mm)
-    d.build(story, onFirstPage=fn, onLaterPages=fn)
+    if footer:
+        fn = footer_fn(form_no, y=bottom - 6 * mm)
+        d.build(story, onFirstPage=fn, onLaterPages=fn)
+    else:
+        d.build(story)
 
 
 # ═══════════════════════════════════════════════════════════════════
 # 1. 수술·마취 동의서  (KAHA-F-2601)
 # ═══════════════════════════════════════════════════════════════════
 s = band_header("수술등중대진료(마취) 동의서",
-                "수의사법 제13조의2 및 같은 법 시행규칙 제13조의3에 따른 설명·서면동의 — 전신마취를 동반하는 내부장기·뼈·관절 수술 및 수혈",
-                "KAHA-F-2601")
+                "수의사법 제13조의2 및 같은 법 시행규칙 제13조의3에 따른 설명 · 서면동의")
 
 # ── 인적사항: 보호자 · 반려동물 · 수의사 3구획 (좌측 라벨 병합) ──
 LC, KC = 20 * mm, 24 * mm
 VC = (W - LC - KC * 2) / 2
 info = [
     [P("보호자", bold=True, size=9.5, color=BLUE_DK), P("성 명"), "", P("생년월일"), ""],
-    ["", P("연 락 처"), "", P("제2연락처"), ""],
+    ["", P("연 락 처"), "", P("동물과의 관계"), P("□ 소유자     □ 대리인", size=8.6)],
     ["", P("주 소"), "", "", ""],
     [P("반려동물", bold=True, size=9.5, color=BLUE_DK), P("이 름"), "", P("종 / 품종"), ""],
     ["", P("성별 / 중성화"), "", P("연령 / 체중"), ""],
-    ["", P("차트번호"), "", P("특이사항"), ""],
+    ["", P("특이사항"), "", "", ""],
     [P("수의사", bold=True, size=9.5, color=BLUE_DK), P("동물병원명"), "", P("면허번호"), ""],
-    ["", P("성 명"), "", P("보호자 관계"), P("□ 소유자   □ 대리인", size=8.4)],
+    ["", P("성 명"), "", "", P("(서명 또는 인)", size=8.4, color=GREY)],
 ]
-it = Table(info, colWidths=[LC, KC, VC, KC, VC], rowHeights=[6.5 * mm] * 8)
+it = Table(info, colWidths=[LC, KC, VC, KC, VC], rowHeights=[7.6 * mm] * 8)
 it.setStyle(TableStyle([
     ("GRID", (1, 0), (-1, -1), 0.5, LINE),
     ("BOX", (0, 0), (-1, -1), 0.5, LINE),
     ("SPAN", (0, 0), (0, 2)), ("SPAN", (0, 3), (0, 5)), ("SPAN", (0, 6), (0, 7)),
-    ("SPAN", (2, 2), (4, 2)),
+    ("SPAN", (2, 2), (4, 2)), ("SPAN", (2, 5), (4, 5)), ("SPAN", (2, 7), (3, 7)),
     ("LINEBELOW", (0, 2), (-1, 2), 0.9, BLUE),
     ("LINEBELOW", (0, 5), (-1, 5), 0.9, BLUE),
     ("BACKGROUND", (0, 0), (0, -1), BLUE_BG),
@@ -249,11 +257,11 @@ s += cap("수술등중대진료의 필요성, 방법 및 내용")
 s.append(grid([
     [P("진단명 (추정 포함)"), "", P("예정 일시"), ""],
     [P("수술 / 처치명"), "", P("마취 방식"), ""],
-], [30 * mm, W / 2 - 30 * mm, 26 * mm, W / 2 - 26 * mm], heights=[6.6 * mm] * 2, label_cols=(0, 2)))
+], [30 * mm, W / 2 - 30 * mm, 26 * mm, W / 2 - 26 * mm], heights=[7.6 * mm] * 2, label_cols=(0, 2)))
 s.append(grid([
     [P("필요성 · 현재 상태"), ""],
     [P("방법 및 내용"), ""],
-], [30 * mm, W - 30 * mm], heights=[8.4 * mm, 8.4 * mm], valign_top=(0, 1)))
+], [30 * mm, W - 30 * mm], heights=[11 * mm, 11 * mm], valign_top=(0, 1)))
 
 # ── 2. 후유증 · 부작용 + ASA 등급 ──
 s += cap("수술등중대진료에 따라 전형적으로 발생이 예상되는 후유증 또는 부작용")
@@ -274,7 +282,7 @@ rt.setStyle(TableStyle([
 s.append(rt)
 s.append(Spacer(1, 1 * mm))
 
-ASA_W = [13 * mm, 18 * mm, W - 97 * mm, 66 * mm]
+ASA_W = [16 * mm, 20 * mm, W - 66 * mm, 30 * mm]
 ac = ParagraphStyle("ac", fontName="Nanum", fontSize=8.2, leading=10.4, alignment=TA_CENTER,
                     textColor=INK)
 ah = ParagraphStyle("ah", fontName="NanumB", fontSize=8.6, leading=11, alignment=TA_CENTER,
@@ -288,33 +296,25 @@ def AC(t, bold=False, color=INK):
 
 asa_rows = [
     [AC("체크", bold=True), AC("ASA 등급", bold=True), AC("정 의", bold=True),
-     AC("마취 관련 사망 위험 (CEPSAF)", bold=True)],
-    [AC("□"), AC("Ⅰ"), AC("정상적이고 건강한 개체"),
-     AC("개 0.05 %　·　고양이 0.11 %<br/><font size='7.2' color='#6B7683'>ASA Ⅰ–Ⅱ 건강 개체 기준</font>")],
-    [AC("□"), AC("Ⅱ"), AC("활동을 제한하지 않는 가벼운 전신질환"), ""],
-    [AC("□"), AC("Ⅲ"), AC("활동이 가능한 중등도의 전신질환"),
-     AC("개 1.33 %　·　고양이 1.40 %<br/><font size='7.2' color='#6B7683'>ASA Ⅲ–Ⅴ 질환 동반 개체 기준</font>")],
-    [AC("□"), AC("Ⅳ"), AC("지속적으로 생명을 위협하며 활동이 불가능한 전신질환"), ""],
-    [AC("□"), AC("Ⅴ"), AC("수술과 관계없이 24시간 이내 사망할 수 있는 빈사 상태"), ""],
-    [AC("□"), AC("E"), AC("위 등급에 해당하면서 응급으로 시행하는 경우"),
-     AC("응급 상황은 위험을 더 높입니다", color=GREY)],
+     AC("사망률(%)", bold=True)],
+    [AC("□"), AC("Ⅰ"), AC("정상적이고 건강한 개체"), AC("0.1")],
+    [AC("□"), AC("Ⅱ"), AC("활동을 제한하지 않는 가벼운 전신질환"), AC("1")],
+    [AC("□"), AC("Ⅲ"), AC("활동이 가능한 중증의 전신질환"), AC("10")],
+    [AC("□"), AC("Ⅳ"), AC("지속적으로 생명을 위협하며 활동이 불가능한 전신질환"), AC("30")],
+    [AC("□"), AC("Ⅴ"), AC("수술과 관계없이 24시간 이내에 사망할 수 있는 빈사 상태"), AC("50")],
 ]
-at = Table(asa_rows, colWidths=ASA_W, rowHeights=[5.8 * mm] * 7)
+at = Table(asa_rows, colWidths=ASA_W, rowHeights=[6.3 * mm] * 6)
 at.setStyle(TableStyle([
     ("BACKGROUND", (0, 0), (-1, 0), BLUE_BG),
     ("LINEABOVE", (0, 0), (-1, 0), 0.9, BLUE),
     ("LINEBELOW", (0, 0), (-1, 0), 0.9, BLUE),
     ("LINEBELOW", (0, -1), (-1, -1), 0.9, BLUE),
     ("INNERGRID", (0, 1), (-1, -1), 0.4, LINE),
-    ("SPAN", (3, 1), (3, 2)), ("SPAN", (3, 3), (3, 5)),
     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
     ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
     ("LEFTPADDING", (0, 0), (-1, -1), 3), ("RIGHTPADDING", (0, 0), (-1, -1), 3),
 ]))
 s.append(at)
-s.append(Paragraph("※ 위험 수치 출처 : 영국 CEPSAF 연구(Brodbelt 등, 2008, 개 98,036두 · 고양이 79,178두). 전체 평균 개 0.17 % · 고양이 0.24 %이며, "
-                   "개별 위험은 질환 · 수술 종류 · 연령에 따라 달라집니다. 위 후유증은 전형적으로 예상되는 사항으로 예측하지 못한 상황이 발생할 수 있습니다.",
-                   st_note))
 
 # ── 3. 보호자 준수·숙지 사항 및 추가 확인 ──
 s += cap("수술등중대진료 전후에 보호자가 준수 및 숙지하여야 할 사항", "— 해당 항목에 표시하여 주십시오")
@@ -323,16 +323,16 @@ s.append(grid([
     [P("□  마취를 시행함에 있어 발생할 수 있는 부작용 · 합병증 또는 후유증에 대한 설명을 충분히 듣고 이해하였습니다.", size=8.6)],
     [P("□  마취 과정에 있어 불가항력적이거나 환자의 특이체질로 인한 우발사고의 가능성을 인정합니다.", size=8.6)],
     [P("□  수술 후 주의사항(넥카라 · 활동 제한 · 투약 등)을 준수하고, 응급상황에 연락 가능한 연락처를 유지합니다.", size=8.6)],
-], [W], heights=[6 * mm] * 4, label_cols=()))
+], [W], heights=[6.7 * mm] * 4, label_cols=()))
 s.append(grid([
     [P("□  심폐소생술(CPR) :  □ 시행 원함   □ 원하지 않음(DNR)", size=8.6),
      P("□  마취 및 수술비 설명을 들었음  ( 예상 : __________ 원 )", size=8.6)],
     [P("□  수술 중 상태에 따라 범위가 변경될 수 있음을 설명받음", size=8.6),
      P("변경 시 :  □ 사전 연락 요망   □ 수의사 판단에 위임", size=8.6)],
-], [W / 2, W / 2], heights=[6 * mm] * 2, label_cols=()))
+], [W / 2, W / 2], heights=[6.7 * mm] * 2, label_cols=()))
 
 # ── 동의문 · 서명 ──
-s.append(Spacer(1, 1.8 * mm))
+s.append(Spacer(1, 1.4 * mm))
 agree = Table([[Paragraph(
     "「수의사법」 제13조의2 및 같은 법 시행규칙 제13조의3에 따라 위와 같이 수의사로부터 수술등중대진료에 관한 설명을 들었으며, "
     "그 필요성 · 방법 · 내용과 전형적으로 예상되는 후유증 및 부작용을 충분히 이해하였습니다. 이에 위 수술등중대진료 및 마취의 시행에 동의하며, "
@@ -346,16 +346,16 @@ agree.setStyle(TableStyle([
     ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
 ]))
 s.append(agree)
-s.append(Spacer(1, 1.8 * mm))
+s.append(Spacer(1, 1.4 * mm))
 s.append(grid([
     [P("작성일", size=8.6), P("20____년  ____월  ____일", size=8.6),
      P("보호자", size=8.6), P("성명 : __________ (서명 또는 인)", size=8.6),
      P("설명 수의사", size=8.6), P("성명 : __________ (서명 또는 인)", size=8.6)],
 ], [13 * mm, 38 * mm, 13 * mm, 47 * mm, 20 * mm, W - 131 * mm],
-    heights=[9.6 * mm], label_cols=(0, 2, 4)))
+    heights=[11 * mm], label_cols=(0, 2, 4)))
 
 build("surgery-anesthesia-consent.pdf", "KAHA-F-2601", "수술등중대진료(마취) 동의서", s,
-      top=10 * mm, bottom=15 * mm)
+      top=10 * mm, bottom=10 * mm, footer=False)
 
 # ═══════════════════════════════════════════════════════════════════
 # 2. 마취 전 평가·모니터링 체크리스트  (KAHA-F-2602)
