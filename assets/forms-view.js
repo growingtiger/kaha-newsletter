@@ -53,21 +53,36 @@
   }
 
   // 정부·유관기관 서식 — 협회가 만든 것이 아니므로 파일을 두지 않고 받는 곳을 안내한다
-  function officialItem(it) {
+  function officialItem(it, base) {
     var h = '<div class="fitem is-official"><div class="t">'
       + '<span class="tag">협회 양식 아님</span>'
       + '<span class="tag agency">' + esc(it.agency) + "</span>"
       + "<strong>" + esc(it.name) + "</strong>"
-      + (it.desc ? '<span class="no">' + esc(it.desc) + "</span>" : "");
+      + (it.desc || it.rev
+         ? '<span class="no">' + esc(it.desc)
+           + (it.rev ? (it.desc ? " · " : "") + esc(it.rev) : "") + "</span>"
+         : "");
     if (it.basis) h += "<span>근거 " + esc(it.basis) + "</span>";
     if (it.note) h += "<span>" + esc(it.note) + "</span>";
-    if (!it.url && it.site) {
+    var has = it.files && it.files.length;
+    if (has && it.asof) {
+      h += '<span class="where">' + esc(it.asof) + " 내려받은 사본 · 최신본은 "
+        + esc(it.agency) + "에서 확인</span>";
+    }
+    if (!has && it.site) {
       h += '<span class="where">받는 곳 · ' + esc(it.site)
         + (it.path ? " (" + esc(it.path) + ")" : "") + "</span>";
     }
     h += '</div><div class="dl">';
-    if (it.url) h += '<a class="pdf" href="' + encodeURI(it.url)
-      + '" target="_blank" rel="noopener noreferrer">받으러 가기</a>';
+    if (has) {
+      it.files.forEach(function (f, i) {
+        h += '<a' + (i === 0 ? ' class="pdf"' : "") + ' href="' + encodeURI(base + f.path)
+          + '" target="_blank" rel="noopener noreferrer">' + esc(f.label) + "</a>";
+      });
+    } else if (it.url) {
+      h += '<a class="pdf" href="' + encodeURI(it.url)
+        + '" target="_blank" rel="noopener noreferrer">받으러 가기</a>';
+    }
     return h + "</div></div>";
   }
 
@@ -172,7 +187,7 @@
         cats += '<div class="fcat"><h2>' + esc(c.label) + "</h2>"
           + (c.blurb ? "<p>" + esc(c.blurb) + "</p>" : "");
         hits.forEach(function (it) {
-          cats += it.agency ? officialItem(it) : ownItem(it, self.base);
+          cats += it.agency ? officialItem(it, self.base) : ownItem(it, self.base);
         });
         cats += "</div>";
       });

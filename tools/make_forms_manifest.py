@@ -58,8 +58,9 @@ GUIDE_CAT_LABEL = {
 }
 
 OFFICIAL_CAT_LABEL = {
-    "01_진료증명": "진료 · 증명", "02_개설신고": "개설 · 신고",
-    "03_검역출국": "검역 · 출국",
+    "01_검역출국": "검역 · 출국", "02_마약류": "마약류 관리",
+    "03_의약품": "의약품 취급", "04_대한수의사회": "대한수의사회 권고 양식",
+    "05_운영안내": "운영 안내 · 가이드라인", "06_법정서식": "법정 서식 (최신본 직접 확인)",
 }
 
 ADMIN_CAT_LABEL = {
@@ -168,11 +169,14 @@ def build():
         for folder in sorted(by_dir):
             items = [{
                 "name": e["title"],
-                "desc": e["form_no"],
-                "kw": e.get("kw", "") + " " + e["form_no"] + " " + e["agency"],
+                "desc": e.get("form_no", ""),
+                "kw": e.get("kw", "") + " " + e.get("form_no", "") + " " + e["agency"],
                 "agency": e["agency"],
                 "basis": e.get("basis", ""),
                 "note": e.get("note", ""),
+                "rev": e.get("rev", ""),
+                "asof": e.get("asof", ""),
+                "files": e.get("files", []),
                 "site": e.get("site", ""),
                 "path": e.get("path", ""),
                 "url": e.get("url", ""),
@@ -183,9 +187,11 @@ def build():
         groups.append({
             "key": "official", "external": True,
             "label": "정부 · 유관기관 공식 서식 (협회 양식 아님)",
-            "blurb": "법령과 고시가 정한 서식입니다. 협회가 만든 것이 아니므로 "
-                     "내용을 고치지 말고 발급 기관의 원본을 그대로 받아 쓰십시오. "
-                     "아래는 어디서 받는지를 안내하는 목록입니다.",
+            "blurb": "법령·고시가 정한 서식과 유관기관 배포 자료입니다. 협회가 만든 것이 "
+                     "아니므로 내용을 고치지 말고 원본 그대로 쓰십시오. 파일이 붙어 있는 "
+                     "것은 발급 기관에서 받아 둔 사본이며, 개정될 수 있으니 표시된 "
+                     "기준일을 확인하고 중요한 서류는 발급 기관에서 최신본을 "
+                     "다시 확인하십시오.",
             "cats": cats})
 
     n = sum(len(c["items"]) for g in groups for c in g["cats"])
