@@ -56,6 +56,11 @@ GUIDE_CAT_LABEL = {
     "15_행동": "행동", "16_응급": "응급", "17_생활관리": "생활 관리",
 }
 
+OFFICIAL_CAT_LABEL = {
+    "01_진료증명": "진료 · 증명", "02_개설신고": "개설 · 신고",
+    "03_검역출국": "검역 · 출국",
+}
+
 ADMIN_CAT_LABEL = {
     "01_채용근로계약": "채용 · 근로계약", "02_근태휴가": "근태 · 휴가",
     "03_인사관리": "인사 관리", "04_퇴직": "퇴직",
@@ -150,8 +155,42 @@ def build():
               ADMIN_ROOT, "admin_forms.json", ADMIN_CAT_LABEL, "title",
               lambda e: (e["title"], e.get("sub", "")))
 
+    # 정부·유관기관이 배포하는 공식 서식 — 협회가 만든 양식이 아니므로
+    # 파일을 두지 않고 어디서 받는지만 안내한다.
+    op = os.path.join(BASE, "data", "official_forms.json")
+    if os.path.exists(op):
+        rows = json.load(open(op, encoding="utf-8"))
+        by_dir = {}
+        for e in rows:
+            by_dir.setdefault(e["cat"], []).append(e)
+        cats = []
+        for folder in sorted(by_dir):
+            items = [{
+                "name": e["title"],
+                "desc": e["form_no"],
+                "kw": e.get("kw", "") + " " + e["form_no"] + " " + e["agency"],
+                "agency": e["agency"],
+                "basis": e.get("basis", ""),
+                "note": e.get("note", ""),
+                "site": e.get("site", ""),
+                "path": e.get("path", ""),
+                "url": e.get("url", ""),
+            } for e in by_dir[folder]]
+            cats.append({"folder": folder,
+                         "label": OFFICIAL_CAT_LABEL.get(folder, folder),
+                         "blurb": "", "items": items})
+        groups.append({
+            "key": "official", "external": True,
+            "label": "정부 · 유관기관 공식 서식 (협회 양식 아님)",
+            "blurb": "법령과 고시가 정한 서식입니다. 협회가 만든 것이 아니므로 "
+                     "내용을 고치지 말고 발급 기관의 원본을 그대로 받아 쓰십시오. "
+                     "아래는 어디서 받는지를 안내하는 목록입니다.",
+            "cats": cats})
+
     n = sum(len(c["items"]) for g in groups for c in g["cats"])
-    return {"groups": groups, "count": n}
+    own = sum(len(c["items"]) for g in groups for c in g["cats"]
+              if not g.get("external"))
+    return {"groups": groups, "count": own, "total": n}
 
 
 if __name__ == "__main__":

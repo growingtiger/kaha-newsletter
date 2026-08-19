@@ -73,3 +73,35 @@
   border-radius: 8px; padding: 0.5rem 1.1rem; white-space: nowrap;
 }
 .fbundle .dl:hover { background: var(--accent-dk, #023A68); }
+
+/* 정부 · 유관기관 서식 — 협회 양식과 확실히 구분되게 */
+.fgroup .fcat .fitem.is-official {
+  border-style: dashed;
+  border-color: #b8863b;
+  background: color-mix(in srgb, #b8863b 6%, transparent);
+  align-items: flex-start;
+}
+.fitem.is-official .t strong { margin-top: 0.35rem; }
+.fitem.is-official .t span { margin-top: 0.3rem; }
+.fitem.is-official .t span.no { font-weight: 600; color: var(--ink); }
+.fitem.is-official .t span.where { color: #8a6528; }
+.fitem .tag {
+  display: inline-block !important;
+  margin: 0 0.3rem 0 0 !important;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  background: #b8863b;
+  color: #fff !important;
+  vertical-align: middle;
+}
+.fitem .tag.agency { background: none; color: #8a6528 !important; border: 1px solid #c9a366; }
+.fchip.ext { border-style: dashed; border-color: #c9a366; color: #8a6528; }
+.fchip.ext.on { background: #b8863b; border-color: #b8863b; color: #fff; }
+@media (prefers-color-scheme: dark) {
+  .fgroup .fcat .fitem.is-official { border-color: #c9a366; }
+  .fitem.is-official .t span.where { color: #d8b071; }
+  .fitem .tag.agency { color: #d8b071 !important; }
+}

@@ -41,6 +41,36 @@
       + "</div>";
   }
 
+  // 협회가 만든 양식 — PDF·워드를 바로 받는다
+  function ownItem(it, base) {
+    var h = '<div class="fitem"><div class="t"><strong>' + esc(it.name) + "</strong>"
+      + (it.desc ? "<span>" + esc(it.desc) + "</span>" : "") + '</div><div class="dl">';
+    if (it.pdf) h += '<a class="pdf" href="' + encodeURI(base + it.pdf)
+      + '" target="_blank" rel="noopener noreferrer">PDF</a>';
+    if (it.docx) h += '<a href="' + encodeURI(base + it.docx)
+      + '" target="_blank" rel="noopener noreferrer">워드</a>';
+    return h + "</div></div>";
+  }
+
+  // 정부·유관기관 서식 — 협회가 만든 것이 아니므로 파일을 두지 않고 받는 곳을 안내한다
+  function officialItem(it) {
+    var h = '<div class="fitem is-official"><div class="t">'
+      + '<span class="tag">협회 양식 아님</span>'
+      + '<span class="tag agency">' + esc(it.agency) + "</span>"
+      + "<strong>" + esc(it.name) + "</strong>"
+      + (it.desc ? '<span class="no">' + esc(it.desc) + "</span>" : "");
+    if (it.basis) h += "<span>근거 " + esc(it.basis) + "</span>";
+    if (it.note) h += "<span>" + esc(it.note) + "</span>";
+    if (!it.url && it.site) {
+      h += '<span class="where">받는 곳 · ' + esc(it.site)
+        + (it.path ? " (" + esc(it.path) + ")" : "") + "</span>";
+    }
+    h += '</div><div class="dl">';
+    if (it.url) h += '<a class="pdf" href="' + encodeURI(it.url)
+      + '" target="_blank" rel="noopener noreferrer">받으러 가기</a>';
+    return h + "</div></div>";
+  }
+
   function View(el, opts) {
     this.el = el;
     this.base = (opts && opts.base) || "";
@@ -71,8 +101,11 @@
   // (매번 다시 그리면 한글 입력 중 조합이 끊겨 자모가 분리된다)
   View.prototype.render = function (data) {
     this.data = data;
-    var intro = this.intro || ("회원병원에서 바로 쓰실 수 있는 양식 " + data.count + "종입니다. "
-      + "인쇄해서 바로 쓰실 수 있고, 워드 파일은 자유롭게 고쳐 쓰실 수 있습니다. 모두 A4 한 장입니다.");
+    var extra = data.total && data.total > data.count
+      ? " 정부·유관기관이 배포하는 공식 서식 " + (data.total - data.count) + "종도 목록 맨 아래에 함께 안내해 두었습니다."
+      : "";
+    var intro = this.intro || ("회원병원에서 바로 쓰실 수 있는 협회 양식 " + data.count + "종입니다. "
+      + "인쇄해서 바로 쓰실 수 있고, 워드 파일은 자유롭게 고쳐 쓰실 수 있습니다. 모두 A4 한 장입니다." + extra);
 
     this.el.innerHTML = '<div class="forms-head"><h1>' + esc(this.title) + "</h1>"
       + "<p>" + esc(intro) + "</p></div>"
@@ -111,6 +144,7 @@
       g.cats.forEach(function (c) {
         var key = g.key + "/" + c.folder;
         h += '<button type="button" class="fchip' + (self.cat === key ? " on" : "")
+          + (g.external ? " ext" : "")
           + '" data-cat="' + esc(key) + '">' + esc(c.label) + " " + c.items.length + "</button>";
       });
     });
@@ -138,13 +172,7 @@
         cats += '<div class="fcat"><h2>' + esc(c.label) + "</h2>"
           + (c.blurb ? "<p>" + esc(c.blurb) + "</p>" : "");
         hits.forEach(function (it) {
-          cats += '<div class="fitem"><div class="t"><strong>' + esc(it.name) + "</strong>"
-            + (it.desc ? "<span>" + esc(it.desc) + "</span>" : "") + '</div><div class="dl">';
-          if (it.pdf) cats += '<a class="pdf" href="' + encodeURI(self.base + it.pdf)
-            + '" target="_blank" rel="noopener noreferrer">PDF</a>';
-          if (it.docx) cats += '<a href="' + encodeURI(self.base + it.docx)
-            + '" target="_blank" rel="noopener noreferrer">워드</a>';
-          cats += "</div></div>";
+          cats += it.agency ? officialItem(it) : ownItem(it, self.base);
         });
         cats += "</div>";
       });
