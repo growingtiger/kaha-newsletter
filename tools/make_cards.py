@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""인스타그램 카드뉴스(1080×1080) 생성 — 발행 안내 전용(2026-08-21 개편).
+"""인스타그램 카드뉴스(1080×1080) 생성 — 발행 안내 전용 1장(2026-08-23 개편).
 
 인스타그램은 회원병원뿐 아니라 보호자 등 일반 대중도 볼 수 있으므로,
 카드에는 조문·수치 등 소식지 세부 내용을 싣지 않는다. "오늘 이런 주제로
-발행되었다"는 안내와 협회 홈페이지 링크만 담는다. 세부 내용은 홈페이지에서
-확인하도록 유도한다.
+발행되었다"는 안내와 협회 홈페이지 링크만 한 장에 담는다. 세부 내용은
+홈페이지에서 확인하도록 유도한다.
 
 tools/cards_data.json의 호별 데이터(제목·부제)를 읽어 cards/<날짜>/ 아래에
-표지 카드 1장 + 홈페이지 안내 카드 1장, caption.txt를 만든다.
+안내 카드 1장, caption.txt를 만든다.
 디자인은 소식지·양식과 같은 브랜드 팔레트(KAHA 블루 #035293)를 쓴다.
 필요: Pillow, 시스템 폰트 fonts-nanum.
 """
@@ -92,15 +92,9 @@ def base_card():
     img = Image.new("RGB", (SIZE, SIZE), WHITE)
     return img, ImageDraw.Draw(img)
 
-def footer(img, draw, page, total):
+def footer(img, draw):
     draw.rectangle([0, SIZE - 14, SIZE, SIZE], fill=BLUE)
     draw.text((80, SIZE - 74), "KAHA 회원병원 실무 소식지", font=F("semibold", 26), fill=GREY)
-    cx = SIZE // 2 - (total - 1) * 18
-    for i in range(total):
-        r = 7
-        fill = BLUE if (i + 1) == page else BLUE_LT
-        draw.ellipse([cx - r, SIZE - 66 - r, cx + r, SIZE - 66 + r], fill=fill)
-        cx += 36
 
 def chip(draw, x, y, text, font, pad=18):
     w = draw.textlength(text, font=font)
@@ -125,51 +119,41 @@ def make_set(date, data):
     os.makedirs(outdir, exist_ok=True)
     dow = datetime.date(*map(int, date.split("-"))).isoweekday()
     theme = THEMES.get(dow, "")
-    total = 2
 
-    # ── 1. 표지: 오늘 발행 안내 (제목 + 한 줄 소개만, 세부 내용 없음) ──
+    # ── 1장: 발행 안내 + 홈페이지 유도 (세부 내용 없음) ──
     img, d = base_card()
     img.paste(logo(64), (80, 80), logo(64))
     d.rectangle([80, 184, SIZE - 80, 190], fill=BLUE)
     chip(d, 80, 250, theme, F("semibold", 32))
     d.text((80, 336), "오늘의 회원병원 실무 소식지가 발행되었습니다",
            font=F("bold", 32), fill=BLUE_DK)
-    tf = F("extrabold", 60)
-    y = draw_lines(d, wrap(d, data["title"], tf, 920), 80, 400, tf, INK, 80)
-    sf = F("regular", 38)
-    y = draw_lines(d, wrap(d, data["subtitle"], sf, 920), 80, y + 14, sf, GREY, 54)
+    tf = F("extrabold", 58)
+    y = draw_lines(d, wrap(d, data["title"], tf, 920), 80, 400, tf, INK, 78)
+    sf = F("regular", 36)
+    y = draw_lines(d, wrap(d, data["subtitle"], sf, 920), 80, y + 12, sf, GREY, 50)
+
+    y += 56
+    d.rectangle([80, y, SIZE - 80, y + 3], fill=BLUE_LT)
+    y += 54
+
+    d.text((80, y), "자세한 내용은 협회 홈페이지에서 확인하세요",
+           font=F("bold", 38), fill=BLUE_DK)
+    y += 74
+    box_w, box_h = 560, 88
+    d.rounded_rectangle([80, y, 80 + box_w, y + box_h], radius=box_h // 2, fill=BLUE)
+    uf = F("bold", 38)
+    d.text((80 + 40, y + (box_h - uf.size) / 2 - 4), SITE_URL, font=uf, fill=WHITE)
+    y += box_h + 40
+    df = F("regular", 30)
+    y = draw_lines(d, wrap(d, "회원병원을 위한 실무 소식지 전문과 지난 호 전체는 협회 홈페이지에서 볼 수 있습니다.", df, 920),
+                   80, y, df, GREY, 44)
+
     if y > CONTENT_MAX_Y:
         OVERFLOW.append("%s cover: y=%d (한계 %d)" % (date, y, CONTENT_MAX_Y))
-    hint = "자세한 내용은 다음 장에서  →"
-    hw = d.textlength(hint, font=F("semibold", 30))
-    d.text((SIZE - 80 - hw, 908), hint, font=F("semibold", 30), fill=BLUE)
-    footer(img, d, page=1, total=total)
+    footer(img, d)
     img.save(os.path.join(outdir, "1-cover.png"))
 
-    # ── 2. 홈페이지 안내: 세부 내용은 협회 홈페이지에서 ──
-    img, d = base_card()
-    img.paste(logo(56), ((SIZE - logo(56).width) // 2, 130), logo(56))
-    hf = F("extrabold", 54)
-    y = draw_lines(d, ["자세한 내용은", "협회 홈페이지에서 확인하세요"],
-                   0, 320, hf, BLUE_DK, 76, center=True)
-    y += 40
-    box_w = 780
-    box_x = (SIZE - box_w) // 2
-    box_h = 96
-    d.rounded_rectangle([box_x, y, box_x + box_w, y + box_h], radius=box_h // 2, fill=BLUE)
-    uf = F("bold", 42)
-    uw = d.textlength(SITE_URL, font=uf)
-    d.text(((SIZE - uw) / 2, y + (box_h - uf.size) / 2 - 6), SITE_URL, font=uf, fill=WHITE)
-    y += box_h + 50
-    df = F("regular", 32)
-    y = draw_lines(d, ["회원병원을 위한 실무 소식지 전문과", "지난 호 전체는 협회 홈페이지에서 볼 수 있습니다."],
-                   0, y, df, GREY, 48, center=True)
-    if y > CONTENT_MAX_Y:
-        OVERFLOW.append("%s info: y=%d (한계 %d)" % (date, y, CONTENT_MAX_Y))
-    footer(img, d, page=2, total=total)
-    img.save(os.path.join(outdir, "2-info.png"))
-
-    for stale in ("3-point2.png", "4-point3.png", "5-outro.png"):
+    for stale in ("2-point1.png", "2-info.png", "3-point2.png", "4-point3.png", "5-outro.png"):
         p = os.path.join(outdir, stale)
         if os.path.exists(p):
             os.remove(p)
