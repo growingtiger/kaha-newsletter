@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
-"""인스타그램 카드뉴스(1080×1080) 생성.
+"""인스타그램 카드뉴스(1080×1080) 생성 — 발행 안내 전용 1장(2026-08-23 개편).
 
-tools/cards_data.json의 호별 데이터(제목·부제·포인트 3개·캡션)를 읽어
-cards/<날짜>/ 아래에 표지·포인트 3장·요약 카드와 caption.txt를 만든다.
-- 표지: 제목 + 이번 호 핵심 3줄 미리보기
-- 포인트 카드: 번호 칩 + 머리글 + 본문 + 세부 항목(선택) + 근거/출처 줄
-- 마무리: 오늘의 핵심 정리(3줄 재수록) + 안내
+인스타그램은 회원병원뿐 아니라 보호자 등 일반 대중도 볼 수 있으므로,
+카드에는 조문·수치 등 소식지 세부 내용을 싣지 않는다. "오늘 이런 주제로
+발행되었다"는 안내와 협회 홈페이지 링크만 한 장에 담는다. 세부 내용은
+홈페이지에서 확인하도록 유도한다.
 
-포인트 형식: [머리글, 본문, 근거] 또는 [머리글, 본문, 근거, [세부항목, ...]]
-세부항목은 가이드라인 요약·핵심 수치를 나열하는 용도이며 생략할 수 있다.
-생성 시 CONTENT_MAX_Y를 넘는 카드가 있으면 경고와 함께 비정상 종료한다.
-- 마무리: 오늘의 핵심 정리(3줄 재수록) + 안내
+tools/cards_data.json의 호별 데이터(제목·부제)를 읽어 cards/<날짜>/ 아래에
+안내 카드 1장, caption.txt를 만든다.
 디자인은 소식지·양식과 같은 브랜드 팔레트(KAHA 블루 #035293)를 쓴다.
 필요: Pillow, 시스템 폰트 fonts-nanum.
 """
+import datetime
 import json
 import os
 from PIL import Image, ImageDraw, ImageFont
@@ -22,6 +20,7 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "tools", "cards_data.json")
 LOGO_PATH = os.path.join(BASE, "assets", "kaha-logo.png")
 OUT_ROOT = os.path.join(BASE, "cards")
+SITE_URL = "https://kaha.or.kr/"
 
 SIZE = 1080
 CONTENT_MAX_Y = 946        # 하단 푸터 영역 침범 방지 한계선
@@ -55,6 +54,9 @@ def F(weight, size):
 
 THEMES = {1: "월요일 · 진료 가이드라인", 2: "화요일 · 노무·인사",
           3: "수요일 · 서식·양식", 4: "목요일 · 경영·세무", 5: "금요일 · 법규·정책"}
+DOW_SHORT = {1: "월", 2: "화", 3: "수", 4: "목", 5: "금"}
+THEME_SHORT = {1: "진료 가이드라인", 2: "노무·인사", 3: "서식·양식",
+               4: "경영·세무", 5: "법규·정책"}
 
 logo_src = Image.open(LOGO_PATH).convert("RGBA")
 
@@ -76,9 +78,13 @@ def wrap(draw, text, font, maxw):
         lines.append(cur)
     return lines
 
-def draw_lines(draw, lines, x, y, font, fill, leading):
+def draw_lines(draw, lines, x, y, font, fill, leading, center=False):
     for ln in lines:
-        draw.text((x, y), ln, font=font, fill=fill)
+        xx = x
+        if center:
+            w = draw.textlength(ln, font=font)
+            xx = (SIZE - w) / 2
+        draw.text((xx, y), ln, font=font, fill=fill)
         y += leading
     return y
 
@@ -86,16 +92,9 @@ def base_card():
     img = Image.new("RGB", (SIZE, SIZE), WHITE)
     return img, ImageDraw.Draw(img)
 
-def footer(img, draw, date, page=None, total=None):
+def footer(img, draw):
     draw.rectangle([0, SIZE - 14, SIZE, SIZE], fill=BLUE)
     draw.text((80, SIZE - 74), "KAHA 회원병원 실무 소식지", font=F("semibold", 26), fill=GREY)
-    if page is not None:
-        cx = SIZE // 2 - (total - 1) * 18
-        for i in range(total):
-            r = 7
-            fill = BLUE if (i + 1) == page else BLUE_LT
-            draw.ellipse([cx - r, SIZE - 66 - r, cx + r, SIZE - 66 + r], fill=fill)
-            cx += 36
 
 def chip(draw, x, y, text, font, pad=18):
     w = draw.textlength(text, font=font)
@@ -104,120 +103,63 @@ def chip(draw, x, y, text, font, pad=18):
     draw.text((x + pad, y + (h + 6 - font.size) // 2 - 2), text, font=font, fill=WHITE)
     return y + h + 6
 
+def caption_for(date, data, dow):
+    theme = THEME_SHORT[dow]
+    md = "%d/%d" % (int(date[5:7]), int(date[8:10]))
+    return (
+        "[KAHA 회원병원 실무 소식지] %s (%s %s · %s)\n\n"
+        "오늘 소식지 주제: %s\n\n"
+        "회원병원 실무 소식지 전문은 협회 홈페이지에서 확인하실 수 있습니다.\n"
+        "%s\n\n"
+        "#KAHA #한국동물병원협회 #수의사 #동물병원 #동물병원실무"
+    ) % (data["title"], md, DOW_SHORT[dow], theme, data["subtitle"], SITE_URL)
+
 def make_set(date, data):
     outdir = os.path.join(OUT_ROOT, date)
     os.makedirs(outdir, exist_ok=True)
-    import datetime
     dow = datetime.date(*map(int, date.split("-"))).isoweekday()
     theme = THEMES.get(dow, "")
-    points = data["points"]
-    total = 2 + len(points)
 
-    # ── 1. 표지: 제목 + 이번 호 핵심 미리보기 ──
+    # ── 1장: 발행 안내 + 홈페이지 유도 (세부 내용 없음) ──
     img, d = base_card()
     img.paste(logo(64), (80, 80), logo(64))
     d.rectangle([80, 184, SIZE - 80, 190], fill=BLUE)
     chip(d, 80, 250, theme, F("semibold", 32))
-    tf = F("extrabold", 66)
-    y = draw_lines(d, wrap(d, data["title"], tf, 920), 80, 356, tf, INK, 88)
-    sf = F("regular", 40)
-    y = draw_lines(d, wrap(d, data["subtitle"], sf, 920), 80, y + 10, sf, GREY, 56)
-    y = max(y + 34, 610)
-    d.text((80, y), "이번 호 핵심", font=F("bold", 30), fill=BLUE)
+    d.text((80, 336), "오늘의 회원병원 실무 소식지가 발행되었습니다",
+           font=F("bold", 32), fill=BLUE_DK)
+    tf = F("extrabold", 58)
+    y = draw_lines(d, wrap(d, data["title"], tf, 920), 80, 400, tf, INK, 78)
+    sf = F("regular", 36)
+    y = draw_lines(d, wrap(d, data["subtitle"], sf, 920), 80, y + 12, sf, GREY, 50)
+
+    y += 56
+    d.rectangle([80, y, SIZE - 80, y + 3], fill=BLUE_LT)
     y += 54
-    bf = F("semibold", 36)
-    for point in points:
-        d.ellipse([84, y + 16, 100, y + 32], fill=BLUE)
-        for ln in wrap(d, point[0], bf, 860):
-            d.text((124, y), ln, font=bf, fill=INK)
-            y += 54
-        y += 12
-    hint = "넘겨서 자세히 보기  →"
-    hw = d.textlength(hint, font=F("semibold", 30))
-    d.text((SIZE - 80 - hw, 908), hint, font=F("semibold", 30), fill=BLUE)
-    footer(img, d, date, page=1, total=total)
+
+    d.text((80, y), "자세한 내용은 협회 홈페이지에서 확인하세요",
+           font=F("bold", 38), fill=BLUE_DK)
+    y += 74
+    box_w, box_h = 560, 88
+    d.rounded_rectangle([80, y, 80 + box_w, y + box_h], radius=box_h // 2, fill=BLUE)
+    uf = F("bold", 38)
+    d.text((80 + 40, y + (box_h - uf.size) / 2 - 4), SITE_URL, font=uf, fill=WHITE)
+    y += box_h + 40
+    df = F("regular", 30)
+    y = draw_lines(d, wrap(d, "회원병원을 위한 실무 소식지 전문과 지난 호 전체는 협회 홈페이지에서 볼 수 있습니다.", df, 920),
+                   80, y, df, GREY, 44)
+
+    if y > CONTENT_MAX_Y:
+        OVERFLOW.append("%s cover: y=%d (한계 %d)" % (date, y, CONTENT_MAX_Y))
+    footer(img, d)
     img.save(os.path.join(outdir, "1-cover.png"))
 
-    # ── 2~4. 포인트 카드: 번호 칩 + 머리글 + 본문 + 세부 항목 + 근거 줄 ──
-    for i, point in enumerate(points, start=1):
-        head, body = point[0], point[1]
-        detail = point[2] if len(point) > 2 else None
-        bullets = point[3] if len(point) > 3 else None
-        img, d = base_card()
-        img.paste(logo(48), (80, 72), logo(48))
-        tw = d.textlength(theme, font=F("regular", 28))
-        d.text((SIZE - 80 - tw, 84), theme, font=F("regular", 28), fill=GREY)
-        d.rectangle([80, 160, SIZE - 80, 164], fill=BLUE_LT)
-        # 번호 칩
-        num = "%02d" % i
-        nf = F("bold", 42)
-        d.rounded_rectangle([80, 208, 196, 280], radius=16, fill=BLUE)
-        nw = d.textlength(num, font=nf)
-        d.text((80 + (116 - nw) / 2, 220), num, font=nf, fill=WHITE)
-        # 머리글
-        hf = F("bold", 56)
-        y = draw_lines(d, wrap(d, head, hf, 920), 80, 318, hf, BLUE_DK, 76)
-        # 본문
-        bf2 = F("regular", 40)
-        y = draw_lines(d, wrap(d, body, bf2, 920), 80, y + 22, bf2, INK, 62)
-        # 세부 항목 (선택) — 가이드라인 요약·핵심 수치를 항목으로 나열
-        if bullets:
-            y += 20
-            lf = F("regular", 34)
-            for b in bullets:
-                lines = wrap(d, b, lf, 848)
-                d.ellipse([88, y + 15, 104, y + 31], fill=BLUE_LT)
-                for ln in lines:
-                    d.text((128, y), ln, font=lf, fill=INK)
-                    y += 50
-                y += 10
-        # 근거/출처 줄
-        if detail:
-            y += 22
-            df = F("regular", 32)
-            dlines = wrap(d, detail, df, 880)
-            bar_h = len(dlines) * 46 + 8
-            d.rectangle([80, y, 88, y + bar_h], fill=BLUE)
-            draw_lines(d, dlines, 112, y + 4, df, GREY, 46)
-            y += bar_h
-        if y > CONTENT_MAX_Y:
-            OVERFLOW.append("%s point%d: y=%d (한계 %d)" % (date, i, y, CONTENT_MAX_Y))
-        footer(img, d, date, page=i + 1, total=total)
-        img.save(os.path.join(outdir, "%d-point%d.png" % (i + 1, i)))
-
-    # ── 5. 마무리: 오늘의 핵심 정리 ──
-    img, d = base_card()
-    img.paste(logo(64), (80, 80), logo(64))
-    d.rectangle([80, 184, SIZE - 80, 190], fill=BLUE)
-    d.text((80, 244), "오늘의 핵심 정리", font=F("extrabold", 48), fill=BLUE_DK)
-    y = 356
-    kf = F("semibold", 38)
-    vf = F("regular", 30)
-    for idx, point in enumerate(points, start=1):
-        d.ellipse([80, y + 2, 124, y + 46], fill=BLUE)
-        d.line([(91, y + 25), (100, y + 34), (114, y + 14)], fill=WHITE, width=5, joint="curve")
-        yy = y
-        for ln in wrap(d, point[0], kf, 820):
-            d.text((148, yy), ln, font=kf, fill=INK)
-            yy += 54
-        if len(point) > 2:
-            for ln in wrap(d, point[2], vf, 820):
-                d.text((148, yy), ln, font=vf, fill=GREY)
-                yy += 44
-        y = yy + 30
-    d.rectangle([80, y + 6, SIZE - 80, y + 9], fill=BLUE_LT)
-    y += 44
-    cf = F("bold", 40)
-    d.text((80, y), "전체 내용 · 양식 PDF · 워드 파일은 소식지에서", font=cf, fill=INK)
-    d.text((80, y + 62), "프로필 링크 · 매 평일 발행 · 한국동물병원협회",
-           font=F("regular", 30), fill=GREY)
-    if y + 62 + 30 > CONTENT_MAX_Y:
-        OVERFLOW.append("%s outro: y=%d (한계 %d)" % (date, y + 92, CONTENT_MAX_Y))
-    footer(img, d, date, page=total, total=total)
-    img.save(os.path.join(outdir, "%d-outro.png" % total))
+    for stale in ("2-point1.png", "2-info.png", "3-point2.png", "4-point3.png", "5-outro.png"):
+        p = os.path.join(outdir, stale)
+        if os.path.exists(p):
+            os.remove(p)
 
     with open(os.path.join(outdir, "caption.txt"), "w", encoding="utf-8") as f:
-        f.write(data["caption"] + "\n")
+        f.write(caption_for(date, data, dow) + "\n")
 
 if __name__ == "__main__":
     import sys
