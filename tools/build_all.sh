@@ -27,4 +27,6 @@ echo "── 5. 골든룰 검사"
 python3 tools/check_forms.py
 
 echo "── 6. 전체 내려받기 압축 파일 (반드시 마지막)"
-python3 tools/make_forms_zip.py
+# 압축 파일은 저장소에 커밋하지 않는다. 배포할 때 Vercel 이 같은 스크립트를 다시 돌린다.
+# 여기서 만드는 것은 확인용이자 forms.json 의 크기·개수 표기를 채우기 위한 것이다.
+node tools/make_forms_zip.js
