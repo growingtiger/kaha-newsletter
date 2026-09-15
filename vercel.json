@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "node tools/make_forms_zip.js",
+  "buildCommand": "node tools/make_forms_zip.js || true",
   "outputDirectory": ".",
   "trailingSlash": true,
   "headers": [

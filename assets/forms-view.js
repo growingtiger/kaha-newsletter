@@ -124,12 +124,21 @@
 
     this.el.innerHTML = '<div class="forms-head"><h1>' + esc(this.title) + "</h1>"
       + "<p>" + esc(intro) + "</p></div>"
-      + bundleBar(data.bundle, this.base)
+      + '<div class="fbundle-slot"></div>' 
       + '<div class="fsearch"><input type="search" class="fq" '
       + 'placeholder="양식 · 진단명 검색 (예: 슬개골, 백내장, cataract, 연차)" '
       + 'aria-label="양식 검색" autocomplete="off">'
       + '<span class="cnt fcnt"></span></div>'
       + '<div class="fchips"></div><div class="flist"></div>';
+
+    // 압축 파일은 배포할 때 만들어진다. 어떤 이유로든 없으면 버튼을 띄우지
+    // 않는다 — 회원이 눌렀다가 깨진 링크를 만나는 것보다 낫다.
+    var slot = this.el.querySelector(".fbundle-slot"), base = this.base;
+    if (data.bundle && data.bundle.path) {
+      fetch(encodeURI(base + data.bundle.path), { method: "HEAD" })
+        .then(function (r) { if (r.ok) slot.innerHTML = bundleBar(data.bundle, base); })
+        .catch(function () { /* 없으면 그냥 두지 않는다 */ });
+    }
 
     this.box = this.el.querySelector(".fq");
     this.chipWrap = this.el.querySelector(".fchips");
