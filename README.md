@@ -445,8 +445,9 @@ WSAVA·AAHA 등 해외 가이드라인은 **국내 시행 의무가 없는 학�
      `mcp__github__actions_run_trigger` → `run_workflow`, `growingtiger/signature-hub`,
      `notify.yml`, `ref: main`, `inputs: {title, message, slug}`.
      실행 결과를 `actions_list` 로 확인하고 `conclusion: success` 인지 본다.
-   - 실제 **카톡 메시지 발송은 맥의 `~/ai-assistant/kakao_hub.py`** 가 한다. 클라우드 세션은 그 맥에 닿을 수 없으니
-     허브 페이지 + ntfy 알림까지만 할 수 있다. 카톡 메시지 자체는 가지 않는다는 점을 원장님께 말씀드린다.
+   - 실제 **카톡 메시지 발송은 맥의 `~/ai-assistant/kakao_hub.py`** 가 한다 (2026-10-20 원장 결정).
+     클라우드 세션은 허브 페이지 + ntfy 알림까지만 한다. 카톡 메시지까지 꼭 필요하면 `ListAgents` 로 맥 세션이
+     보이는지 확인해 `SendMessage` 로 발송을 부탁하고, 닿지 않으면 ntfy 알림으로 끝낸 뒤 그 사실을 말씀드린다.
 5. **막히면 조용히 끝내지 않는다** — 무엇이 왜 막혔는지 분명히 말한다.
 
 글에는 이모지를 쓰지 않는다.
