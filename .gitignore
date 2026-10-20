@@ -6,3 +6,6 @@ package-lock.json
 # 양식을 고칠 때마다 통째로 새 파일이 쌓여 저장소가 무거워지고,
 # 일일 발행 루틴의 클론이 위태로워진다. 배포 시 Vercel 이 만든다.
 downloads/
+
+# 파이썬 캐시
+tools/__pycache__/
