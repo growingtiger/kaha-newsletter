@@ -428,3 +428,23 @@ WSAVA·AAHA 등 해외 가이드라인은 **국내 시행 의무가 없는 학�
 ## 이메일·단체방 배포
 
 배포 주소 링크(`/?d=날짜`)를 회원병원 단체 채널이나 메일로 공유하는 방식을 기본으로 합니다. 추후 뉴스레터 메일 발송 자동화가 필요하면 issues 마크다운을 HTML 메일로 변환하는 스크립트를 추가할 수 있습니다.
+
+## 골든룰: "내 카톡으로 보내줘"는 이렇게 한다
+
+카카오톡으로 직접 보내는 기능은 없다. **"불가능하다"고 답하지 말 것.** 정해진 경로가 있다.
+
+1. **허브 페이지를 만든다** — `growingtiger/signature-hub` 저장소에 `<이름>.html` 을 추가한다.
+   기존 페이지(`salim-*.html`, `signal-*.html` 등)를 그대로 본떠, 보낼 글을 `<div class="box">` 에 넣고
+   **[복사] 단추**를 붙인다. 사용자는 이 단추로 글을 복사해 카톡에 붙여넣는다.
+2. **목록에 올린다** — 같은 저장소 `list-74a54603.json` 맨 위에 `{slug, label, title, at}` 한 줄을 넣는다.
+3. **main 에 푸시한다** — 주소는 `https://vet-briefing.vercel.app/drafts/hub/<이름>.html`
+   (vet-briefing 의 rewrite 가 signature-hub 로 넘긴다).
+4. **휴대폰 알림(ntfy)을 보낸다** — 알림을 보내야 "보낸 것"이다. 링크만 채팅에 적어 두고 끝내지 말 것.
+   - 세션에서 `ntfy.sh` 에 닿으면 그대로 보낸다.
+   - **막혀 있으면**(클라우드 세션의 네트워크 정책) 깃허브 액션으로 보낸다:
+     `mcp__github__actions_run_trigger` → `run_workflow`, `growingtiger/signature-hub`,
+     `notify.yml`, `ref: main`, `inputs: {title, message, slug}`.
+     실행 결과를 `actions_list` 로 확인하고 `conclusion: success` 인지 본다.
+5. **막히면 조용히 끝내지 않는다** — 무엇이 왜 막혔는지 분명히 말한다.
+
+글에는 이모지를 쓰지 않는다.
