@@ -445,6 +445,20 @@ WSAVA·AAHA 등 해외 가이드라인은 **국내 시행 의무가 없는 학�
      `mcp__github__actions_run_trigger` → `run_workflow`, `growingtiger/signature-hub`,
      `notify.yml`, `ref: main`, `inputs: {title, message, slug}`.
      실행 결과를 `actions_list` 로 확인하고 `conclusion: success` 인지 본다.
+   - 실제 **카톡 메시지 발송은 맥의 `~/ai-assistant/kakao_hub.py`** 가 한다. 클라우드 세션은 그 맥에 닿을 수 없으니
+     허브 페이지 + ntfy 알림까지만 할 수 있다. 카톡 메시지 자체는 가지 않는다는 점을 원장님께 말씀드린다.
 5. **막히면 조용히 끝내지 않는다** — 무엇이 왜 막혔는지 분명히 말한다.
 
 글에는 이모지를 쓰지 않는다.
+
+## 골든룰: 새 앱은 이태호 통합 포털에도 등록한다
+
+새 PWA·웹앱·홈페이지·정기 결과물 페이지를 만들어 배포하면, **어느 저장소에서 만들었든**
+`growingtiger/leetaeho-portal` 의 `public/apps.json` 의 `apps` 에 한 줄을 넣고 main 에 푸시한다
+(2026-10-10 원장 지시, leetaeho-portal/CLAUDE.md 와 같은 규칙).
+
+항목: `id`(고유), `group`(me·owners·hospital·public·outputs·family·console), `repo`(~/ 아래 폴더 이름, 없으면 ""),
+`name`, `url`, `desc`(한 줄), `kw`(검색 별칭).
+
+**직원용 시그니처 통합 포털**(`signature-amc-referral/public/portal.html`)에는 원장님이 말씀하실 때만 넣는다.
+한쪽에 넣었다고 다른 쪽에 넣지 않는다.
