@@ -42,6 +42,8 @@ def main():
     for e in rows:
         key = e["file"].replace("동의서_한국동물병원협회", "")
         c = CONTENT.get(key)
+        if not c and e.get("about"):
+            continue    # 설명을 procedures.json 에 바로 써 넣은 양식(예: 간 생검)은 그대로 둔다
         if not c:
             missing.append(key)
             continue
